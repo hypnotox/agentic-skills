@@ -29,7 +29,7 @@
   "scripts": {
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
-    "check": "npm run typecheck && npm test && claude plugin validate . && claude plugin validate .claude-plugin/plugin.json && claude plugin validate --strict skills && claude plugin validate --strict agents"
+    "check": "npm run typecheck && npm test && claude plugin validate . && claude plugin validate --strict skills && claude plugin validate --strict agents"
   },
   "peerDependencies": {
     "@earendil-works/pi-coding-agent": "*",
@@ -38,7 +38,7 @@
   "devDependencies": {
     "@earendil-works/pi-coding-agent": "0.84.4",
     "@types/node": "20.19.37",
-    "pi-tools": "https://github.com/hypnotox/pi-tools/archive/refs/tags/v0.3.0.tar.gz",
+    "pi-tools": "https://github.com/hypnotox/pi-tools/archive/refs/heads/main.tar.gz",
     "typebox": "1.3.7",
     "typescript": "5.9.3",
     "vitest": "3.2.7"

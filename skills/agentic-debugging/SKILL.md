@@ -1,6 +1,6 @@
 ---
 name: agentic-debugging
-description: Investigate unexpected behavior with an unknown cause, distinguish hypotheses with evidence, and establish a regression oracle or report an unresolved cause.
+description: Investigate unexpected behavior with an unknown cause, distinguish hypotheses with evidence, and establish a regression oracle or report that the cause remains unresolved.
 ---
 
 # Agentic debugging
@@ -24,6 +24,6 @@ Do not describe a speculative causal change as a root-cause fix. Preserve eviden
 
 Before changing production behavior, establish the strongest practical regression oracle. Prefer a deterministic automated test that fails before the fix and passes afterward. When that is impractical, explain why and use the strongest reproducible alternative.
 
-For intermittent, production-only, environment-dependent, or evidence-limited failures, `unresolved` is an honest terminal outcome. Report eliminated hypotheses, the strongest remaining explanation, evidence limits, and the next discriminating experiment.
+For intermittent, production-only, environment-dependent, or evidence-limited failures, `unresolved` is an honest terminal outcome. State that the cause remains unresolved, then report eliminated hypotheses, the strongest remaining explanation, evidence limits, and the next discriminating experiment.
 
 Adding the oracle may be the first mutation when authorized. Route a supported fix through `agentic-implementing`. Apply `agentic-code-design` when the established cause creates a structural ownership, state, invariant, contract, dependency, or refactor-boundary question. Use `agentic-brainstorming` only when the evidence creates a material choice about outcome, scope, compatibility, safety, user-visible behavior, or durable architecture.

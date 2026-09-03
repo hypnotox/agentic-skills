@@ -92,7 +92,7 @@ const ROLES: readonly RoleDefinition[] = [
 ];
 
 function promptGuideline(role: RoleDefinition): string {
-  return `Use ${role.toolName} only for this role. The child receives only its role prompt and delegated task—not the parent transcript, installed skills, or repository context files. Include the applicable outcome, repository constraints, evidence or write boundary, and verification expectations in the task. ${role.roleGuidance} Extract only applicable repository constraints; do not paste whole instruction files by default.`;
+  return `Use ${role.toolName} only for this role. The child starts a fresh Pi session with the role prompt and delegated task. It does not inherit the parent transcript, and automatic repository-context discovery is disabled. Installed skills and extensions remain available and may contribute instructions or context. Supply a self-contained delegated task; loaded skills are capabilities, not parent-task context. ${role.roleGuidance}`;
 }
 
 function instructionBody(content: string, path: string): string {
@@ -104,6 +104,7 @@ function instructionBody(content: string, path: string): string {
 export function registerAgenticProfiles(pi: ExtensionAPI, dependencies: AdapterDependencies): void {
   const packageRoot = resolve(dirname(dependencies.extensionFile), "../..");
   const correlationId = dependencies.randomId();
+  const isSubagentChild = process.env.PI_TOOLS_SUBAGENT_CHILD === "1";
   let sessionContext:
     | { ui?: { notify?(message: string, type: "error"): void } }
     | undefined;
@@ -113,7 +114,7 @@ export function registerAgenticProfiles(pi: ExtensionAPI, dependencies: AdapterD
 
   const reportUnavailable = (reason: string): void => {
     failureReason ??= reason;
-    if (!sessionContext || notified || registered) return;
+    if (isSubagentChild || !sessionContext || notified || registered) return;
     notified = true;
     sessionContext.ui?.notify?.(
       `Agentic role delegation is unavailable (${failureReason}). Install or update hypnotox/pi-tools with subagent-profile protocol v2, then reload Pi. The agentic-skills Markdown skills remain available.`,

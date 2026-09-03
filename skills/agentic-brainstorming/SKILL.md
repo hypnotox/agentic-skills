@@ -14,8 +14,8 @@ Safety rules, permissions, harness instructions, the actual user request, and ap
 1. State the choice, outcome, constraints, affected boundary, and evidence needed.
 2. Separate settled facts from assumptions and unknowns.
 3. Present a proportionate set of viable options with trade-offs, risks, reversibility, and compatibility effects.
-4. Recommend the option that best fits the evidence.
-5. Confirm the direction before dependent work, unless the user explicitly delegated this decision and proceeding remains within granted authority.
+4. Recommend the option that best fits the evidence. If the evidence cannot distinguish the options responsibly, report the choice as unresolved, name the missing discriminating evidence, and propose a bounded investigation.
+5. Confirm a supported direction before dependent work, unless the user explicitly delegated the decision and proceeding remains within granted authority. Do not force a choice while it remains unresolved.
 
 Keep the decision in the active interaction by default. Persist it only when the user asks or applicable repository instructions require it and the task authorizes that write. Do not invent a decision log, memory store, hidden state, or other process artifact.
 

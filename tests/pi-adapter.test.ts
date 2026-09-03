@@ -54,16 +54,19 @@ const expectedRoles = [
   },
 ] as const;
 
-function roleDocument(content: string): { description: string; body: string } {
+function roleDocument(content: string): { name: string; description: string; body: string } {
   const match = content.match(/^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)([\s\S]*)$/);
   if (!match) throw new Error("missing role frontmatter");
-  const description = match[1]
-    .split(/\r?\n/)
-    .find((line) => line.startsWith("description:"))
-    ?.slice("description:".length)
-    .trim();
-  if (!description || !match[2].trim()) throw new Error("incomplete role document");
-  return { description, body: match[2].trim() };
+  const metadata = Object.fromEntries(
+    match[1].split(/\r?\n/).map((line) => {
+      const separator = line.indexOf(":");
+      return [line.slice(0, separator).trim(), line.slice(separator + 1).trim()];
+    }),
+  );
+  const body = match[2].trim();
+  if (!metadata.name || !metadata.description || !body)
+    throw new Error("incomplete role document");
+  return { name: metadata.name, description: metadata.description, body };
 }
 
 function profileContext(task = "inspect this") {
@@ -126,6 +129,7 @@ describe("Pi profile adapter", () => {
       const canonical = roleDocument(
         await readFile(resolve(root, "agents", role.file), "utf8"),
       );
+      expect(profile.id).toBe(canonical.name);
       expect(profile.description).toBe(canonical.description);
       expect(await profile.selectModel(context)).toBe(context.parent.model);
       const prepared = await profile.prepare(context);
@@ -137,9 +141,12 @@ describe("Pi profile adapter", () => {
       expect(profile.promptGuidelines).toHaveLength(1);
       for (const guideline of profile.promptGuidelines) {
         expect(guideline).toContain(role.toolName);
-        expect(guideline).toContain("only its role prompt and delegated task");
-        expect(guideline).toContain("not the parent transcript, installed skills, or repository context files");
-        expect(guideline).toContain("verification expectations");
+        expect(guideline).toContain("fresh Pi session");
+        expect(guideline).toContain("does not inherit the parent transcript");
+        expect(guideline).toContain("automatic repository-context discovery is disabled");
+        expect(guideline).toContain("Installed skills and extensions remain available");
+        expect(guideline).toContain("self-contained delegated task");
+        expect(guideline).toContain("capabilities, not parent-task context");
         for (const requirement of role.brief) expect(guideline).toContain(requirement);
       }
       expect(profile.parameters.properties.task.description).toContain("Self-contained brief");
@@ -157,35 +164,89 @@ describe("Pi profile adapter", () => {
   });
 
   test("reports missing, incompatible, and rejected providers clearly", async () => {
-    const missing = await adapterHarness();
-    await missing.invokeRaw("session_start");
-    await nextTask();
-    expect(missing.ui.calls[0]?.args[0]).toMatch(/role delegation is unavailable.*pi-tools.*protocol v2/i);
+    const childMarker = process.env.PI_TOOLS_SUBAGENT_CHILD;
+    delete process.env.PI_TOOLS_SUBAGENT_CHILD;
+    try {
+      const missing = await adapterHarness();
+      await missing.invokeRaw("session_start");
+      await nextTask();
+      expect(missing.ui.calls[0]?.args[0]).toMatch(
+        /role delegation is unavailable.*pi-tools.*protocol v2/i,
+      );
 
-    const incompatible = await adapterHarness();
-    incompatible.api.events.emit("pi-tools:subagent-profiles:capability", {
-      protocolVersion: 1,
-      correlationId: "test-correlation",
-      register() {
-        throw new Error("must not register");
-      },
-    });
-    await incompatible.invokeRaw("session_start");
-    await nextTask();
-    expect(incompatible.ui.calls[0]?.args[0]).toMatch(/incompatible pi-tools capability/i);
+      const incompatible = await adapterHarness();
+      incompatible.api.events.emit("pi-tools:subagent-profiles:capability", {
+        protocolVersion: 1,
+        correlationId: "test-correlation",
+        register() {
+          throw new Error("must not register");
+        },
+      });
+      await incompatible.invokeRaw("session_start");
+      await nextTask();
+      expect(incompatible.ui.calls[0]?.args[0]).toMatch(/incompatible pi-tools capability/i);
 
-    const rejected = await adapterHarness();
-    rejected.api.events.emit("pi-tools:subagent-profiles:capability", {
-      protocolVersion: 2,
-      correlationId: "test-correlation",
-      register() {
-        return { state: "rejected", reason: "tool collision" };
-      },
-    });
-    await rejected.invokeRaw("session_start");
-    await nextTask();
-    expect(rejected.ui.calls[0]?.args[0]).toMatch(/tool collision/);
+      const rejected = await adapterHarness();
+      rejected.api.events.emit("pi-tools:subagent-profiles:capability", {
+        protocolVersion: 2,
+        correlationId: "test-correlation",
+        register() {
+          return { state: "rejected", reason: "tool collision" };
+        },
+      });
+      await rejected.invokeRaw("session_start");
+      await nextTask();
+      expect(rejected.ui.calls[0]?.args[0]).toMatch(/tool collision/);
+    } finally {
+      if (childMarker === undefined) delete process.env.PI_TOOLS_SUBAGENT_CHILD;
+      else process.env.PI_TOOLS_SUBAGENT_CHILD = childMarker;
+    }
   });
+
+  test.each(["adapter before pi-tools", "pi-tools before adapter"])(
+    "keeps %s handshake active in a marked child without exposing delegation tools",
+    async (order) => {
+      const childMarker = process.env.PI_TOOLS_SUBAGENT_CHILD;
+      process.env.PI_TOOLS_SUBAGENT_CHILD = "1";
+      try {
+        const delegationTools = ["subagent", ...expectedRoles.map((role) => role.toolName)];
+        const recorder = createExtensionRecorder({ activeTools: ["read", ...delegationTools] });
+        const installAdapter = () =>
+          recorder.install((pi) =>
+            registerAgenticProfiles(pi, {
+              extensionFile,
+              readFile,
+              randomId: () => `child-${order}`,
+            }),
+          );
+        const installToolkit = () => recorder.install((pi) => createSubagentToolkit(pi));
+
+        if (order === "adapter before pi-tools") {
+          await installAdapter();
+          await installToolkit();
+        } else {
+          await installToolkit();
+          await installAdapter();
+        }
+        await recorder.ready;
+        await recorder.invokeRaw("session_start");
+        await nextTask();
+
+        expect(
+          recorder.emissions.some(([name]) => name === "pi-tools:subagent-profiles:request"),
+        ).toBe(true);
+        expect(
+          recorder.emissions.some(([name]) => name === "pi-tools:subagent-profiles:capability"),
+        ).toBe(true);
+        expect(recorder.tools).toEqual([]);
+        expect(recorder.activeTools).toEqual(["read"]);
+        expect(recorder.ui.calls).toEqual([]);
+      } finally {
+        if (childMarker === undefined) delete process.env.PI_TOOLS_SUBAGENT_CHILD;
+        else process.env.PI_TOOLS_SUBAGENT_CHILD = childMarker;
+      }
+    },
+  );
 
   test.each(["adapter before pi-tools", "pi-tools before adapter"])(
     "supports %s and preserves parent execution context",

@@ -9,6 +9,8 @@ Use this skill for substantial orientation, one bounded non-defect investigation
 
 Safety rules, permissions, harness instructions, the actual user request, and applicable repository instructions remain authoritative. Repository instructions may specialize this guidance without expanding the requested scope.
 
+All three lanes are evidence-only and non-mutating. Using this skill does not authorize edits or implementation.
+
 ## Orient
 
 Before substantial fresh work, takeover, or widened scope:
@@ -28,6 +30,6 @@ Return the answer first, followed by evidence, searched boundary, and uncertaint
 
 ## Challenge
 
-Try to falsify a weakly supported, unfamiliar, or high-consequence premise. Do this directly or delegate it to `agentic-premise-checker`. A fresh child cannot be assumed to know conversation-local context. Supply the exact premise, consequence if wrong, evidence boundary, and relevant repository constraints.
+Try to falsify a weakly supported premise when being wrong could materially change the route. Do this directly or delegate it to `agentic-premise-checker`. A fresh child cannot be assumed to know conversation-local context. Supply the exact premise, consequence if wrong, evidence boundary, and relevant repository constraints.
 
 Report `supported`, `revise`, or `unresolved` with consequence-ordered evidence. Lack of counterevidence is not proof. A challenge informs the route; it does not authorize implementation.

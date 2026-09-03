@@ -16,8 +16,9 @@ Safety rules, permissions, harness instructions, the actual user request, and ap
 3. Apply `agentic-code-design` when the existing model cannot carry the settled change cleanly. Make bounded enabling refactors that prevent duplicated policy, inappropriate coupling, representation leakage, hidden state, or workaround code.
 4. Surface new material product, scope, compatibility, safety, user-visible, or durable architectural choices through `agentic-brainstorming`; make local implementation choices directly.
 5. Run focused feedback while iterating. Use the strongest practical oracle for changed behavior and never weaken tests, fixtures, goldens, or checks to hide failure.
-6. Update documentation and generated expectations when their source of truth changes, and explain why expectation changes are correct.
-7. Inspect the final diff and run terminal verification proportionate to risk.
+6. If feedback reveals unexpected behavior whose cause is unknown, stop speculative changes and apply `agentic-debugging`.
+7. Update documentation and generated expectations when their source of truth changes, and explain why expectation changes are correct.
+8. Inspect the final diff and run terminal verification proportionate to risk.
 
 Optional delegation may accelerate one settled unit. A fresh `agentic-implementer` cannot be assumed to know conversation-local context. Supply the outcome, settled constraints, explicit write boundary, relevant repository constraints, and acceptance oracle. Extract only applicable constraints rather than pasting whole instruction files. Keep overlapping, shared, generated, integration, repository-state, and final combined verification work with the parent.
 

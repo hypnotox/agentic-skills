@@ -19,4 +19,6 @@ Prefer one combined reviewer. Multiple non-overlapping reviewers are appropriate
 
 ## Report
 
-Report findings first in consequence order. For each, give precise path and line or command evidence, concrete consequence, and practical correction. Then state coverage and residual uncertainty. Clearly say when no finding was established. Route requested corrections through `agentic-implementing`.
+Report findings first in consequence order. For each, give precise path and line or command evidence, concrete consequence, and practical correction. Then state coverage and residual uncertainty. Clearly say when no finding was established.
+
+Route settled corrections through `agentic-implementing`. An unknown cause belongs in `agentic-debugging`; an unresolved structural question belongs in `agentic-code-design`; and a material product, scope, compatibility, safety, user-visible, or system-level architectural choice belongs in `agentic-brainstorming`.

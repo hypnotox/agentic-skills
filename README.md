@@ -1,6 +1,6 @@
 # agentic-skills
 
-Repository-agnostic engineering skills and focused delegation roles for Claude Code and Pi.
+Repository-agnostic engineering skills and delegation roles for Claude Code and Pi. Markdown skills work from this package alone; Pi delegation requires compatible `pi-tools`.
 
 ## Authority and adaptation
 
@@ -14,7 +14,7 @@ Repository-agnostic engineering skills and focused delegation roles for Claude C
 |---|---|
 | `agentic-context` | Orient before substantial fresh, takeover, or widened-scope work; investigate one bounded non-defect unknown; or test a consequential premise. |
 | `agentic-brainstorming` | Resolve a material choice about outcome, scope, compatibility, safety, user-visible behavior, or durable architecture before dependent work proceeds. |
-| `agentic-debugging` | Investigate unexpected behavior with an unknown cause, distinguish hypotheses with evidence, and establish a regression oracle or report an unresolved cause. |
+| `agentic-debugging` | Investigate unexpected behavior with an unknown cause, distinguish hypotheses with evidence, and establish a regression oracle or report that the cause remains unresolved. |
 | `agentic-code-design` | Resolve a structural question about semantic ownership, state or invariants, contracts, dependency direction, or refactor boundaries for agreed behavior. |
 | `agentic-planning` | Sequence a settled non-obvious change into verifiable units with dependencies, ownership, integration points, and terminal checks. |
 | `agentic-implementing` | Implement and verify a settled change while preserving unrelated work and surfacing newly material choices. |
@@ -29,7 +29,7 @@ Repository-agnostic engineering skills and focused delegation roles for Claude C
 | `agentic-implementer` | Implement one settled self-contained unit with an explicit write boundary; return a completion receipt while the parent retains integration. | `subagent_implement` |
 | `agentic-reviewer` | Independently inspect one supplied change or existing surface in fresh report-only context; return concrete findings, coverage, and uncertainty. | `subagent_review_code` |
 
-Both harnesses use the same Markdown sources. Pi's small routing-metadata representation is protected by alignment tests.
+Both harnesses share the canonical Markdown; Pi adds a small adapter for optional role tools.
 
 ## Claude Code
 
@@ -44,7 +44,7 @@ claude --plugin-dir /absolute/path/to/agentic-skills
 ## Pi
 
 ```bash
-pi install git:github.com/hypnotox/pi-tools@v0.3.0
+pi install git:github.com/hypnotox/pi-tools
 pi install git:github.com/hypnotox/agentic-skills
 
 # Local checkouts
@@ -54,13 +54,17 @@ pi install /absolute/path/to/agentic-skills
 
 ### Delegation context
 
-Pi role children receive their role prompt and delegated task, but not the parent transcript, installed skills, or repository context files. The parent must supply the relevant outcome, repository constraints, evidence or write boundary, and verification expectations. Pass applicable constraints, not whole instruction files.
+The child starts a fresh Pi session with the role prompt and delegated task. It does not inherit the parent transcript, and automatic repository-context discovery is disabled. Installed skills and extensions remain available and may contribute instructions or context.
+
+Delegated tasks must be self-contained: include the relevant outcome, repository constraints, evidence or write boundary, and verification expectations. Loaded skills are capabilities, not parent-task context.
 
 ### Behavioral boundary
 
 Read-only and report-only roles are behaviorally constrained prompts. They inherit harness-provided tools and permissions and are not security boundaries.
 
 ## Development checks
+
+`npm run check` requires Node.js 22.19+, npm, and Claude Code.
 
 ```bash
 npm install

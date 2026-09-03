@@ -11,7 +11,7 @@ Safety rules, permissions, harness instructions, the actual user request, and ap
 
 ## Build a revisable route
 
-Before sequencing, settle semantic ownership, authoritative state, invariants, contracts, and dependency direction through `agentic-code-design`, or expose the missing design as a blocker.
+Inspect the affected current state, dependencies, and verification surfaces. For a code change with an unresolved structural question, apply `agentic-code-design` before sequencing or expose it as a blocker.
 
 1. State the outcome and settled constraints.
 2. Divide work into independently verifiable units at semantic boundaries.
