@@ -17,7 +17,13 @@ const CAPABILITY_EVENT = "pi-tools:subagent-profiles:capability";
 const RESULT_EVENT = "pi-tools:subagent-profiles:registration-result";
 
 const TASK_PARAMETERS = Type.Object(
-  { task: Type.String({ minLength: 1, description: "Self-contained task for the selected role." }) },
+  {
+    task: Type.String({
+      minLength: 1,
+      description:
+        "Self-contained brief for a fresh child: include the applicable outcome, repository constraints, evidence or write boundary, and verification expectations.",
+    }),
+  },
   { additionalProperties: false },
 );
 const EMPTY_PROFILE_DATA = Type.Object({}, { additionalProperties: false });
@@ -35,7 +41,7 @@ interface RoleDefinition {
   label: string;
   description: string;
   promptSnippet: string;
-  promptGuideline: string;
+  roleGuidance: string;
 }
 
 const ROLES: readonly RoleDefinition[] = [
@@ -44,42 +50,50 @@ const ROLES: readonly RoleDefinition[] = [
     file: "premise-checker.md",
     toolName: "subagent_grounding",
     label: "Premise Check Subagent",
-    description: "Challenge one consequential premise against a bounded evidence set.",
-    promptSnippet: "Challenge a consequential premise in fresh read-only context",
-    promptGuideline:
-      "Use subagent_grounding for one self-contained premise challenge when fresh adversarial evidence would materially improve the route.",
+    description:
+      "Adversarially test one explicit consequential premise in fresh read-only context; return supported, revise, or unresolved with evidence.",
+    promptSnippet: "Test one explicit consequential premise in fresh read-only context",
+    roleGuidance:
+      "Minimum brief: exact premise, consequence if wrong, evidence boundary, and relevant repository constraints.",
   },
   {
     id: "agentic-explorer",
     file: "explorer.md",
     toolName: "subagent_explore",
     label: "Explore Subagent",
-    description: "Investigate one bounded question in fresh read-only context.",
-    promptSnippet: "Investigate a bounded evidence question in fresh read-only context",
-    promptGuideline:
-      "Use subagent_explore for one self-contained bounded investigation when separate fresh context is useful.",
+    description:
+      "Investigate one bounded factual or structural question in fresh read-only context; return evidence, searched boundary, and uncertainty.",
+    promptSnippet: "Investigate one bounded question in fresh read-only context",
+    roleGuidance:
+      "Minimum brief: question, evidence boundary, allowed source types, relevant repository constraints, and desired detail.",
   },
   {
     id: "agentic-reviewer",
     file: "reviewer.md",
     toolName: "subagent_review_code",
     label: "Review Subagent",
-    description: "Perform one fresh, report-only review of supplied change context.",
-    promptSnippet: "Delegate an evidence-backed report-only review to fresh context",
-    promptGuideline:
-      "Use subagent_review_code with one combined review brief when independent risk-based scrutiny is warranted.",
+    description:
+      "Independently inspect one supplied change or existing surface in fresh report-only context; return concrete findings, coverage, and uncertainty.",
+    promptSnippet: "Inspect one supplied change or existing surface in fresh report-only context",
+    roleGuidance:
+      "Minimum brief: intended outcome, settled constraints, review or change boundary, relevant repository constraints, and verification evidence.",
   },
   {
     id: "agentic-implementer",
     file: "implementer.md",
     toolName: "subagent_implement",
     label: "Implementation Subagent",
-    description: "Implement one bounded unit in the active project with an explicit write boundary.",
-    promptSnippet: "Delegate one bounded implementation unit in the active project",
-    promptGuideline:
-      "Use subagent_implement for one self-contained implementation unit with explicit assigned paths; preserve integration and final verification for the parent.",
+    description:
+      "Implement one settled self-contained unit with an explicit write boundary; return a completion receipt while the parent retains integration.",
+    promptSnippet: "Implement one settled self-contained unit with an explicit write boundary",
+    roleGuidance:
+      "Minimum brief: outcome, settled constraints, explicit write boundary, relevant repository constraints, and acceptance oracle; the parent retains integration.",
   },
 ];
+
+function promptGuideline(role: RoleDefinition): string {
+  return `Use ${role.toolName} only for this role. The child receives only its role prompt and delegated task—not the parent transcript, installed skills, or repository context files. Include the applicable outcome, repository constraints, evidence or write boundary, and verification expectations in the task. ${role.roleGuidance} Extract only applicable repository constraints; do not paste whole instruction files by default.`;
+}
 
 function instructionBody(content: string, path: string): string {
   const body = content.replace(/^---\r?\n[\s\S]*?\r?\n---(?:\r?\n|$)/, "").trim();
@@ -113,7 +127,7 @@ export function registerAgenticProfiles(pi: ExtensionAPI, dependencies: AdapterD
     label: role.label,
     description: role.description,
     promptSnippet: role.promptSnippet,
-    promptGuidelines: [role.promptGuideline],
+    promptGuidelines: [promptGuideline(role)],
     parameters: TASK_PARAMETERS,
     profileDataSchema: EMPTY_PROFILE_DATA,
     selectModel: ({ parent }) => parent.model,

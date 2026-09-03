@@ -9,6 +9,62 @@ import { registerAgenticProfiles } from "../extensions/pi-subagents/index.ts";
 const root = resolve(import.meta.dirname, "..");
 const extensionFile = resolve(root, "extensions/pi-subagents/index.ts");
 const nextTask = () => new Promise<void>((resolvePromise) => setTimeout(resolvePromise, 0));
+const expectedRoles = [
+  {
+    id: "agentic-premise-checker",
+    file: "premise-checker.md",
+    toolName: "subagent_grounding",
+    brief: ["exact premise", "consequence if wrong", "evidence boundary", "relevant repository constraints"],
+  },
+  {
+    id: "agentic-explorer",
+    file: "explorer.md",
+    toolName: "subagent_explore",
+    brief: [
+      "question",
+      "evidence boundary",
+      "allowed source types",
+      "relevant repository constraints",
+      "desired detail",
+    ],
+  },
+  {
+    id: "agentic-reviewer",
+    file: "reviewer.md",
+    toolName: "subagent_review_code",
+    brief: [
+      "intended outcome",
+      "settled constraints",
+      "review or change boundary",
+      "relevant repository constraints",
+      "verification evidence",
+    ],
+  },
+  {
+    id: "agentic-implementer",
+    file: "implementer.md",
+    toolName: "subagent_implement",
+    brief: [
+      "outcome",
+      "settled constraints",
+      "explicit write boundary",
+      "relevant repository constraints",
+      "acceptance oracle",
+    ],
+  },
+] as const;
+
+function roleDocument(content: string): { description: string; body: string } {
+  const match = content.match(/^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)([\s\S]*)$/);
+  if (!match) throw new Error("missing role frontmatter");
+  const description = match[1]
+    .split(/\r?\n/)
+    .find((line) => line.startsWith("description:"))
+    ?.slice("description:".length)
+    .trim();
+  if (!description || !match[2].trim()) throw new Error("incomplete role document");
+  return { description, body: match[2].trim() };
+}
 
 function profileContext(task = "inspect this") {
   return {
@@ -57,28 +113,37 @@ describe("Pi profile adapter", () => {
     expect(request).toEqual({ protocolVersion: 2, correlationId: "test-correlation" });
     expect(batch.registrationId).toBe("agentic-skills:subagent-profiles:v2");
     expect(batch.suppressDefault).toBeUndefined();
-    expect(batch.profiles.map((profile: any) => profile.id)).toEqual([
-      "agentic-premise-checker",
-      "agentic-explorer",
-      "agentic-reviewer",
-      "agentic-implementer",
-    ]);
-    expect(batch.profiles.map((profile: any) => profile.toolName)).toEqual([
-      "subagent_grounding",
-      "subagent_explore",
-      "subagent_review_code",
-      "subagent_implement",
-    ]);
+    expect(batch.profiles.map((profile: any) => profile.id)).toEqual(
+      expectedRoles.map((role) => role.id),
+    );
+    expect(batch.profiles.map((profile: any) => profile.toolName)).toEqual(
+      expectedRoles.map((role) => role.toolName),
+    );
 
     const context = profileContext("bounded question");
-    for (const profile of batch.profiles) {
+    for (const [index, profile] of batch.profiles.entries()) {
+      const role = expectedRoles[index];
+      const canonical = roleDocument(
+        await readFile(resolve(root, "agents", role.file), "utf8"),
+      );
+      expect(profile.description).toBe(canonical.description);
       expect(await profile.selectModel(context)).toBe(context.parent.model);
       const prepared = await profile.prepare(context);
       expect(prepared.cwd).toBe("/live/active-project");
       expect(prepared.prompt).toBe("bounded question");
       expect(prepared.toolPolicy).toEqual({ mode: "inherit", deny: [] });
-      expect(prepared.systemPrompt).not.toMatch(/^---/);
-      expect(prepared.systemPrompt).toMatch(/^# /);
+      expect(prepared.systemPrompt).toBe(canonical.body);
+
+      expect(profile.promptGuidelines).toHaveLength(1);
+      for (const guideline of profile.promptGuidelines) {
+        expect(guideline).toContain(role.toolName);
+        expect(guideline).toContain("only its role prompt and delegated task");
+        expect(guideline).toContain("not the parent transcript, installed skills, or repository context files");
+        expect(guideline).toContain("verification expectations");
+        for (const requirement of role.brief) expect(guideline).toContain(requirement);
+      }
+      expect(profile.parameters.properties.task.description).toContain("Self-contained brief");
+      expect(profile.parameters.properties.task.description).toContain("repository constraints");
     }
 
     recorder.api.events.emit("pi-tools:subagent-profiles:registration-result", {
@@ -122,90 +187,115 @@ describe("Pi profile adapter", () => {
     expect(rejected.ui.calls[0]?.args[0]).toMatch(/tool collision/);
   });
 
-  test("delegates through pi-tools in the live active project", async () => {
-    const childMarker = process.env.PI_TOOLS_SUBAGENT_CHILD;
-    delete process.env.PI_TOOLS_SUBAGENT_CHILD;
-    try {
-      const recorder = createExtensionRecorder({ activeTools: ["read"] });
-    recorder.modelRegistry.configuredAuth = true;
-    const model: any = {
-      provider: "test",
-      id: "model",
-      name: "Model",
-      api: "openai-completions",
-      reasoning: false,
-      input: ["text"],
-      cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
-      contextWindow: 100_000,
-      maxTokens: 4_096,
-    };
-    recorder.modelRegistry.add(model);
-    const requests: RunRequest[] = [];
-
-    await recorder.install((pi) =>
-      registerAgenticProfiles(pi, {
-        extensionFile,
-        readFile,
-        randomId: () => "integrated-correlation",
-      }),
-    );
-    await recorder.install((pi) =>
-      createSubagentToolkit(pi, {
-        runner: {
-          async run(request: RunRequest) {
-            requests.push(request);
-            return {
-              state: "completed",
-              report: "done",
-              usage: {
-                input: 0,
-                output: 0,
-                cacheRead: 0,
-                cacheWrite: 0,
-                totalTokens: 0,
-                cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0, total: 0 },
+  test.each(["adapter before pi-tools", "pi-tools before adapter"])(
+    "supports %s and preserves parent execution context",
+    async (order) => {
+      const childMarker = process.env.PI_TOOLS_SUBAGENT_CHILD;
+      delete process.env.PI_TOOLS_SUBAGENT_CHILD;
+      try {
+        const recorder = createExtensionRecorder({ activeTools: ["read"] });
+        recorder.modelRegistry.configuredAuth = true;
+        const model: any = {
+          provider: "test",
+          id: "model",
+          name: "Model",
+          api: "openai-completions",
+          reasoning: false,
+          input: ["text"],
+          cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
+          contextWindow: 100_000,
+          maxTokens: 4_096,
+        };
+        recorder.modelRegistry.add(model);
+        const requests: RunRequest[] = [];
+        const installAdapter = () =>
+          recorder.install((pi) =>
+            registerAgenticProfiles(pi, {
+              extensionFile,
+              readFile,
+              randomId: () => `integrated-${order}`,
+            }),
+          );
+        const installToolkit = () =>
+          recorder.install((pi) =>
+            createSubagentToolkit(pi, {
+              runner: {
+                async run(request: RunRequest) {
+                  requests.push(request);
+                  return {
+                    state: "completed",
+                    report: "done",
+                    usage: {
+                      input: 0,
+                      output: 0,
+                      cacheRead: 0,
+                      cacheWrite: 0,
+                      totalTokens: 0,
+                      cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0, total: 0 },
+                    },
+                    activity: [],
+                    omittedActivity: 0,
+                    retries: 0,
+                    retryActive: false,
+                  };
+                },
+                async shutdown() {},
               },
-              activity: [],
-              omittedActivity: 0,
-              retries: 0,
-              retryActive: false,
-            };
-          },
-          async shutdown() {},
-        },
-      }),
-    );
-    await recorder.ready;
+            }),
+          );
 
-    const context = recorder.makeContext({
-      cwd: "/live/active-project",
-      model,
-      thinkingLevel: "off",
-      modelRegistry: recorder.modelRegistry.registry as any,
-    });
-    await recorder.invokeRaw("session_start", {}, context);
-    await nextTask();
+        if (order === "adapter before pi-tools") {
+          await installAdapter();
+          await installToolkit();
+        } else {
+          await installToolkit();
+          await installAdapter();
+        }
+        await recorder.ready;
 
-    const result: any = await recorder.invokeToolDirect(
-      "subagent_explore",
-      { task: "find the owner" },
-      { context },
-    );
-    expect(result.content[0].text).toBe("done");
-    expect(requests).toHaveLength(1);
-    expect(requests[0].prepared.cwd).toBe("/live/active-project");
-    expect(requests[0].prepared.prompt).toBe("find the owner");
-      expect(requests[0].prepared.systemPrompt).toContain("# Explorer");
-      expect(requests[0].prepared.systemPrompt).not.toContain("name: agentic-explorer");
-    } finally {
-      if (childMarker === undefined) delete process.env.PI_TOOLS_SUBAGENT_CHILD;
-      else process.env.PI_TOOLS_SUBAGENT_CHILD = childMarker;
-    }
-  });
+        const context = recorder.makeContext({
+          cwd: "/live/active-project",
+          model,
+          thinkingLevel: "off",
+          modelRegistry: recorder.modelRegistry.registry as any,
+          isProjectTrusted: () => true,
+        });
+        await recorder.invokeRaw("session_start", {}, context);
+        await nextTask();
 
-  test("contains no target-repository write or process API", async () => {
+        const result: any = await recorder.invokeToolDirect(
+          "subagent_explore",
+          { task: "find the owner" },
+          { context },
+        );
+        expect(result.content[0].text).toBe("done");
+        expect(requests).toHaveLength(1);
+        expect(requests[0]).toMatchObject({
+          model: { provider: model.provider, id: model.id },
+          thinkingLevel: "off",
+          tools: ["read"],
+          parentCwd: "/live/active-project",
+          parentTrusted: true,
+        });
+        expect(requests[0].prepared.cwd).toBe("/live/active-project");
+        expect(requests[0].prepared.prompt).toBe("find the owner");
+        expect(requests[0].prepared.systemPrompt).toContain("# Explorer");
+        expect(requests[0].prepared.systemPrompt).not.toContain("name: agentic-explorer");
+        expect(recorder.ui.calls).toEqual([]);
+      } finally {
+        if (childMarker === undefined) delete process.env.PI_TOOLS_SUBAGENT_CHILD;
+        else process.env.PI_TOOLS_SUBAGENT_CHILD = childMarker;
+      }
+    },
+  );
+
+  test("contains no repository storage, model-routing, or restrictive-policy machinery", async () => {
     const source = await readFile(extensionFile, "utf8");
     expect(source).not.toMatch(/\b(writeFile|mkdir|rename|unlink|appendEntry|exec)\b/);
     expect(source).not.toMatch(/\.awf\/|agentic-workflows/i);
+    expect(source.match(/selectModel:/g)).toHaveLength(1);
+    expect(source).toContain("selectModel: ({ parent }) => parent.model");
+    expect(source).not.toContain("selectThinkingLevel:");
+    expect(source).toContain('toolPolicy: { mode: "inherit", deny: [] }');
   });
 });

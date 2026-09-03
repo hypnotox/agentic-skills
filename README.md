@@ -1,102 +1,73 @@
 # agentic-skills
 
-Repository-agnostic engineering skills and focused role prompts for Claude Code and Pi.
+Repository-agnostic engineering skills and focused delegation roles for Claude Code and Pi.
 
 ## Authority and adaptation
 
-The package supplies reusable engineering defaults that adapt to each task:
+1. Safety, harness constraints, and the user request are authoritative.
+2. Repository instructions specialize defaults; they do not expand delegated authority.
+3. Report conflicts or missing context rather than infer permission.
 
-1. Safety rules, permissions, harness instructions, and the current user request are authoritative.
-2. Applicable repository instructions specialize the defaults for the project.
-3. The generic guidance applies where the repository is silent.
-
-## Contents
-
-### Skills
+## Skills
 
 | Skill | Use it for |
 |---|---|
-| `agentic-context` | Orientation, bounded evidence gathering, and premise challenges |
-| `agentic-brainstorming` | Material unresolved choices and trade-offs |
-| `agentic-debugging` | Unknown causes, reproducible hypotheses, and regression protection |
-| `agentic-code-design` | Semantic modeling, state ownership, contracts, dependencies, and refactor boundaries |
-| `agentic-planning` | Useful sequencing, ownership, and verification |
-| `agentic-implementing` | Settled changes, clean integration, and verification |
-| `agentic-reviewing` | Fresh, evidence-backed, report-only review |
+| `agentic-context` | Orient before substantial fresh, takeover, or widened-scope work; investigate one bounded non-defect unknown; or test a consequential premise. |
+| `agentic-brainstorming` | Resolve a material choice about outcome, scope, compatibility, safety, user-visible behavior, or durable architecture before dependent work proceeds. |
+| `agentic-debugging` | Investigate unexpected behavior with an unknown cause, distinguish hypotheses with evidence, and establish a regression oracle or report an unresolved cause. |
+| `agentic-code-design` | Resolve a structural question about semantic ownership, state or invariants, contracts, dependency direction, or refactor boundaries for agreed behavior. |
+| `agentic-planning` | Sequence a settled non-obvious change into verifiable units with dependencies, ownership, integration points, and terminal checks. |
+| `agentic-implementing` | Implement and verify a settled change while preserving unrelated work and surfacing newly material choices. |
+| `agentic-reviewing` | Independently audit existing code or prose, a design, diff, or implementation and report evidence-backed risks without editing. |
 
-### Roles
+## Optional roles
 
-The shared sources in [`skills/`](skills/) and [`agents/`](agents/) are canonical for both harness integrations. The role prompts define four optional focused roles:
+| Role | Purpose | Pi tool |
+|---|---|---|
+| `agentic-explorer` | Investigate one bounded factual or structural question in fresh read-only context; return evidence, searched boundary, and uncertainty. | `subagent_explore` |
+| `agentic-premise-checker` | Adversarially test one explicit consequential premise in fresh read-only context; return `supported`, `revise`, or `unresolved` with evidence. | `subagent_grounding` |
+| `agentic-implementer` | Implement one settled self-contained unit with an explicit write boundary; return a completion receipt while the parent retains integration. | `subagent_implement` |
+| `agentic-reviewer` | Independently inspect one supplied change or existing surface in fresh report-only context; return concrete findings, coverage, and uncertainty. | `subagent_review_code` |
 
-- `agentic-explorer`
-- `agentic-premise-checker`
-- `agentic-implementer`
-- `agentic-reviewer`
+Both harnesses use the same Markdown sources. Pi's small routing-metadata representation is protected by alignment tests.
 
-Skills support direct use, while roles provide focused delegation.
-
-## Install for Claude Code
-
-This repository is a Claude Code plugin and marketplace. Add it, then install the plugin:
+## Claude Code
 
 ```bash
 claude plugin marketplace add hypnotox/agentic-skills
 claude plugin install agentic-skills@agentic-skills
+
+# Local checkout
+claude --plugin-dir /absolute/path/to/agentic-skills
 ```
 
-For local development from a checkout:
-
-```bash
-git clone https://github.com/hypnotox/agentic-skills.git
-claude --plugin-dir "$PWD/agentic-skills"
-```
-
-Claude Code discovers the shared skills and role prompts directly from the canonical root directories.
-
-## Install for Pi
-
-Pi loads the Markdown skills directly from this package. Focused role delegation uses a separately installed, protocol-v2-compatible [`hypnotox/pi-tools`](https://github.com/hypnotox/pi-tools); install that prerequisite first:
+## Pi
 
 ```bash
 pi install git:github.com/hypnotox/pi-tools@v0.3.0
 pi install git:github.com/hypnotox/agentic-skills
-```
 
-For a local checkout:
-
-```bash
+# Local checkouts
 pi install /absolute/path/to/pi-tools
 pi install /absolute/path/to/agentic-skills
 ```
 
-Restart Pi or run `/reload` after changing installed resources. For reproducible use after releases begin, pin `agentic-skills` to a release tag.
+### Delegation context
 
-The Pi adapter registers these `pi-tools` profiles:
+Pi role children receive their role prompt and delegated task, but not the parent transcript, installed skills, or repository context files. The parent must supply the relevant outcome, repository constraints, evidence or write boundary, and verification expectations. Pass applicable constraints, not whole instruction files.
 
-| Role identity | Pi tool |
-|---|---|
-| `agentic-premise-checker` | `subagent_grounding` |
-| `agentic-explorer` | `subagent_explore` |
-| `agentic-reviewer` | `subagent_review_code` |
-| `agentic-implementer` | `subagent_implement` |
+### Behavioral boundary
 
-Each delegated run uses the active Pi project's working directory and inherits the parent model, thinking level, tools, trust, and normal `pi-tools` execution defaults.
+Read-only and report-only roles are behaviorally constrained prompts. They inherit harness-provided tools and permissions and are not security boundaries.
 
-A compatible `pi-tools` installation is required for role delegation. Pi reports an actionable error when that prerequisite is unavailable or incompatible, while the Markdown skills remain available for direct use.
-
-## Development
-
-Requirements: Node.js 22.19 or newer, Claude Code for plugin validation, and npm.
+## Development checks
 
 ```bash
 npm install
 npm run check
+npm pack --dry-run
 ```
-
-`npm run check` type-checks the adapter, runs focused package and protocol tests, and validates Claude plugin discovery.
 
 ## License and provenance
 
-Copyright (C) 2026 Josua Müller. Licensed under [`AGPL-3.0-only`](LICENSE).
-
-Some skill and role material was adapted from [`hypnotox/agentic-workflows`](https://github.com/hypnotox/agentic-workflows) with the copyright holder's authorization. See [`NOTICE`](NOTICE).
+[`AGPL-3.0-only`](LICENSE). Adapted from [`hypnotox/agentic-workflows`](https://github.com/hypnotox/agentic-workflows); see [`NOTICE`](NOTICE).

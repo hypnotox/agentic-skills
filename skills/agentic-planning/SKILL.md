@@ -1,23 +1,27 @@
 ---
 name: agentic-planning
-description: Turn a settled direction into executable sequencing, ownership, and verification when coordination or complexity benefits from a plan.
+description: Sequence a settled non-obvious change into verifiable units with dependencies, ownership, integration points, and terminal checks.
 ---
 
 # Agentic planning
 
-Use this skill when a settled change benefits from explicit sequencing, dependency ordering, ownership, or verification. Skip it for work that is already obvious and safely executable.
+Use this skill when settled work is non-obvious enough to benefit from explicit sequencing, dependency ordering, ownership, integration points, or terminal verification. Skip it when the route is already obvious and safely executable.
 
-Safety rules, permissions, harness instructions, the user request, and applicable repository instructions remain authoritative. Repository instructions may specialize this default.
+Safety rules, permissions, harness instructions, the actual user request, and applicable repository instructions remain authoritative. Repository instructions may specialize this guidance without expanding the requested scope.
 
-## Build the plan
+## Build a revisable route
+
+Before sequencing, settle semantic ownership, authoritative state, invariants, contracts, and dependency direction through `agentic-code-design`, or expose the missing design as a blocker.
 
 1. State the outcome and settled constraints.
 2. Divide work into independently verifiable units at semantic boundaries.
 3. Order dependencies and identify integration points.
-4. Assign ownership only when delegation is useful; keep shared and integration work with one owner.
+4. Assign ownership only when delegation helps; keep shared and integration work with one owner.
 5. Pair each unit with focused feedback and define terminal verification for the combined result.
 6. Surface open blockers instead of disguising them as tasks.
 
-A useful plan says what changes, where, why, what it depends on, and how completion is proved. Prefer concrete paths and commands when known, without inventing details unsupported by evidence.
+A useful plan says what changes, where, why, what it depends on, and how completion is proved. Prefer concrete paths and commands when evidence supports them.
 
-Plans remain in the active interaction by default. Create or update a plan file only when the user asks or applicable repository instructions require it and the task authorizes that write. Do not create hidden state, caches, memory, or a plan lifecycle as a fallback.
+A plan is a revisable route, not a frozen contract. Paths, order, commands, and delegated ownership may change as evidence develops while the outcome and settled constraints remain authoritative. Surface changes that affect that outcome or those constraints rather than silently revising them.
+
+Keep plans in the active interaction by default. Create or update a plan file only when the user asks or applicable repository instructions require it and the task authorizes that write. Do not create hidden state, caches, memory, or a plan lifecycle as a fallback.

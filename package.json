@@ -29,7 +29,7 @@
   "scripts": {
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
-    "check": "npm run typecheck && npm test && claude plugin validate --strict .claude-plugin/plugin.json && claude plugin validate --strict skills && claude plugin validate --strict agents && claude plugin validate --strict .claude-plugin/marketplace.json"
+    "check": "npm run typecheck && npm test && claude plugin validate . && claude plugin validate .claude-plugin/plugin.json && claude plugin validate --strict skills && claude plugin validate --strict agents"
   },
   "peerDependencies": {
     "@earendil-works/pi-coding-agent": "*",

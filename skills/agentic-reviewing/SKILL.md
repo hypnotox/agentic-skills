@@ -1,22 +1,22 @@
 ---
 name: agentic-reviewing
-description: Perform a fresh, evidence-backed, report-only review of an implementation or proposed change when risk warrants independent scrutiny.
+description: Independently audit existing code or prose, a design, diff, or implementation and report evidence-backed risks without editing.
 ---
 
 # Agentic reviewing
 
-Use this skill for independent scrutiny of non-obvious or consequential work: public or compatibility effects, cross-boundary changes, security, concurrency, data loss, migrations, destructive behavior, substantial refactoring, generated ownership, or judgment-heavy verification. Low-risk, obvious, well-verified work may be self-reviewed.
+Use this skill for an explicit audit of existing code or prose, a design, proposed change, diff, or implementation. Independent review is especially useful for compatibility effects, cross-boundary changes, security, concurrency, data loss, migrations, destructive behavior, substantial refactoring, generated ownership, or judgment-heavy verification.
 
-Safety rules, permissions, harness instructions, the user request, and applicable repository instructions remain authoritative. Repository instructions may specialize this default.
+Safety rules, permissions, harness instructions, the actual user request, and applicable repository instructions remain authoritative. Repository instructions may specialize this guidance without expanding the requested scope.
 
 ## Review
 
-Review from fresh evidence rather than implementation narration alone. Inspect the requested outcome, settled constraints, relevant source and repository instructions, diff or proposed change, integration effects, and verification results. Focus on risks relevant to the change rather than a ceremonial checklist.
+Inspect fresh evidence rather than trusting supplied claims or implementation narration. Compare the intended outcome and settled constraints with relevant source, prose, design, repository instructions, change surface, integration effects, and verification results.
 
-Optionally delegate one combined review brief to `agentic-reviewer`; delegation is not required. Review remains report-only unless the user separately asks for fixes.
+Report only evidence-backed defects or risks with concrete consequences. Do not turn aesthetic, pattern, or stylistic preferences into findings. When judging maintainability, require an identifiable correctness or maintenance risk such as ambiguous ownership, duplicated policy, stale state, representation leakage, inappropriate dependencies, unreadable control flow, weakened verification, or a recurring workaround.
+
+Prefer one combined reviewer. Multiple non-overlapping reviewers are appropriate only when the user requests distinct lenses or materially different expertise or evidence is needed. A fresh `agentic-reviewer` cannot be assumed to know conversation-local context. Supply the intended outcome, settled constraints, review/change boundary, relevant repository constraints, and verification evidence; extract only applicable constraints rather than pasting whole instruction files. Review remains report-only.
 
 ## Report
 
-Report findings first, ordered by consequence. For each finding include precise path/line or command evidence, the concrete consequence, and a practical correction. Then state coverage performed and residual uncertainty. Clearly say when no finding was established.
-
-A clean report is evidence, not approval or a status transition. Route requested corrections through `agentic-implementing`, verify them, and re-review only when the correction materially changes risk.
+Report findings first in consequence order. For each, give precise path and line or command evidence, concrete consequence, and practical correction. Then state coverage and residual uncertainty. Clearly say when no finding was established. Route requested corrections through `agentic-implementing`.
