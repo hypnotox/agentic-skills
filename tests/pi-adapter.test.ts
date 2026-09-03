@@ -123,7 +123,10 @@ describe("Pi profile adapter", () => {
   });
 
   test("delegates through pi-tools in the live active project", async () => {
-    const recorder = createExtensionRecorder({ activeTools: ["read"] });
+    const childMarker = process.env.PI_TOOLS_SUBAGENT_CHILD;
+    delete process.env.PI_TOOLS_SUBAGENT_CHILD;
+    try {
+      const recorder = createExtensionRecorder({ activeTools: ["read"] });
     recorder.modelRegistry.configuredAuth = true;
     const model: any = {
       provider: "test",
@@ -192,8 +195,12 @@ describe("Pi profile adapter", () => {
     expect(requests).toHaveLength(1);
     expect(requests[0].prepared.cwd).toBe("/live/active-project");
     expect(requests[0].prepared.prompt).toBe("find the owner");
-    expect(requests[0].prepared.systemPrompt).toContain("# Explorer");
-    expect(requests[0].prepared.systemPrompt).not.toContain("name: agentic-explorer");
+      expect(requests[0].prepared.systemPrompt).toContain("# Explorer");
+      expect(requests[0].prepared.systemPrompt).not.toContain("name: agentic-explorer");
+    } finally {
+      if (childMarker === undefined) delete process.env.PI_TOOLS_SUBAGENT_CHILD;
+      else process.env.PI_TOOLS_SUBAGENT_CHILD = childMarker;
+    }
   });
 
   test("contains no target-repository write or process API", async () => {
