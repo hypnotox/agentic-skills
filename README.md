@@ -2,12 +2,13 @@
 
 Repository-agnostic engineering skills and focused role prompts for Claude Code and Pi.
 
-The package provides defaults, not a competing project process:
+## Authority and adaptation
+
+The package supplies reusable engineering defaults that adapt to each task:
 
 1. Safety rules, permissions, harness instructions, and the current user request are authoritative.
-2. Applicable repository instructions specialize these defaults.
-3. Where the repository is silent, the generic default applies.
-4. Nothing in this package implicitly creates memory, plan files, decision records, caches, hidden state, or target-repository files.
+2. Applicable repository instructions specialize the defaults for the project.
+3. The generic guidance applies where the repository is silent.
 
 ## Contents
 
@@ -25,14 +26,14 @@ The package provides defaults, not a competing project process:
 
 ### Roles
 
-The canonical prompts in [`agents/`](agents/) define four optional focused roles:
+The shared sources in [`skills/`](skills/) and [`agents/`](agents/) are canonical for both harness integrations. The role prompts define four optional focused roles:
 
 - `agentic-explorer`
 - `agentic-premise-checker`
 - `agentic-implementer`
 - `agentic-reviewer`
 
-Skills remain useful without role delegation.
+Skills support direct use, while roles provide focused delegation.
 
 ## Install for Claude Code
 
@@ -43,18 +44,18 @@ claude plugin marketplace add hypnotox/agentic-skills
 claude plugin install agentic-skills@agentic-skills
 ```
 
-For local development without installation:
+For local development from a checkout:
 
 ```bash
 git clone https://github.com/hypnotox/agentic-skills.git
 claude --plugin-dir "$PWD/agentic-skills"
 ```
 
-Claude Code discovers the canonical root `skills/` and `agents/` directories. There are no generated harness-specific prose copies.
+Claude Code discovers the shared skills and role prompts directly from the canonical root directories.
 
 ## Install for Pi
 
-Pi skill loading works from this package alone. The four role tools additionally require a separately installed, protocol-v2-compatible [`hypnotox/pi-tools`](https://github.com/hypnotox/pi-tools). Install `pi-tools` first:
+Pi loads the Markdown skills directly from this package. Focused role delegation uses a separately installed, protocol-v2-compatible [`hypnotox/pi-tools`](https://github.com/hypnotox/pi-tools); install that prerequisite first:
 
 ```bash
 pi install git:github.com/hypnotox/pi-tools@v0.3.0
@@ -70,7 +71,7 @@ pi install /absolute/path/to/agentic-skills
 
 Restart Pi or run `/reload` after changing installed resources. For reproducible use after releases begin, pin `agentic-skills` to a release tag.
 
-The thin Pi adapter registers these `pi-tools` profiles:
+The Pi adapter registers these `pi-tools` profiles:
 
 | Role identity | Pi tool |
 |---|---|
@@ -79,9 +80,9 @@ The thin Pi adapter registers these `pi-tools` profiles:
 | `agentic-reviewer` | `subagent_review_code` |
 | `agentic-implementer` | `subagent_implement` |
 
-Each delegated run uses the active Pi project's working directory and the parent model, thinking level, tools, trust, and normal `pi-tools` execution defaults. The adapter adds no routing, preferences, policy engine, scheduler, Git checks, persistence, or project configuration.
+Each delegated run uses the active Pi project's working directory and inherits the parent model, thinking level, tools, trust, and normal `pi-tools` execution defaults.
 
-If `pi-tools` is absent or incompatible, Pi reports an actionable role-delegation error. The Markdown skills still load; the adapter does not install a fallback provider or pretend a role ran.
+A compatible `pi-tools` installation is required for role delegation. Pi reports an actionable error when that prerequisite is unavailable or incompatible, while the Markdown skills remain available for direct use.
 
 ## Development
 
