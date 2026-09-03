@@ -19,7 +19,7 @@ The package supplies reusable engineering defaults that adapt to each task:
 | `agentic-context` | Orientation, bounded evidence gathering, and premise challenges |
 | `agentic-brainstorming` | Material unresolved choices and trade-offs |
 | `agentic-debugging` | Unknown causes, reproducible hypotheses, and regression protection |
-| `agentic-code-design` | Ownership, dependency direction, interfaces, and refactor boundaries |
+| `agentic-code-design` | Semantic modeling, state ownership, contracts, dependencies, and refactor boundaries |
 | `agentic-planning` | Useful sequencing, ownership, and verification |
 | `agentic-implementing` | Settled changes, clean integration, and verification |
 | `agentic-reviewing` | Fresh, evidence-backed, report-only review |
