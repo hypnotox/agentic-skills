@@ -1,0 +1,12 @@
+{
+  "name": "agentic-skills",
+  "version": "0.1.0",
+  "description": "Repository-agnostic engineering skills and focused role agents.",
+  "author": {
+    "name": "Josua Müller",
+    "email": "hypnotox@pm.me"
+  },
+  "homepage": "https://github.com/hypnotox/agentic-skills",
+  "repository": "https://github.com/hypnotox/agentic-skills",
+  "license": "AGPL-3.0-only"
+}
