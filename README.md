@@ -13,7 +13,7 @@ Repository-agnostic engineering skills and delegation roles for Claude Code and 
 | Skill | Use it for |
 |---|---|
 | `agentic-context` | Orient before substantial fresh, takeover, or widened-scope work; investigate one bounded non-defect unknown; or test a consequential premise. |
-| `agentic-artifact-design` | Design or substantially revise a written artifact intended for reuse, handoff, or repository persistence around its audience, purpose, information ownership, and local conventions. Skip routine conversational replies and incidental prose edits. |
+| `agentic-artifact-design` | Design or substantially revise documentation, a plan, handoff, report, decision record, runbook, specification, skill, or another substantial prose artifact when audience, structure, information ownership, or local conventions materially affect the result. Skip routine replies and incidental edits. |
 | `agentic-brainstorming` | Resolve a material choice about outcome, scope, compatibility, safety, user-visible behavior, or durable architecture before dependent work proceeds. |
 | `agentic-debugging` | Investigate unexpected behavior with an unknown cause, distinguish hypotheses with evidence, and establish a regression oracle or report that the cause remains unresolved. |
 | `agentic-code-design` | Resolve a structural question about semantic ownership, state or invariants, contracts, dependency direction, or refactor boundaries for agreed behavior. |

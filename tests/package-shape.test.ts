@@ -7,7 +7,7 @@ const skills = {
   "agentic-context":
     "Orient before substantial fresh, takeover, or widened-scope work; investigate one bounded non-defect unknown; or test a consequential premise.",
   "agentic-artifact-design":
-    "Design or substantially revise a written artifact intended for reuse, handoff, or repository persistence around its audience, purpose, information ownership, and local conventions. Skip routine conversational replies and incidental prose edits.",
+    "Design or substantially revise documentation, a plan, handoff, report, decision record, runbook, specification, skill, or another substantial prose artifact when audience, structure, information ownership, or local conventions materially affect the result. Skip routine replies and incidental edits.",
   "agentic-brainstorming":
     "Resolve a material choice about outcome, scope, compatibility, safety, user-visible behavior, or durable architecture before dependent work proceeds.",
   "agentic-debugging":
