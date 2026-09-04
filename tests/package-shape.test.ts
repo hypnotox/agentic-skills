@@ -6,6 +6,8 @@ const root = resolve(import.meta.dirname, "..");
 const skills = {
   "agentic-context":
     "Orient before substantial fresh, takeover, or widened-scope work; investigate one bounded non-defect unknown; or test a consequential premise.",
+  "agentic-artifact-design":
+    "Design or substantially revise a written artifact intended for reuse, handoff, or repository persistence around its audience, purpose, information ownership, and local conventions. Skip routine conversational replies and incidental prose edits.",
   "agentic-brainstorming":
     "Resolve a material choice about outcome, scope, compatibility, safety, user-visible behavior, or durable architecture before dependent work proceeds.",
   "agentic-debugging":
@@ -69,7 +71,7 @@ async function doesNotExist(path: string): Promise<boolean> {
 }
 
 describe("canonical package invariants", () => {
-  test("ships exactly seven skills and four roles with canonical frontmatter and bodies", async () => {
+  test("ships the exact canonical skill and role sets with frontmatter and bodies", async () => {
     const skillDirectories = (await readdir(join(root, "skills"), { withFileTypes: true }))
       .filter((entry) => entry.isDirectory())
       .map((entry) => entry.name)
