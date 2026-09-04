@@ -1,36 +1,36 @@
 # agentic-skills
 
-Repository-agnostic engineering skills and delegation roles for Claude Code and Pi. Markdown skills work from this package alone; Pi delegation requires compatible `pi-tools`.
-
-## Authority and adaptation
-
-1. Safety, harness constraints, and the user request are authoritative.
-2. Repository instructions specialize defaults; they do not expand delegated authority.
-3. Report conflicts or missing context rather than infer permission.
+Repository-agnostic engineering skills and delegation roles for Claude Code and Pi. Markdown skills work from this package alone; Pi delegation uses `pi-tools` for child execution.
 
 ## Skills
 
-| Skill | Use it for |
+Each skill is a generic method. Read its canonical file for routing and procedure.
+
+| Skill | Focus |
 |---|---|
-| `agentic-context` | Orient before substantial fresh, takeover, or widened-scope work; investigate one bounded non-defect unknown; or test a consequential premise. |
-| `agentic-artifact-design` | Design or substantially revise documentation, a plan, handoff, report, decision record, runbook, specification, skill, or another substantial prose artifact when audience, structure, information ownership, or local conventions materially affect the result. Skip routine replies and incidental edits. |
-| `agentic-brainstorming` | Resolve a material choice about outcome, scope, compatibility, safety, user-visible behavior, or durable architecture before dependent work proceeds. |
-| `agentic-debugging` | Investigate unexpected behavior with an unknown cause, distinguish hypotheses with evidence, and establish a regression oracle or report that the cause remains unresolved. |
-| `agentic-code-design` | Resolve a structural question about semantic ownership, state or invariants, contracts, dependency direction, or refactor boundaries for agreed behavior. |
-| `agentic-planning` | Sequence a settled non-obvious change into verifiable units with dependencies, ownership, integration points, and terminal checks. |
-| `agentic-implementing` | Implement and verify a settled change while preserving unrelated work and surfacing newly material choices. |
-| `agentic-reviewing` | Independently audit existing code or prose, a design, diff, or implementation and report evidence-backed risks without editing. |
+| [`agentic-context`](skills/agentic-context/SKILL.md) | Orientation, bounded exploration, and premise testing |
+| [`agentic-artifact-design`](skills/agentic-artifact-design/SKILL.md) | Substantial prose artifacts |
+| [`agentic-brainstorming`](skills/agentic-brainstorming/SKILL.md) | Material behavior or system-direction choices |
+| [`agentic-code-design`](skills/agentic-code-design/SKILL.md) | Target structure for agreed behavior |
+| [`agentic-debugging`](skills/agentic-debugging/SKILL.md) | Unexpected behavior with an unknown cause |
+| [`agentic-planning`](skills/agentic-planning/SKILL.md) | Verifiable sequencing for settled work |
+| [`agentic-implementing`](skills/agentic-implementing/SKILL.md) | Implementation and verification |
+| [`agentic-reviewing`](skills/agentic-reviewing/SKILL.md) | Independent, evidence-backed audit |
 
-## Optional roles
+## Delegated roles
 
-| Role | Purpose | Pi tool |
-|---|---|---|
-| `agentic-explorer` | Investigate one bounded factual or structural question in fresh read-only context; return evidence, searched boundary, and uncertainty. | `subagent_explore` |
-| `agentic-premise-checker` | Adversarially test one explicit consequential premise in fresh read-only context; return `supported`, `revise`, or `unresolved` with evidence. | `subagent_grounding` |
-| `agentic-implementer` | Implement one settled self-contained unit with an explicit write boundary; return a completion receipt while the parent retains integration. | `subagent_implement` |
-| `agentic-reviewer` | Independently inspect one supplied change or existing surface in fresh report-only context; return concrete findings, coverage, and uncertainty. | `subagent_review_code` |
+Treat every delegated role as fresh context: provide a self-contained brief rather than assuming access to the parent transcript. Safety, permissions, and harness constraints remain authoritative. The delegated brief and applicable repository instructions govern work within the role; the role and brief set the boundary, while loaded skills supply method within it.
 
-Both harnesses share the canonical Markdown; Pi adds a small adapter for optional role tools.
+| Role | Required brief |
+|---|---|
+| [`agentic-explorer`](agents/explorer.md) | question; evidence boundary; applicable constraints or `none` |
+| [`agentic-premise-checker`](agents/premise-checker.md) | premise; consequence if wrong; evidence boundary; applicable constraints or `none` |
+| [`agentic-reviewer`](agents/reviewer.md) | outcome or evaluation standard; review surface; applicable constraints or `none` |
+| [`agentic-implementer`](agents/implementer.md) | outcome; settled constraints; write boundary; applicable constraints or `none`; acceptance checks |
+
+Write `none` explicitly when no constraints apply. Cite the repository path for a load-bearing constraint when one exists. Source restrictions, desired detail, and existing verification evidence are optional.
+
+Explorer, premise-checker, and reviewer are report-only roles. Their mutation limits are behavioral prompt constraints, not security boundaries; harness-provided safety and permissions still apply.
 
 ## Claude Code
 
@@ -41,6 +41,13 @@ claude plugin install agentic-skills@agentic-skills
 # Local checkout
 claude --plugin-dir /absolute/path/to/agentic-skills
 ```
+
+Claude Code namespaces the role agents as:
+
+- `agentic-skills:agentic-explorer`
+- `agentic-skills:agentic-premise-checker`
+- `agentic-skills:agentic-reviewer`
+- `agentic-skills:agentic-implementer`
 
 ## Pi
 
@@ -53,19 +60,20 @@ pi install /absolute/path/to/pi-tools
 pi install /absolute/path/to/agentic-skills
 ```
 
-### Delegation context
+| Role | Pi tool |
+|---|---|
+| [`agentic-explorer`](agents/explorer.md) | `subagent_explore` |
+| [`agentic-premise-checker`](agents/premise-checker.md) | `subagent_grounding` |
+| [`agentic-reviewer`](agents/reviewer.md) | `subagent_review_code` |
+| [`agentic-implementer`](agents/implementer.md) | `subagent_implement` |
 
-The child starts a fresh Pi session with the role prompt and delegated task. It does not inherit the parent transcript, and automatic repository-context discovery is disabled. Installed skills and extensions remain available and may contribute instructions or context.
+The [Pi adapter](extensions/pi-subagents/index.ts) publishes each role as the private structural payload `toolName`, `description`, and `loadSystemPrompt`; `pi-tools` requests a replay so either package load order works.
 
-Delegated tasks must be self-contained: include the relevant outcome, repository constraints, evidence or write boundary, and verification expectations. Loaded skills are capabilities, not parent-task context.
-
-### Behavioral boundary
-
-Read-only and report-only roles are behaviorally constrained prompts. They inherit harness-provided tools and permissions and are not security boundaries.
+Each tool starts a fresh no-session Pi process with the role prompt and delegated brief. It inherits the parent model, thinking level, working directory, trust state, and ordinary active tools, but not the parent transcript. Skills and ordinary extensions load; context files, delegation tools, and handoff remain unavailable.
 
 ## Development checks
 
-`npm run check` requires Node.js 22.19+, npm, and Claude Code.
+`npm run check` requires the current Node release, npm, and Claude Code.
 
 ```bash
 npm install

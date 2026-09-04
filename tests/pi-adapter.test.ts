@@ -1,362 +1,192 @@
 import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
-import { createExtensionRecorder } from "pi-tools/testing";
-import { createSubagentToolkit } from "../node_modules/pi-tools/extensions/subagents/index.ts";
-import type { RunRequest } from "../node_modules/pi-tools/extensions/subagents/runner.ts";
-import { describe, expect, test } from "vitest";
-import { registerAgenticProfiles } from "../extensions/pi-subagents/index.ts";
+import { pathToFileURL } from "node:url";
+import { afterAll, beforeEach, describe, expect, test, vi } from "vitest";
+import { registerAgenticRoles } from "../extensions/pi-subagents/index.ts";
 
+const inheritedChildMarker = process.env.PI_TOOLS_SUBAGENT_CHILD;
 const root = resolve(import.meta.dirname, "..");
 const extensionFile = resolve(root, "extensions/pi-subagents/index.ts");
-const nextTask = () => new Promise<void>((resolvePromise) => setTimeout(resolvePromise, 0));
-const expectedRoles = [
-  {
-    id: "agentic-premise-checker",
-    file: "premise-checker.md",
-    toolName: "subagent_grounding",
-    brief: ["exact premise", "consequence if wrong", "evidence boundary", "relevant repository constraints"],
-  },
-  {
-    id: "agentic-explorer",
-    file: "explorer.md",
-    toolName: "subagent_explore",
-    brief: [
-      "question",
-      "evidence boundary",
-      "allowed source types",
-      "relevant repository constraints",
-      "desired detail",
-    ],
-  },
-  {
-    id: "agentic-reviewer",
-    file: "reviewer.md",
-    toolName: "subagent_review_code",
-    brief: [
-      "intended outcome",
-      "settled constraints",
-      "review or change boundary",
-      "relevant repository constraints",
-      "verification evidence",
-    ],
-  },
-  {
-    id: "agentic-implementer",
-    file: "implementer.md",
-    toolName: "subagent_implement",
-    brief: [
-      "outcome",
-      "settled constraints",
-      "explicit write boundary",
-      "relevant repository constraints",
-      "acceptance oracle",
-    ],
-  },
-] as const;
+const piToolsRoot = process.env.PI_TOOLS_CHECKOUT
+  ? resolve(process.env.PI_TOOLS_CHECKOUT)
+  : resolve(root, "node_modules/pi-tools");
+const piToolsModule = (await import(
+  pathToFileURL(resolve(piToolsRoot, "extensions/subagents/index.ts")).href
+)) as {
+  registerSubagents(
+    pi: any,
+    dependencies: { runner: { run(request: any): Promise<any>; shutdown(): Promise<void> } },
+  ): void;
+};
 
-function roleDocument(content: string): { name: string; description: string; body: string } {
-  const match = content.match(/^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)([\s\S]*)$/);
-  if (!match) throw new Error("missing role frontmatter");
-  const metadata = Object.fromEntries(
-    match[1].split(/\r?\n/).map((line) => {
-      const separator = line.indexOf(":");
-      return [line.slice(0, separator).trim(), line.slice(separator + 1).trim()];
-    }),
-  );
-  const body = match[2].trim();
-  if (!metadata.name || !metadata.description || !body)
-    throw new Error("incomplete role document");
-  return { name: metadata.name, description: metadata.description, body };
-}
-
-function profileContext(task = "inspect this") {
+function createBus() {
+  const listeners = new Map<string, Array<(value: unknown) => void>>();
   return {
-    args: { task },
-    parent: {
-      cwd: "/live/active-project",
-      activeTools: ["read"],
-      model: { provider: "test", id: "model", thinkingLevels: ["off"] as const },
-      thinkingLevel: "off" as const,
-      trusted: true,
+    emissions: [] as Array<[string, unknown]>,
+    on(name: string, listener: (value: unknown) => void) {
+      const current = listeners.get(name) ?? [];
+      current.push(listener);
+      listeners.set(name, current);
+      return () => undefined;
     },
-    signal: new AbortController().signal,
+    emit(name: string, value?: unknown) {
+      this.emissions.push([name, value]);
+      for (const listener of [...(listeners.get(name) ?? [])]) listener(value);
+    },
   };
 }
 
-async function adapterHarness() {
-  const recorder = createExtensionRecorder();
-  await recorder.install((pi) =>
-    registerAgenticProfiles(pi, {
-      extensionFile,
-      readFile,
-      randomId: () => "test-correlation",
-    }),
-  );
-  await recorder.ready;
-  return recorder;
+function createPi(bus: ReturnType<typeof createBus>, activeTools = ["read"]) {
+  const tools: any[] = [];
+  const handlers = new Map<string, any[]>();
+  const api = {
+    events: bus,
+    registerTool(tool: any) {
+      tools.push(tool);
+    },
+    on(name: string, handler: any) {
+      handlers.set(name, [...(handlers.get(name) ?? []), handler]);
+    },
+    getActiveTools: () => [...activeTools],
+  };
+  return { api, tools, handlers };
 }
 
-describe("Pi profile adapter", () => {
-  test("negotiates protocol v2 and registers all canonical roles", async () => {
-    const recorder = await adapterHarness();
-    const request = recorder.emissions.find(
-      ([name]) => name === "pi-tools:subagent-profiles:request",
-    )?.[1] as { protocolVersion: number; correlationId: string };
-    let batch: any;
+function installAdapter(pi: ReturnType<typeof createPi>["api"]) {
+  registerAgenticRoles(pi as never, { extensionFile, readFile });
+}
 
-    recorder.api.events.emit("pi-tools:subagent-profiles:capability", {
-      protocolVersion: 2,
-      correlationId: request.correlationId,
-      register(value: unknown) {
-        batch = value;
-        return { state: "pending" };
-      },
-    });
+const requiredBriefByTool = new Map([
+  ["subagent_grounding", "premise, consequence if wrong, evidence boundary"],
+  ["subagent_explore", "question, evidence boundary"],
+  ["subagent_review_code", "outcome or evaluation standard, review surface"],
+  ["subagent_implement", "outcome, settled constraints, explicit write boundary"],
+]);
 
-    expect(request).toEqual({ protocolVersion: 2, correlationId: "test-correlation" });
-    expect(batch.registrationId).toBe("agentic-skills:subagent-profiles:v2");
-    expect(batch.suppressDefault).toBeUndefined();
-    expect(batch.profiles.map((profile: any) => profile.id)).toEqual(
-      expectedRoles.map((role) => role.id),
-    );
-    expect(batch.profiles.map((profile: any) => profile.toolName)).toEqual(
-      expectedRoles.map((role) => role.toolName),
-    );
+const usage = {
+  input: 1,
+  output: 2,
+  cacheRead: 0,
+  cacheWrite: 0,
+  totalTokens: 3,
+  cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0, total: 0 },
+};
 
-    const context = profileContext("bounded question");
-    for (const [index, profile] of batch.profiles.entries()) {
-      const role = expectedRoles[index];
-      const canonical = roleDocument(
-        await readFile(resolve(root, "agents", role.file), "utf8"),
-      );
-      expect(profile.id).toBe(canonical.name);
-      expect(profile.description).toBe(canonical.description);
-      expect(await profile.selectModel(context)).toBe(context.parent.model);
-      const prepared = await profile.prepare(context);
-      expect(prepared.cwd).toBe("/live/active-project");
-      expect(prepared.prompt).toBe("bounded question");
-      expect(prepared.toolPolicy).toEqual({ mode: "inherit", deny: [] });
-      expect(prepared.systemPrompt).toBe(canonical.body);
+beforeEach(() => {
+  delete process.env.PI_TOOLS_SUBAGENT_CHILD;
+});
 
-      expect(profile.promptGuidelines).toHaveLength(1);
-      for (const guideline of profile.promptGuidelines) {
-        expect(guideline).toContain(role.toolName);
-        expect(guideline).toContain("fresh Pi session");
-        expect(guideline).toContain("does not inherit the parent transcript");
-        expect(guideline).toContain("automatic repository-context discovery is disabled");
-        expect(guideline).toContain("Installed skills and extensions remain available");
-        expect(guideline).toContain("self-contained delegated task");
-        expect(guideline).toContain("capabilities, not parent-task context");
-        for (const requirement of role.brief) expect(guideline).toContain(requirement);
-      }
-      expect(profile.parameters.properties.task.description).toContain("Self-contained brief");
-      expect(profile.parameters.properties.task.description).toContain("repository constraints");
-    }
+afterAll(() => {
+  if (inheritedChildMarker === undefined) delete process.env.PI_TOOLS_SUBAGENT_CHILD;
+  else process.env.PI_TOOLS_SUBAGENT_CHILD = inheritedChildMarker;
+});
 
-    recorder.api.events.emit("pi-tools:subagent-profiles:registration-result", {
-      protocolVersion: 2,
-      registrationId: batch.registrationId,
-      state: "registered",
-    });
-    await recorder.invokeRaw("session_start");
-    await nextTask();
-    expect(recorder.ui.calls).toEqual([]);
-  });
+describe("Pi role adapter", () => {
+  test("publishes the complete local three-field role payload", async () => {
+    const bus = createBus();
+    const pi = createPi(bus);
+    installAdapter(pi.api);
 
-  test("reports missing, incompatible, and rejected providers clearly", async () => {
-    const childMarker = process.env.PI_TOOLS_SUBAGENT_CHILD;
-    delete process.env.PI_TOOLS_SUBAGENT_CHILD;
-    try {
-      const missing = await adapterHarness();
-      await missing.invokeRaw("session_start");
-      await nextTask();
-      expect(missing.ui.calls[0]?.args[0]).toMatch(
-        /role delegation is unavailable.*pi-tools.*protocol v2/i,
-      );
-
-      const incompatible = await adapterHarness();
-      incompatible.api.events.emit("pi-tools:subagent-profiles:capability", {
-        protocolVersion: 1,
-        correlationId: "test-correlation",
-        register() {
-          throw new Error("must not register");
-        },
-      });
-      await incompatible.invokeRaw("session_start");
-      await nextTask();
-      expect(incompatible.ui.calls[0]?.args[0]).toMatch(/incompatible pi-tools capability/i);
-
-      const rejected = await adapterHarness();
-      rejected.api.events.emit("pi-tools:subagent-profiles:capability", {
-        protocolVersion: 2,
-        correlationId: "test-correlation",
-        register() {
-          return { state: "rejected", reason: "tool collision" };
-        },
-      });
-      await rejected.invokeRaw("session_start");
-      await nextTask();
-      expect(rejected.ui.calls[0]?.args[0]).toMatch(/tool collision/);
-    } finally {
-      if (childMarker === undefined) delete process.env.PI_TOOLS_SUBAGENT_CHILD;
-      else process.env.PI_TOOLS_SUBAGENT_CHILD = childMarker;
+    const publication = bus.emissions.find(([name]) => name === "agentic-skills:roles")?.[1] as any[];
+    expect(publication.map((role) => role.toolName)).toEqual([
+      "subagent_grounding",
+      "subagent_explore",
+      "subagent_review_code",
+      "subagent_implement",
+    ]);
+    for (const role of publication) {
+      expect(Object.keys(role).sort()).toEqual(["description", "loadSystemPrompt", "toolName"]);
+      expect(role.description).toContain("self-contained");
+      expect(role.description).toContain(requiredBriefByTool.get(role.toolName));
+      expect(role.description).toContain("applicable constraints or `none`");
+      expect(role.description).toContain("inherits the parent model");
+      expect(role.description).toContain("loads skills but not context files");
+      expect(role.description).toContain("cannot delegate or hand off");
+      expect(await role.loadSystemPrompt()).toMatch(/^# /);
     }
   });
 
   test.each(["adapter before pi-tools", "pi-tools before adapter"])(
-    "keeps %s handshake active in a marked child without exposing delegation tools",
+    "supports %s, repeated publication, and parent execution inheritance",
     async (order) => {
-      const childMarker = process.env.PI_TOOLS_SUBAGENT_CHILD;
-      process.env.PI_TOOLS_SUBAGENT_CHILD = "1";
-      try {
-        const delegationTools = ["subagent", ...expectedRoles.map((role) => role.toolName)];
-        const recorder = createExtensionRecorder({ activeTools: ["read", ...delegationTools] });
-        const installAdapter = () =>
-          recorder.install((pi) =>
-            registerAgenticProfiles(pi, {
-              extensionFile,
-              readFile,
-              randomId: () => `child-${order}`,
-            }),
-          );
-        const installToolkit = () => recorder.install((pi) => createSubagentToolkit(pi));
+      const bus = createBus();
+      const pi = createPi(bus, ["read", "handoff_session", "subagent"]);
+      const requests: any[] = [];
+      const installTools = () =>
+        piToolsModule.registerSubagents(pi.api, {
+          runner: {
+            async run(request) {
+              requests.push(request);
+              return { state: "completed", report: "done", usage };
+            },
+            async shutdown() {},
+          },
+        });
 
-        if (order === "adapter before pi-tools") {
-          await installAdapter();
-          await installToolkit();
-        } else {
-          await installToolkit();
-          await installAdapter();
-        }
-        await recorder.ready;
-        await recorder.invokeRaw("session_start");
-        await nextTask();
-
-        expect(
-          recorder.emissions.some(([name]) => name === "pi-tools:subagent-profiles:request"),
-        ).toBe(true);
-        expect(
-          recorder.emissions.some(([name]) => name === "pi-tools:subagent-profiles:capability"),
-        ).toBe(true);
-        expect(recorder.tools).toEqual([]);
-        expect(recorder.activeTools).toEqual(["read"]);
-        expect(recorder.ui.calls).toEqual([]);
-      } finally {
-        if (childMarker === undefined) delete process.env.PI_TOOLS_SUBAGENT_CHILD;
-        else process.env.PI_TOOLS_SUBAGENT_CHILD = childMarker;
+      if (order === "adapter before pi-tools") {
+        installAdapter(pi.api);
+        installTools();
+      } else {
+        installTools();
+        installAdapter(pi.api);
       }
-    },
-  );
+      bus.emit(
+        "agentic-skills:roles",
+        bus.emissions.find(([name]) => name === "agentic-skills:roles")?.[1],
+      );
 
-  test.each(["adapter before pi-tools", "pi-tools before adapter"])(
-    "supports %s and preserves parent execution context",
-    async (order) => {
-      const childMarker = process.env.PI_TOOLS_SUBAGENT_CHILD;
-      delete process.env.PI_TOOLS_SUBAGENT_CHILD;
-      try {
-        const recorder = createExtensionRecorder({ activeTools: ["read"] });
-        recorder.modelRegistry.configuredAuth = true;
-        const model: any = {
-          provider: "test",
-          id: "model",
-          name: "Model",
-          api: "openai-completions",
-          reasoning: false,
-          input: ["text"],
-          cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
-          contextWindow: 100_000,
-          maxTokens: 4_096,
-        };
-        recorder.modelRegistry.add(model);
-        const requests: RunRequest[] = [];
-        const installAdapter = () =>
-          recorder.install((pi) =>
-            registerAgenticProfiles(pi, {
-              extensionFile,
-              readFile,
-              randomId: () => `integrated-${order}`,
-            }),
-          );
-        const installToolkit = () =>
-          recorder.install((pi) =>
-            createSubagentToolkit(pi, {
-              runner: {
-                async run(request: RunRequest) {
-                  requests.push(request);
-                  return {
-                    state: "completed",
-                    report: "done",
-                    usage: {
-                      input: 0,
-                      output: 0,
-                      cacheRead: 0,
-                      cacheWrite: 0,
-                      totalTokens: 0,
-                      cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0, total: 0 },
-                    },
-                    activity: [],
-                    omittedActivity: 0,
-                    retries: 0,
-                    retryActive: false,
-                  };
-                },
-                async shutdown() {},
-              },
-            }),
-          );
-
-        if (order === "adapter before pi-tools") {
-          await installAdapter();
-          await installToolkit();
-        } else {
-          await installToolkit();
-          await installAdapter();
-        }
-        await recorder.ready;
-
-        const context = recorder.makeContext({
-          cwd: "/live/active-project",
-          model,
-          thinkingLevel: "off",
-          modelRegistry: recorder.modelRegistry.registry as any,
+      expect(pi.tools.map((tool) => tool.name)).toEqual([
+        "subagent",
+        "subagent_grounding",
+        "subagent_explore",
+        "subagent_review_code",
+        "subagent_implement",
+      ]);
+      const explore = pi.tools.find((tool) => tool.name === "subagent_explore");
+      const result = await explore.execute(
+        "call",
+        { task: "find the owner" },
+        undefined,
+        undefined,
+        {
+          cwd: "/project",
+          model: { provider: "provider", id: "model" },
+          thinkingLevel: "high",
           isProjectTrusted: () => true,
-        });
-        await recorder.invokeRaw("session_start", {}, context);
-        await nextTask();
-
-        const result: any = await recorder.invokeToolDirect(
-          "subagent_explore",
-          { task: "find the owner" },
-          { context },
-        );
-        expect(result.content[0].text).toBe("done");
-        expect(requests).toHaveLength(1);
-        expect(requests[0]).toMatchObject({
-          model: { provider: model.provider, id: model.id },
-          thinkingLevel: "off",
-          tools: ["read"],
-          parentCwd: "/live/active-project",
-          parentTrusted: true,
-        });
-        expect(requests[0].prepared.cwd).toBe("/live/active-project");
-        expect(requests[0].prepared.prompt).toBe("find the owner");
-        expect(requests[0].prepared.systemPrompt).toContain("# Explorer");
-        expect(requests[0].prepared.systemPrompt).not.toContain("name: agentic-explorer");
-        expect(recorder.ui.calls).toEqual([]);
-      } finally {
-        if (childMarker === undefined) delete process.env.PI_TOOLS_SUBAGENT_CHILD;
-        else process.env.PI_TOOLS_SUBAGENT_CHILD = childMarker;
-      }
+        },
+      );
+      expect(result.content).toEqual([{ type: "text", text: "done" }]);
+      expect(requests[0]).toMatchObject({
+        cwd: "/project",
+        task: "find the owner",
+        model: { provider: "provider", id: "model" },
+        thinkingLevel: "high",
+        tools: ["read"],
+        approved: true,
+        systemPrompt: expect.stringContaining("# Explorer"),
+      });
     },
   );
 
-  test("contains no repository storage, model-routing, or restrictive-policy machinery", async () => {
-    const source = await readFile(extensionFile, "utf8");
-    expect(source).not.toMatch(/\b(writeFile|mkdir|rename|unlink|appendEntry|exec)\b/);
-    expect(source).not.toMatch(/\.awf\/|agentic-workflows/i);
-    expect(source.match(/selectModel:/g)).toHaveLength(1);
-    expect(source).toContain("selectModel: ({ parent }) => parent.model");
-    expect(source).not.toContain("selectThinkingLevel:");
-    expect(source).toContain('toolPolicy: { mode: "inherit", deny: [] }');
-  });
+  test.each(["adapter before pi-tools", "pi-tools before adapter"])(
+    "exposes no delegation tools in a marked child with %s",
+    (order) => {
+      process.env.PI_TOOLS_SUBAGENT_CHILD = "1";
+      const bus = createBus();
+      const pi = createPi(bus);
+      const installTools = () =>
+        piToolsModule.registerSubagents(pi.api, {
+          runner: { run: vi.fn(), shutdown: vi.fn(async () => undefined) },
+        });
+      if (order === "adapter before pi-tools") {
+        installAdapter(pi.api);
+        installTools();
+      } else {
+        installTools();
+        installAdapter(pi.api);
+      }
+      expect(pi.tools).toEqual([]);
+      expect(bus.emissions).toEqual([]);
+    },
+  );
 });

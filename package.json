@@ -23,9 +23,6 @@
     "claude-code-plugin",
     "pi-package"
   ],
-  "engines": {
-    "node": ">=22.19.0"
-  },
   "scripts": {
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
@@ -36,12 +33,12 @@
     "typebox": "*"
   },
   "devDependencies": {
-    "@earendil-works/pi-coding-agent": "0.84.4",
-    "@types/node": "20.19.37",
+    "@earendil-works/pi-coding-agent": "https://github.com/hypnotox/pi/releases/latest/download/pi-coding-agent.tgz",
+    "@types/node": "*",
     "pi-tools": "https://github.com/hypnotox/pi-tools/archive/refs/heads/main.tar.gz",
-    "typebox": "1.3.7",
-    "typescript": "5.9.3",
-    "vitest": "3.2.7"
+    "typebox": "*",
+    "typescript": "*",
+    "vitest": "*"
   },
   "pi": {
     "extensions": [

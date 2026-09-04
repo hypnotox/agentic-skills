@@ -7,7 +7,7 @@ description: Investigate unexpected behavior with an unknown cause, distinguish 
 
 Use this skill when observed behavior differs from expected behavior and the cause is unknown. Do not use it for a known mechanical fix.
 
-Safety rules, permissions, harness instructions, the actual user request, and applicable repository instructions remain authoritative. Repository instructions may specialize this guidance without expanding the requested scope.
+Safety, permissions, harness constraints, the active task, and applicable repository instructions remain authoritative. Repository instructions may specialize this guidance without expanding scope or permission.
 
 ## Investigate
 

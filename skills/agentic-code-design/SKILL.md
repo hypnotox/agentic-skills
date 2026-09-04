@@ -5,65 +5,39 @@ description: Resolve a structural question about semantic ownership, state or in
 
 # Agentic code design
 
-Use this skill when agreed behavior raises questions about meaning, state, invariants, boundaries, dependencies, contracts, or enabling refactoring.
+Use this skill when agreed behavior raises a structural question about meaning, state, invariants, ownership, dependencies, contracts, or enabling refactoring. Skip mechanical edits that fit the current model. Explorer establishes current structure; code design chooses target structure. Planning sequences the resulting work.
 
-Skip mechanical edits that fit the model. Use `agentic-brainstorming` only when a structural choice materially changes settled outcome, scope, compatibility, safety, user-visible behavior, or system-level direction outside delegated design authority. Planning sequences work; this skill defines design.
+`agentic-brainstorming` owns material changes to outcome, scope, compatibility, safety, user-visible behavior, or system direction. Code design owns internal structure for agreed behavior. `agentic-implementing` makes local choices within that boundary and escalates only material boundary changes.
 
-Safety rules, permissions, harness instructions, the actual user request, and applicable repository instructions remain authoritative. Repository instructions may specialize this guidance without expanding the requested scope.
+Safety, permissions, harness constraints, the active task, and applicable repository instructions remain authoritative. Selecting this skill does not authorize edits. A bounded enabling refactor requires implementation authority from the surrounding task.
 
-## Start from behavior
+## Define the target model
 
-1. Establish behavior, model, authoritative state, contracts, consumers, and constraints before choosing structure.
-2. Prefer the simplest complete design. Add abstraction, indirection, validation, extension points, tooling, or generalization only for a present requirement, defect, invariant, or demonstrated change.
-3. Treat SOLID, DRY, YAGNI, and patterns as diagnostics, not rules. Policy duplication matters more than textual similarity.
-4. Stay direct until variation, volatility, ownership, or translation pressure creates a useful seam.
+1. Establish the agreed behavior, current model, consumers, constraints, and authoritative data flow before choosing structure.
+2. Prefer the simplest complete design. Add abstraction, indirection, validation, extension points, or generalization only for a present requirement, defect, invariant, or demonstrated variation.
+3. Give each value, policy, and mutation path one semantic owner. Place behavior where knowledge and lifecycle can enforce its invariants, not merely in the smallest file.
+4. Model meaningful state, transitions, lifetime, invalidation, ordering, partial success, retry behavior, and side effects explicitly when they affect correctness. Keep operation-derived state local and pass it directly.
+5. Separate domain meaning from storage, transport, UI, serialization, and framework shapes. Translate at boundaries rather than spreading external representations through policy code.
 
-## Model meaning and state
+Treat SOLID, DRY, YAGNI, and patterns as diagnostics, not rules. Policy duplication matters more than textual similarity; stay direct until variation, volatility, ownership, or translation pressure creates a useful seam.
 
-1. Separate domain meaning from storage, transport, UI, serialization, and framework shapes. Translate at boundaries instead of spreading external shapes through policy code.
-2. Model meaningful state, invariants, transitions, lifecycle, and failures explicitly, without wrappers or state machines when a direct representation is safe.
-3. Give each authoritative value or policy one owner and coherent mutation path. Avoid duplicated truth and hidden synchronization.
-4. Keep operation-derived state within that operation and pass it explicitly. For retained or cached state, identify owner, lifetime, invalidation, and consistency requirements.
-5. Make mutability, ordering, partial success, retry behavior, and side effects visible when they affect correctness.
+## Set boundaries, dependencies, and contracts
 
-## Assign ownership and policy
+- Keep code that changes for the same semantic reason together and split unrelated responsibilities. Avoid generic helper or coordinator homes.
+- Keep shared policy and invariants authoritative in one place. Multiple mechanism implementations may satisfy one contract, but must not duplicate its policy.
+- Derive dependency direction from ownership and stability, not call flow. Select volatile mechanisms at the outermost informed layer and pass narrow capabilities inward; avoid service locators, mutable globals, silent defaults, cycles, and dependency bags.
+- Use an interface only for a cohesive contract with real substitution or boundary pressure. Functions and immutable values often suffice. Test-only implementations may satisfy an existing production contract without distorting production architecture.
+- Let adapters translate mechanism-specific values and failures without absorbing domain policy. Expose only what consumers need.
+- Give failures stable identity when callers react programmatically, preserve causes, and add context at the boundary that understands them. When state can change before failure, define partial-success and retry semantics.
 
-1. Place behavior where the knowledge and lifecycle can enforce its invariants. Choose the smallest boundary that fully owns the concern, not merely the smallest file.
-2. Keep code that changes for the same semantic reason together. Split unrelated responsibilities instead of accumulating generic helper or coordinator homes.
-3. Keep one authoritative home for shared policy and invariants. Multiple mechanism implementations may satisfy one contract when real variation requires them; do not duplicate policy across them.
-4. Minimize public surface. Exports, configuration points, outcome variants, and extension hooks need real consumers and clear semantic contracts.
+## Integrate and verify
 
-## Direct dependencies deliberately
+Trace affected owners, callers, representations, public contracts, generated references, and operational constraints. Include a bounded enabling refactor when authorized and needed to prevent duplicated policy, inappropriate coupling, representation leakage, hidden state, or workaround code.
 
-1. Derive dependency direction from ownership and stability, not call flow. Consumers depend on an owner's contract; the owner should not know individual consumers.
-2. Select volatile mechanisms at the outermost informed layer, then pass capabilities inward explicitly. Avoid service locators, universal dependency bags, mutable globals, and silent production defaults.
-3. Do not create interfaces automatically. A function or immutable value often serves a narrow dependency; use an interface for a cohesive contract with real substitution or boundary pressure.
-4. Let adapters translate mechanism-specific values and failures without absorbing business policy. Avoid cycles and bidirectional coordination; excessive mutual knowledge signals misplaced ownership.
+Base compatibility on real consumers. Define migration, move consumers, and remove obsolete paths when practical; any temporary parallel path needs a reason and removal condition. Protect the invariant or contract at the narrowest meaningful verification seam.
 
-## Design contracts and outcomes
+Recommend structural work only for an identifiable correctness or maintenance risk, such as ambiguous ownership, future divergence, stale state, representation leakage, inappropriate dependency direction, unreadable control flow, weakened verification, or a recurring workaround—not for pattern compliance or theoretical flexibility.
 
-1. Express contracts in domain terms and expose only what consumers need. State mutation, ordering, lifecycle, ownership, and compatibility semantics when callers rely on them.
-2. Give failures stable identity or structure when callers react programmatically. Preserve causes and add context at the boundary that understands them; do not branch production control flow on human-readable messages.
-3. When operations can leave changed state, make partial success and retry safety explicit and report enough observed state for the caller to choose recovery.
-4. Keep human-facing wording in presentation unless exact text is itself a contract.
+## Return the design
 
-## Optimize for local reasoning
-
-1. Name domain meaning, keep the common path direct, and handle failure where recovery or useful context is possible.
-2. Prefer explicit conventional constructs. Comments explain constraints, external contracts, or reasoning code cannot show.
-3. Move distant correctness facts closer or represent their relationship.
-4. Create test seams at real production boundaries. Do not distort production architecture solely for test convenience; test-only implementations may satisfy an existing production contract.
-
-## Integrate cleanly
-
-1. Trace the current and target owners, callers, authoritative data flow, representations, public contracts, generated or build references, and operational constraints.
-2. Include a bounded enabling refactor when it prevents duplicated policy, inappropriate coupling, representation leakage, hidden state, or a workaround around the wrong model.
-3. Return a refactor choice to `agentic-brainstorming` only when it materially changes the settled outcome, scope, compatibility, safety, user-visible behavior, or a system-level architectural direction outside delegated design authority. Keep routine ownership, dependency, and refactor choices here; do not silently expand scope or preserve avoidable structural debt merely to minimize the diff.
-4. Base compatibility on real consumers and contracts. Define the migration, move consumers, and remove obsolete paths when practical. A temporary parallel path needs a reason and removal condition.
-5. Put verification at the narrowest meaningful seam protecting the affected invariant or contract.
-
-## Ground recommendations in risk
-
-Recommend structural work for an identifiable correctness or maintenance risk: ambiguous ownership, future divergence, duplicated policy, stale state, representation leakage, inappropriate dependency direction, unreadable control flow, weakened verification, or a recurring workaround. Do not restructure for pattern compliance, aesthetic preference, or theoretical flexibility.
-
-Apply this guidance inline. When useful, state the owner, authoritative state, invariants, boundary and dependency direction, affected contracts, migration or deletion shape, verification seam, and unresolved material choices. Keep it in the active interaction unless persistence is requested or required and authorized.
+Inline use needs no separate artifact. For standalone use, return the owner, authoritative state, invariants, contracts, dependency direction, migration or deletion shape, and verification seam as applicable. If a material choice remains outside design authority, name it as unresolved rather than selecting it. Keep the result in the active interaction unless persistence is requested or required and authorized.

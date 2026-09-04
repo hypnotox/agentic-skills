@@ -1,104 +1,51 @@
 ---
 name: agentic-artifact-design
-description: Design or substantially revise documentation, a plan, handoff, report, decision record, runbook, specification, skill, or another substantial prose artifact when audience, structure, information ownership, or local conventions materially affect the result. Skip routine replies and incidental edits.
+description: Use for substantial prose artifacts when audience, structure, ownership, or repository conventions affect the result; skip routine replies and incidental edits.
 ---
 
 # Agentic artifact design
 
-Use this skill when creating or substantially revising documentation, a plan, handoff, report, decision record, runbook, specification, skill, or another substantial prose artifact whose audience, structure, information ownership, or local conventions materially affect the result. It applies whether the artifact is maintained, transferred, or delivered only in the active interaction. Apply it inline and proportionally rather than introducing a separate design phase or approval gate.
+Use this skill to create or substantially revise documentation, plans, handoffs, reports, decision records, runbooks, specifications, skills, or other prose artifacts whose audience, structure, ownership, or local conventions affect the result. Apply it inline and proportionally.
 
-Skip this skill for routine conversational replies, small prose edits whose structure is already clear, commit messages, ordinary source comments, source code, configuration, structured data, and visual or interactive artifacts such as application interfaces, standalone HTML, images, presentations, and spreadsheets.
+Skip routine replies, incidental edits with an established shape, commit messages, ordinary source comments, source code, configuration, structured data, and visual or interactive artifacts.
 
-Safety rules, permissions, harness instructions, the actual user request, and applicable repository instructions remain authoritative. Repository instructions may specialize this guidance without expanding the requested scope or permission. This skill does not authorize mutation or persistence.
+Safety, permissions, harness constraints, the active task, and applicable repository instructions remain authoritative. This skill supplies method; it does not authorize mutation or persistence.
 
-## Establish the artifact contract
+## Establish the contract and owner
 
-Determine the intended readers, the question or task the artifact must answer, the action it should enable, its authority, expected lifetime, destination, and required format. Identify whether it is current-state reference, instruction, rationale, decision history, proposal, plan, or report; those purposes require different structures and voices.
+Determine the readers, question or task, enabled action, authority, expected lifetime, destination, and required format. Identify whether the artifact is current-state reference, instruction, rationale, decision history, proposal, plan, or report. Surface missing input only when it would materially change the result; do not ask about routine formatting.
 
-Do not ask about routine formatting choices. Surface a blocker only when missing audience, purpose, authority, destination, or required content would materially change the result.
+After applying higher-authority instructions, prefer in order:
 
-First apply the authority hierarchy above. It governs conflicts among the user request, harness constraints, and repository instructions. Within that boundary, prefer:
-
-1. Required artifact contracts, templates, schemas, and generated-source ownership.
-2. Clear precedent from comparable artifacts in the same repository.
+1. Required contracts, templates, schemas, and generated-source ownership.
+2. Clear precedent from comparable artifacts in the same owning area.
 3. The generic defaults in this skill.
 
-Treat precedent as evidence, not unconditional law. Prefer examples of the same artifact kind from the owning area. Match established terminology, information placement, headings, link style, formatting, and voice when they are clear and compatible with higher authority. If examples conflict, follow the strongest applicable instruction or contract; otherwise use the simplest suitable form without inventing a repository-wide convention. Surface only conflicts that materially affect the artifact.
+Treat precedent as evidence, not unconditional law. Match established terminology, information placement, headings, links, format, and voice when compatible with the artifact's contract. If examples conflict, follow the strongest applicable contract or use the simplest suitable form without inventing a repository-wide convention.
 
-## Inspect local context
+Inspect only what remains necessary: applicable instructions, the destination and subject owner, relevant indexes, a small number of same-kind examples, templates or generated markers, and available documentation checks. Edit the owning source rather than generated output; when generation is required, regenerate and verify it. For interaction-only artifacts, the active task is the local contract.
 
-Reuse applicable context and evidence already established by the active task, revalidating it when the artifact requires current evidence. Before choosing a repository artifact's structure, inspect only what remains necessary to establish its contract, ownership, and local precedent:
+## Shape the information
 
-- Applicable repository and directory instructions.
-- The destination and the document or source that owns the subject.
-- Relevant indexes or document maps.
-- A small number of comparable artifacts of the same kind.
-- Templates, schemas, generated-file markers, and editing ownership.
-- Available documentation checks, renderers, or linters.
-
-Do not survey the repository broadly once the contract and precedent are clear. When mutation is authorized, edit the owning source rather than a generated output. If the repository defines a generation mechanism, regenerate the required outputs and run the applicable rendering or consistency checks.
-
-For an artifact delivered only in the active interaction, use the user request and available conversational context as its local contract. Do not invent repository conventions.
-
-## Design the information
-
-Choose the artifact's home and information shape before polishing sentences.
-
-- Honor any output order required by the governing task. Otherwise lead with the outcome, operating rule, decision, highest-consequence finding, or conclusion the reader needs.
-- Organize around the reader's questions and expected use, not the author's discovery order.
-- For maintained documentation, give each changing fact one most-specific authoritative home and link or refer to it from secondary documents.
-- For a standalone handoff, report, or other transfer artifact, include the context required for independent use and identify the authoritative source without presenting the copy as another maintained owner.
-- Use headings to navigate real subjects, not to decorate or wrap every paragraph.
-- Keep connected reasoning together rather than fragmenting one argument across tiny sections or bullets.
-- Keep one coherent subject per artifact or section. Split content when readers would look it up for different reasons.
+- Lead with the outcome, operating rule, decision, finding, or conclusion the reader needs unless a required order applies.
+- Organize around reader questions and use, not discovery order.
+- Give each changing fact one most-specific authoritative home. Link or refer to it elsewhere rather than creating competing owners.
+- Make standalone transfer artifacts independently usable while identifying authoritative sources.
 - Separate normative current state from rationale, proposals, history, and uncertainty when the distinction matters.
 - Include examples only when they resolve ambiguity or materially ease correct action.
 
-Do not impose one template across artifact kinds. A runbook, architecture reference, audit report, plan, and decision record should reflect their distinct reader tasks.
+Use connected paragraphs by default. Use bullets for independent items, numbering for sequence or priority, tables for repeated comparisons, code blocks for exact syntax, and diagrams only when relationships or branching become clearer. Avoid decorative structure, bullet soup, and prose that repeats a table or diagram.
 
-Use connected paragraphs by default. Choose another structure when it represents the information more clearly:
+## Draft and compose
 
-- Bullets for independent, scannable items.
-- Numbered lists for order, priority, or procedure.
-- Tables for exact mappings or comparisons across repeated fields.
-- Code blocks for syntax, commands, schemas, or exact machine-readable examples.
-- Diagrams when relationships, ownership, branching, or event order become materially clearer than in prose.
+Write the shortest precise version. Prefer present-tense authoritative prose and imperative instructions. Use concrete actions and stable domain terms; match repository spelling, naming, capitalization, links, and formatting. Remove promotional language, incidental tool narration, and stale-prone detail while preserving qualifications that affect correctness, compatibility, safety, or scope.
 
-Avoid bullet soup, decorative or one-cell tables, redundant prose-plus-table repetition, and diagrams that merely restate a short linear explanation.
+When another task skill applies, it owns task-specific method, evidence, required content, and terminal behavior. Apply this skill inline for audience fit and document integrity; do not add a separate phase, approval gate, or persistence requirement.
 
-## Write and refine
-
-Use the shortest phrasing that remains precise and complete. Prefer present-tense, authoritative prose; use the imperative for instructions. Choose concrete actions, outcomes, and domain terms over incidental runtime-tool narration. Use stable terminology, direct sentences, and ordinary sentence structure rather than punctuation as a substitute for clarity.
-
-Match repository spelling, capitalization, naming, link, and code-format conventions. Avoid editorializing, promotional language, and historical narration unless evaluation or history is part of the artifact's purpose. Avoid dates and exact counts when they will become stale and are not required. State a tooling-enforced rule and point to its owner when useful rather than narrating its enforcement. Preserve qualifications that affect correctness, compatibility, safety, or scope, and keep the artifact consistent with the reality it describes.
-
-After drafting, perform a compression and coherence pass:
-
-1. Remove repetition, filler, throat-clearing, and repeated conclusions.
-2. Merge fragments that express one connected idea.
-3. Replace vague references with the owned concept, path, command, or contract when known.
-4. Remove incidental stale-prone detail only when it is unnecessary for independent use and the authoritative source remains accessible.
-5. Confirm that compression preserved required context, caveats, evidence, and verification instructions.
-
-## Compose with task skills
-
-When another task skill applies, it governs the task-specific method, required content and evidence, and completion standard derived from the user request and applicable repository contracts. Apply this skill inline to improve audience fit, information architecture, prose, formatting, and document integrity without removing required substance.
-
-Do not add an artifact-design-specific phase, handoff, approval gate, or persistence requirement. Preserve any routing or gates required by the governing task.
+Compress after drafting: remove repetition and filler, merge fragments expressing one idea, replace vague references with owned concepts or paths, and confirm required context and caveats remain.
 
 ## Verify and deliver
 
-Verify proportionally to the artifact and repository:
+Check that the structure serves the reader, required content and order remain, claims and terminology agree with sources, changing facts have one owner, links and commands are accurate, and generated ownership is respected. Run applicable formatting, rendering, link, or repository checks, then inspect the artifact as a reader.
 
-- Any output order required by the governing task is preserved; otherwise the opening communicates the purpose and primary outcome.
-- The structure supports the intended reader task.
-- Required task-specific content remains present.
-- Claims, examples, commands, paths, links, and terminology agree with their sources.
-- Maintained documentation does not create a competing owner for a changing fact or contradict nearby documentation.
-- A standalone handoff, report, or other transfer artifact identifies its authoritative sources and contains the context its reader needs to act independently.
-- Generated-source and template ownership are respected.
-- Applicable formatting, documentation, rendering, link, and repository checks pass.
-
-Inspect the final artifact as a reader; a successful formatter or linter does not prove that it communicates well.
-
-Keep the artifact in the active interaction unless the user asks to save it or applicable repository instructions require a file and the task authorizes that write. Do not invent documentation, plans, decision logs, reports, directories, templates, caches, or memory stores merely because this skill applies.
+Keep the artifact in the active interaction unless the task requests a file or applicable instructions require one and the write is authorized. Do not invent documentation, plans, logs, caches, memory stores, directories, or process artifacts merely because this skill applies.

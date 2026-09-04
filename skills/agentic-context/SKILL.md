@@ -5,11 +5,9 @@ description: Orient before substantial fresh, takeover, or widened-scope work; i
 
 # Agentic context
 
-Use this skill for substantial orientation, one bounded non-defect investigation, or a consequential premise test. Keep routine source inspection inside the active workflow rather than invoking context as a separate phase. Unknown unexpected behavior belongs to `agentic-debugging`.
+Use this skill for substantial orientation, one bounded non-defect investigation, or a consequential premise test. Keep routine source inspection inside the active workflow. Unknown unexpected behavior belongs to `agentic-debugging`.
 
-Safety rules, permissions, harness instructions, the actual user request, and applicable repository instructions remain authoritative. Repository instructions may specialize this guidance without expanding the requested scope.
-
-All three lanes are evidence-only and non-mutating. Using this skill does not authorize edits or implementation.
+Safety, permissions, harness constraints, the active task, and applicable repository instructions remain authoritative. All three lanes are evidence-only and non-mutating; this skill does not authorize edits or implementation. Evidence commands may create understood transient output, but leave no intentional artifacts.
 
 ## Orient
 
@@ -24,12 +22,16 @@ Prefer an exact known-source read over broad exploration.
 
 ## Explore
 
-Investigate a bounded non-defect unknown directly, or delegate it to `agentic-explorer` when separate fresh context helps. A fresh child cannot be assumed to know conversation-local context. Supply the question, evidence boundary, allowed source types, relevant repository constraints, and desired detail; extract only applicable constraints rather than pasting whole instruction files.
+Investigate a bounded non-defect unknown directly, or delegate it to `agentic-explorer` when separate fresh context helps. Explorer establishes current structure; `agentic-code-design` chooses target structure.
+
+A fresh child cannot be assumed to know conversation-local context. Supply the question, evidence boundary, and applicable constraints or the explicit value `none`. Cite the repository path when a load-bearing constraint has one. Source restrictions and desired detail are optional.
 
 Return the answer first, followed by evidence, searched boundary, and uncertainty. Do not silently widen the task.
 
 ## Challenge
 
-Try to falsify a weakly supported premise when being wrong could materially change the route. Do this directly or delegate it to `agentic-premise-checker`. A fresh child cannot be assumed to know conversation-local context. Supply the exact premise, consequence if wrong, evidence boundary, and relevant repository constraints.
+Try to falsify a weakly supported premise when being wrong could materially change the route. Do this directly or delegate it to `agentic-premise-checker`.
+
+Supply a fresh child with the premise, consequence if wrong, evidence boundary, and applicable constraints or the explicit value `none`. Cite the repository path when a load-bearing constraint has one. Source restrictions and desired detail are optional.
 
 Report `supported`, `revise`, or `unresolved` with consequence-ordered evidence. Lack of counterevidence is not proof. A challenge informs the route; it does not authorize implementation.

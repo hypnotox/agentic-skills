@@ -3,44 +3,54 @@ import { join, resolve } from "node:path";
 import { describe, expect, test } from "vitest";
 
 const root = resolve(import.meta.dirname, "..");
-const skills = {
-  "agentic-context":
-    "Orient before substantial fresh, takeover, or widened-scope work; investigate one bounded non-defect unknown; or test a consequential premise.",
-  "agentic-artifact-design":
-    "Design or substantially revise documentation, a plan, handoff, report, decision record, runbook, specification, skill, or another substantial prose artifact when audience, structure, information ownership, or local conventions materially affect the result. Skip routine replies and incidental edits.",
-  "agentic-brainstorming":
-    "Resolve a material choice about outcome, scope, compatibility, safety, user-visible behavior, or durable architecture before dependent work proceeds.",
-  "agentic-debugging":
-    "Investigate unexpected behavior with an unknown cause, distinguish hypotheses with evidence, and establish a regression oracle or report that the cause remains unresolved.",
-  "agentic-code-design":
-    "Resolve a structural question about semantic ownership, state or invariants, contracts, dependency direction, or refactor boundaries for agreed behavior.",
-  "agentic-planning":
-    "Sequence a settled non-obvious change into verifiable units with dependencies, ownership, integration points, and terminal checks.",
-  "agentic-implementing":
-    "Implement and verify a settled change while preserving unrelated work and surfacing newly material choices.",
-  "agentic-reviewing":
-    "Independently audit existing code or prose, a design, diff, or implementation and report evidence-backed risks without editing.",
-} as const;
-const roles = {
+const skillNames = [
+  "agentic-artifact-design",
+  "agentic-brainstorming",
+  "agentic-code-design",
+  "agentic-context",
+  "agentic-debugging",
+  "agentic-implementing",
+  "agentic-planning",
+  "agentic-reviewing",
+] as const;
+const roleSpecs = {
   "explorer.md": {
-    id: "agentic-explorer",
-    description:
-      "Investigate one bounded factual or structural question in fresh read-only context; return evidence, searched boundary, and uncertainty.",
+    name: "agentic-explorer",
+    trigger: /^Investigate\b/,
+    brief: [/\bquestion\b/i, /evidence boundary/i, /applicable constraints/i, /`none`/],
   },
   "premise-checker.md": {
-    id: "agentic-premise-checker",
-    description:
-      "Adversarially test one explicit consequential premise in fresh read-only context; return supported, revise, or unresolved with evidence.",
-  },
-  "implementer.md": {
-    id: "agentic-implementer",
-    description:
-      "Implement one settled self-contained unit with an explicit write boundary; return a completion receipt while the parent retains integration.",
+    name: "agentic-premise-checker",
+    trigger: /^Test\b/,
+    brief: [
+      /\bpremise\b/i,
+      /consequence if wrong/i,
+      /evidence boundary/i,
+      /applicable constraints/i,
+      /`none`/,
+    ],
   },
   "reviewer.md": {
-    id: "agentic-reviewer",
-    description:
-      "Independently inspect one supplied change or existing surface in fresh report-only context; return concrete findings, coverage, and uncertainty.",
+    name: "agentic-reviewer",
+    trigger: /^Review\b/,
+    brief: [
+      /outcome or evaluation standard/i,
+      /review surface/i,
+      /applicable constraints/i,
+      /`none`/,
+    ],
+  },
+  "implementer.md": {
+    name: "agentic-implementer",
+    trigger: /^Implement\b/,
+    brief: [
+      /\boutcome\b/i,
+      /settled constraints/i,
+      /write boundary/i,
+      /applicable constraints/i,
+      /`none`/,
+      /acceptance checks/i,
+    ],
   },
 } as const;
 
@@ -70,33 +80,62 @@ async function doesNotExist(path: string): Promise<boolean> {
   }
 }
 
+async function readRole(file: keyof typeof roleSpecs): Promise<string> {
+  return readFile(join(root, "agents", file), "utf8");
+}
+
 describe("canonical package invariants", () => {
-  test("ships the exact canonical skill and role sets with frontmatter and bodies", async () => {
+  test("ships only the canonical skills and roles with valid nonempty documents", async () => {
     const skillDirectories = (await readdir(join(root, "skills"), { withFileTypes: true }))
       .filter((entry) => entry.isDirectory())
       .map((entry) => entry.name)
       .sort();
-    expect(skillDirectories).toEqual(Object.keys(skills).sort());
+    expect(skillDirectories).toEqual([...skillNames].sort());
 
-    for (const [name, description] of Object.entries(skills)) {
+    for (const name of skillNames) {
       const { metadata, body } = parseDocument(
         await readFile(join(root, "skills", name, "SKILL.md"), "utf8"),
       );
-      expect(metadata).toMatchObject({ name, description });
-      expect(body).not.toBe("");
+      expect(metadata.name).toBe(name);
+      expect(metadata.description?.trim().length).toBeGreaterThan(0);
+      expect(Object.keys(metadata).sort()).toEqual(["description", "name"]);
+      expect(body.length).toBeGreaterThan(0);
     }
 
-    expect((await readdir(join(root, "agents"))).sort()).toEqual(Object.keys(roles).sort());
-    for (const [file, role] of Object.entries(roles)) {
-      const { metadata, body } = parseDocument(
-        await readFile(join(root, "agents", file), "utf8"),
-      );
-      expect(metadata).toMatchObject({ name: role.id, description: role.description });
-      expect(body).not.toBe("");
+    expect((await readdir(join(root, "agents"))).sort()).toEqual(Object.keys(roleSpecs).sort());
+    for (const [file, spec] of Object.entries(roleSpecs)) {
+      const { metadata, body } = parseDocument(await readRole(file as keyof typeof roleSpecs));
+      expect(metadata.name).toBe(spec.name);
+      expect(metadata.description?.trim().length).toBeGreaterThan(0);
+      expect(Object.keys(metadata).sort()).toEqual(["description", "name"]);
+      expect(body.length).toBeGreaterThan(0);
     }
   });
 
-  test("keeps the root package version and Pi manifest but no Claude version or lockfile", async () => {
+  test("keeps repository instructions local and bridges Claude to their canonical owner", async () => {
+    const agents = await readFile(join(root, "AGENTS.md"), "utf8");
+    const claude = await readFile(join(root, "CLAUDE.md"), "utf8");
+    const packageManifest = JSON.parse(await readFile(join(root, "package.json"), "utf8"));
+    const wordCount = agents.match(/\b[\w'-]+\b/g)?.length ?? 0;
+
+    expect(wordCount).toBeGreaterThanOrEqual(100);
+    expect(wordCount).toBeLessThanOrEqual(150);
+    expect(agents).toMatch(/skills\/\*\/SKILL\.md[\s\S]*generic methods/i);
+    expect(agents).toMatch(/agents\/\*\.md[\s\S]*role behavior/i);
+    expect(agents).toMatch(/extensions\/pi-subagents\/index\.ts[\s\S]*bridges[\s\S]*roles[\s\S]*Pi/i);
+    expect(agents).toMatch(/README[\s\S]*explains use[\s\S]*tests[\s\S]*contracts/i);
+    expect(agents).toMatch(/Role and delegated-brief boundaries[\s\S]*loaded skill/i);
+    expect(agents).toMatch(/latest[\s\S]*no version pins[\s\S]*no lockfile/i);
+    expect(agents).toMatch(/cross-harness design thin[\s\S]*persistence[\s\S]*orchestration/i);
+    for (const command of ["npm install", "npm run check", "npm pack --dry-run"])
+      expect(agents).toContain(command);
+
+    expect(claude).toBe("@AGENTS.md\n");
+    expect(packageManifest.files).not.toContain("AGENTS.md");
+    expect(packageManifest.files).not.toContain("CLAUDE.md");
+  });
+
+  test("uses current development sources and creates no lockfile", async () => {
     const packageManifest = JSON.parse(await readFile(join(root, "package.json"), "utf8"));
     const pluginManifest = JSON.parse(
       await readFile(join(root, ".claude-plugin", "plugin.json"), "utf8"),
@@ -108,103 +147,196 @@ describe("canonical package invariants", () => {
       extensions: ["./extensions/pi-subagents/index.ts"],
       skills: ["./skills"],
     });
+    expect(packageManifest.peerDependencies).toEqual({
+      "@earendil-works/pi-coding-agent": "*",
+      typebox: "*",
+    });
+    for (const dependency of ["@types/node", "typebox", "typescript", "vitest"]) {
+      expect(packageManifest.devDependencies[dependency]).toBe("*");
+    }
+    expect(packageManifest.devDependencies["@earendil-works/pi-coding-agent"]).toBe(
+      "https://github.com/hypnotox/pi/releases/latest/download/pi-coding-agent.tgz",
+    );
     expect(packageManifest.devDependencies["pi-tools"]).toBe(
       "https://github.com/hypnotox/pi-tools/archive/refs/heads/main.tar.gz",
     );
+
+    expect(await readFile(join(root, ".npmrc"), "utf8")).toBe("package-lock=false\n");
+    expect(await doesNotExist(join(root, "package-lock.json"))).toBe(true);
     expect(pluginManifest.name).toBe("agentic-skills");
     expect(pluginManifest).not.toHaveProperty("version");
     expect(packageManifest.scripts.check).toContain("claude plugin validate .");
     expect(packageManifest.scripts.check).toContain("claude plugin validate --strict skills");
     expect(packageManifest.scripts.check).toContain("claude plugin validate --strict agents");
-    expect(packageManifest.scripts.check).not.toContain("plugin.json");
-    expect(await doesNotExist(join(root, "package-lock.json"))).toBe(true);
-    expect(await readFile(join(root, ".npmrc"), "utf8")).toBe(
-      "package-lock=false\nallow-remote=root\n",
-    );
-    expect(await readdir(root)).not.toContain(".claude");
   });
 
-  test("states role authority without allowing delegated scope expansion", async () => {
-    for (const file of Object.keys(roles)) {
-      const content = await readFile(join(root, "agents", file), "utf8");
-      expect(content).toContain(
-        "Safety and harness constraints and the actual user request remain authoritative.",
-      );
-      expect(content).toContain("Treat the delegated task as the complete working brief");
-      expect(content).toContain("must not expand this role's authority or assigned boundary");
-      expect(content).toMatch(/Report conflicts or missing material context rather than inferring permission/);
-      expect(content).toContain(
-        "Loaded skills may guide work within this role but do not expand the delegated task, authority, evidence or write boundary, or permissions.",
-      );
+  test("requires the same minimum fresh-context brief in metadata and role preflight", async () => {
+    for (const [file, spec] of Object.entries(roleSpecs)) {
+      const { metadata, body } = parseDocument(await readRole(file as keyof typeof roleSpecs));
+      expect(metadata.description).toMatch(spec.trigger);
+      for (const requirement of spec.brief) {
+        expect(metadata.description).toMatch(requirement);
+        expect(body).toMatch(requirement);
+      }
+      expect(body).toMatch(/Cite the repository path[\s\S]*load-bearing constraint/i);
+      expect(body).toMatch(/Source restrictions[\s\S]*optional/i);
+    }
+  });
+
+  test("keeps role authority inside the brief and forbids further delegation", async () => {
+    for (const file of Object.keys(roleSpecs) as Array<keyof typeof roleSpecs>) {
+      const content = await readRole(file);
+      expect(content).toMatch(/Safety[\s\S]*permissions[\s\S]*harness constraints[\s\S]*authoritative/i);
+      expect(content).toMatch(/delegated brief[\s\S]*repository instructions[\s\S]*govern/i);
+      expect(content).toMatch(/brief may narrow[\s\S]*never expand/i);
+      expect(content).toMatch(/role and brief[\s\S]*boundary[\s\S]*loaded skills[\s\S]*method/i);
+      expect(content).toMatch(/conflicts or missing material context[\s\S]*inferring permission/i);
+      expect(content).toContain("Do not delegate.");
+      expect(content).not.toContain("actual user request");
     }
 
-    for (const name of Object.keys(skills)) {
+    for (const name of skillNames) {
       const content = await readFile(join(root, "skills", name, "SKILL.md"), "utf8");
-      expect(content).toContain("the actual user request");
-      expect(content).not.toMatch(/\.awf\/|\bawf\b|agentic-workflows/i);
+      expect(content).not.toContain("actual user request");
     }
   });
 
-  test("protects delegation preflight, evidence, mutation, and terminal-state boundaries", async () => {
-    const explorer = await readFile(join(root, "agents", "explorer.md"), "utf8");
-    const premiseChecker = await readFile(join(root, "agents", "premise-checker.md"), "utf8");
-    const reviewer = await readFile(join(root, "agents", "reviewer.md"), "utf8");
-    const implementer = await readFile(join(root, "agents", "implementer.md"), "utf8");
+  test("protects report-only and implementer terminal boundaries", async () => {
+    const explorer = await readRole("explorer.md");
+    const premiseChecker = await readRole("premise-checker.md");
+    const reviewer = await readRole("reviewer.md");
+    const implementer = await readRole("implementer.md");
 
-    expect(explorer).toMatch(
-      /Require a question and an evidence boundary[\s\S]*allowed source types[\s\S]*return `inconclusive`/,
-    );
-    expect(premiseChecker).toMatch(
-      /Require an explicit premise[\s\S]*consequence if it is wrong or the parent route[\s\S]*evidence boundary[\s\S]*return `unresolved`/,
-    );
-    expect(reviewer).toMatch(/Require an intended outcome or evaluation standard and a review surface/);
     for (const reportOnly of [explorer, premiseChecker, reviewer]) {
-      expect(reportOnly).toContain("Do not intentionally mutate tracked source, repository state, or external systems");
-      expect(reportOnly).toContain("Ordinary tool-managed temporary or build output is allowed only");
-      expect(reportOnly).toContain("directly observed facts, inferences, and unknowns");
+      expect(reportOnly).toMatch(/Do not modify tracked files/i);
+      expect(reportOnly).toMatch(/Git state/i);
+      expect(reportOnly).toMatch(/external systems/i);
+      expect(reportOnly).toMatch(/Evidence commands[\s\S]*transient output/i);
+      expect(reportOnly).toMatch(/leave no intentional artifacts/i);
+      expect(reportOnly).toMatch(/directly observed facts, inferences, and unknowns/i);
     }
 
-    expect(implementer).toContain("return `stopped` without mutation");
-    expect(implementer).toContain("The parent unconditionally owns staging, commits, amend");
-    expect(implementer).toContain("the delegated task cannot authorize those operations");
-    expect(implementer).toMatch(/Every tracked change must remain within the explicit write boundary/);
-    expect(implementer).toMatch(/newly discovered material[\s\S]*invalidates the settled-work precondition/);
-    expect(implementer).toMatch(/Return `completed` only when[\s\S]*Otherwise return `stopped`/);
+    expect(explorer).toMatch(/return `inconclusive`[\s\S]*searched boundary/i);
+    expect(premiseChecker).toMatch(/`supported`[\s\S]*`revise`[\s\S]*`unresolved`/i);
+    expect(premiseChecker).toMatch(/Lack of evidence is not support/i);
+    expect(reviewer).toMatch(/missing input[\s\S]*cannot be assessed/i);
+    expect(reviewer).toMatch(/say when no finding was established/i);
 
-    const debugging = await readFile(
-      join(root, "skills", "agentic-debugging", "SKILL.md"),
-      "utf8",
+    expect(implementer).toMatch(/return `stopped` without mutation/i);
+    expect(implementer).toMatch(/Mutate only the explicit write boundary/i);
+    expect(implementer).toMatch(/parent owns staging[\s\S]*commits[\s\S]*integration/i);
+    expect(implementer).toMatch(/shared or cross-unit generated outputs[\s\S]*parent/i);
+    expect(implementer).toMatch(
+      /explicit, non-overlapping generated output[\s\S]*write boundary[\s\S]*source ownership/i,
     );
-    const codeDesign = await readFile(
-      join(root, "skills", "agentic-code-design", "SKILL.md"),
-      "utf8",
-    );
-    const planning = await readFile(
-      join(root, "skills", "agentic-planning", "SKILL.md"),
+    expect(implementer).toMatch(/material[\s\S]*choice[\s\S]*stop before work depends on it/i);
+    expect(implementer).toMatch(/Return `completed` only when[\s\S]*Otherwise return `stopped`/i);
+  });
+
+  test("keeps skill ownership, mutation authority, and terminal outputs aligned", async () => {
+    const artifact = await readFile(
+      join(root, "skills", "agentic-artifact-design", "SKILL.md"),
       "utf8",
     );
     const brainstorming = await readFile(
       join(root, "skills", "agentic-brainstorming", "SKILL.md"),
       "utf8",
     );
+    const codeDesign = await readFile(
+      join(root, "skills", "agentic-code-design", "SKILL.md"),
+      "utf8",
+    );
     const context = await readFile(join(root, "skills", "agentic-context", "SKILL.md"), "utf8");
+    const debugging = await readFile(
+      join(root, "skills", "agentic-debugging", "SKILL.md"),
+      "utf8",
+    );
     const implementing = await readFile(
       join(root, "skills", "agentic-implementing", "SKILL.md"),
+      "utf8",
+    );
+    const planning = await readFile(
+      join(root, "skills", "agentic-planning", "SKILL.md"),
       "utf8",
     );
     const reviewing = await readFile(
       join(root, "skills", "agentic-reviewing", "SKILL.md"),
       "utf8",
     );
-    expect(debugging).toMatch(/`unresolved` is an honest terminal outcome[\s\S]*cause remains unresolved/);
-    expect(codeDesign).toContain("Multiple mechanism implementations may satisfy one contract");
-    expect(codeDesign).toContain("do not duplicate policy across them");
-    expect(codeDesign).toMatch(/test-only implementations may satisfy an existing production contract/);
-    expect(planning).toMatch(/code change with an unresolved structural question/);
-    expect(planning).toContain("A plan is a revisable route, not a frozen contract");
-    expect(brainstorming).toMatch(/evidence cannot distinguish[\s\S]*unresolved/);
-    expect(context).toMatch(/All three lanes are evidence-only and non-mutating/);
-    expect(implementing).toMatch(/unexpected behavior whose cause is unknown[\s\S]*`agentic-debugging`/);
-    expect(reviewing).toMatch(/Route settled corrections through `agentic-implementing`/);
+
+    expect(artifact).toMatch(/After applying higher-authority instructions[\s\S]*prefer in order/i);
+    expect(artifact).not.toContain("authority hierarchy above");
+    expect(codeDesign).toMatch(/Explorer establishes current structure[\s\S]*chooses target structure/i);
+    expect(codeDesign).toMatch(/Selecting this skill does not authorize edits/i);
+    expect(codeDesign).toMatch(/enabling refactor[\s\S]*implementation authority/i);
+    expect(codeDesign).toMatch(/brainstorming[\s\S]*material changes[\s\S]*internal structure/i);
+    expect(codeDesign).toMatch(/standalone use[\s\S]*owner[\s\S]*authoritative state[\s\S]*invariants/i);
+    expect(codeDesign).toMatch(/contracts[\s\S]*migration[\s\S]*verification seam/i);
+    expect(codeDesign).toMatch(/material choice[\s\S]*unresolved/i);
+    expect(brainstorming).toMatch(/Code design owns internal structure[\s\S]*implementation owns local choices/i);
+    expect(context).toMatch(/All three lanes are evidence-only and non-mutating/i);
+    expect(implementing).toMatch(/shared outputs[\s\S]*cross-unit generated outputs[\s\S]*parent/i);
+    expect(implementing).toMatch(
+      /explicit, non-overlapping generated output[\s\S]*write boundary[\s\S]*source ownership/i,
+    );
+    expect(debugging).toMatch(/`unresolved` is an honest terminal outcome[\s\S]*cause remains unresolved/i);
+    expect(planning).toMatch(/plan is a revisable route, not a frozen contract/i);
+    expect(reviewing).toMatch(/Route settled corrections through `agentic-implementing`/i);
+  });
+
+  test("documents canonical links, shared delegation rules, and harness mappings", async () => {
+    const readme = await readFile(join(root, "README.md"), "utf8");
+    const delegatedStart = readme.indexOf("## Delegated roles");
+    const claudeStart = readme.indexOf("## Claude Code");
+    const piStart = readme.indexOf("## Pi");
+    const delegated = readme.slice(delegatedStart, claudeStart);
+
+    for (const name of skillNames)
+      expect(readme).toContain(`skills/${name}/SKILL.md`);
+    for (const [file, spec] of Object.entries(roleSpecs)) {
+      expect(delegated).toContain(`agents/${file}`);
+      const row = delegated
+        .split(/\r?\n/)
+        .find((line) => line.includes(`agents/${file}`));
+      expect(row).toBeDefined();
+      for (const requirement of spec.brief) expect(row).toMatch(requirement);
+      expect(readme).toContain(`agentic-skills:${spec.name}`);
+    }
+
+    expect(delegatedStart).toBeGreaterThan(-1);
+    expect(claudeStart).toBeGreaterThan(delegatedStart);
+    expect(piStart).toBeGreaterThan(claudeStart);
+    expect(delegated).toMatch(/fresh context[\s\S]*self-contained brief/i);
+    expect(delegated).toMatch(/report-only roles[\s\S]*behavioral prompt constraints/i);
+    expect(delegated).toMatch(/Source restrictions, desired detail, and existing verification evidence are optional/i);
+    for (const tool of [
+      "subagent_explore",
+      "subagent_grounding",
+      "subagent_review_code",
+      "subagent_implement",
+    ])
+      expect(readme.slice(piStart)).toContain(tool);
+    expect(readme.slice(piStart)).toMatch(/context files, delegation tools, and handoff remain unavailable/i);
+  });
+
+  test("contains no generated agentic-workflows machinery", async () => {
+    const packageManifest = JSON.parse(await readFile(join(root, "package.json"), "utf8"));
+    const dependencyNames = Object.keys({
+      ...packageManifest.dependencies,
+      ...packageManifest.devDependencies,
+      ...packageManifest.peerDependencies,
+    });
+
+    expect(dependencyNames).not.toContain("agentic-workflows");
+    expect(JSON.stringify(packageManifest.scripts)).not.toMatch(/agentic-workflows|\bawf\b/i);
+    for (const path of [
+      ".awf",
+      ".agentic-workflows",
+      ".claude",
+      "agentic-workflows.config.ts",
+      "agentic-workflows.config.json",
+    ]) {
+      expect(await doesNotExist(join(root, path))).toBe(true);
+    }
   });
 });

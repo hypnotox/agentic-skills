@@ -7,7 +7,7 @@ description: Sequence a settled non-obvious change into verifiable units with de
 
 Use this skill when settled work is non-obvious enough to benefit from explicit sequencing, dependency ordering, ownership, integration points, or terminal verification. Skip it when the route is already obvious and safely executable.
 
-Safety rules, permissions, harness instructions, the actual user request, and applicable repository instructions remain authoritative. Repository instructions may specialize this guidance without expanding the requested scope.
+Safety, permissions, harness constraints, the active task, and applicable repository instructions remain authoritative. Repository instructions may specialize this guidance without expanding scope or permission.
 
 ## Build a revisable route
 

@@ -5,9 +5,9 @@ description: Resolve a material choice about outcome, scope, compatibility, safe
 
 # Agentic brainstorming
 
-Use this skill only when a material choice remains about outcome, scope, compatibility, safety, user-visible behavior, or durable architecture. Do not turn routine implementation choices into approval gates.
+Use this skill only when a material choice remains about outcome, scope, compatibility, safety, user-visible behavior, or durable architecture. Code design owns internal structure for agreed behavior, and implementation owns local choices within settled boundaries; do not turn those choices into approval gates.
 
-Safety rules, permissions, harness instructions, the actual user request, and applicable repository instructions remain authoritative. Repository instructions may specialize this guidance without expanding the requested scope.
+Safety, permissions, harness constraints, the active task, and applicable repository instructions remain authoritative. Repository instructions may specialize this guidance without expanding scope or permission.
 
 ## Resolve the choice
 
@@ -19,4 +19,4 @@ Safety rules, permissions, harness instructions, the actual user request, and ap
 
 Keep the decision in the active interaction by default. Persist it only when the user asks or applicable repository instructions require it and the task authorizes that write. Do not invent a decision log, memory store, hidden state, or other process artifact.
 
-Once settled, preserve the decision's boundary. Return only when new evidence creates another material choice; make local implementation choices without reopening routine details.
+Once settled, preserve the decision's boundary. Reopen it only when new evidence creates another material choice.
