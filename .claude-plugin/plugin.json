@@ -1,5 +1,6 @@
 {
   "name": "agentic-skills",
+  "version": "0.1.0",
   "description": "Repository-agnostic engineering skills and focused role agents.",
   "author": {
     "name": "Josua Müller",

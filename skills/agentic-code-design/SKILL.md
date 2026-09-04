@@ -19,6 +19,8 @@ Safety, permissions, harness constraints, the active task, and applicable reposi
 4. Model meaningful state, transitions, lifetime, invalidation, ordering, partial success, retry behavior, and side effects explicitly when they affect correctness. Keep operation-derived state local and pass it directly.
 5. Separate domain meaning from storage, transport, UI, serialization, and framework shapes. Translate at boundaries rather than spreading external representations through policy code.
 
+Choose names and control flow that expose intent and the underlying model. Use comments for constraints or rationale that the code cannot express clearly.
+
 Treat SOLID, DRY, YAGNI, and patterns as diagnostics, not rules. Policy duplication matters more than textual similarity; stay direct until variation, volatility, ownership, or translation pressure creates a useful seam.
 
 ## Set boundaries, dependencies, and contracts

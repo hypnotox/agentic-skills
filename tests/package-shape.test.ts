@@ -215,7 +215,7 @@ describe("canonical package invariants", () => {
     expect(await readFile(join(root, ".npmrc"), "utf8")).toBe("package-lock=false\n");
     expect(await doesNotExist(join(root, "package-lock.json"))).toBe(true);
     expect(pluginManifest.name).toBe("agentic-skills");
-    expect(pluginManifest).not.toHaveProperty("version");
+    expect(pluginManifest.version).toBe(packageManifest.version);
     expect(packageManifest.scripts.check).toContain("claude plugin validate .");
     expect(packageManifest.scripts.check).toContain("claude plugin validate --strict skills");
     expect(packageManifest.scripts.check).toContain("claude plugin validate --strict agents");
