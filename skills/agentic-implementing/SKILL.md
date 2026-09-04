@@ -14,7 +14,7 @@ Safety, permissions, harness constraints, the active task, and applicable reposi
 1. Inspect current state and affected contracts before editing. Preserve unrelated and concurrent work.
 2. Implement at the semantic owner and smallest clean integration point.
 3. Apply `agentic-code-design` when the current model cannot carry the settled change cleanly. Selecting that skill does not expand edit authority; make bounded enabling refactors only when the active task authorizes them.
-4. Make local implementation choices directly. Route material changes to outcome, scope, compatibility, safety, user-visible behavior, or durable architecture through `agentic-brainstorming` before dependent work.
+4. Make local implementation choices directly. Route material changes to outcome, scope, compatibility, safety, user-visible behavior, or system direction through `agentic-brainstorming` before dependent work.
 5. Run focused feedback while iterating. Use the strongest practical oracle for changed behavior and never weaken tests, fixtures, goldens, or checks to hide failure.
 6. If feedback reveals unexpected behavior whose cause is unknown, stop speculative changes and apply `agentic-debugging`.
 7. Update documentation and generated expectations when their source of truth changes, and explain why expectation changes are correct.

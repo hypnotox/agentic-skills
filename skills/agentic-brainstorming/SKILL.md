@@ -1,11 +1,11 @@
 ---
 name: agentic-brainstorming
-description: Resolve a material choice about outcome, scope, compatibility, safety, user-visible behavior, or durable architecture before dependent work proceeds.
+description: Resolve a material choice about outcome, scope, compatibility, safety, user-visible behavior, or system direction before dependent work proceeds.
 ---
 
 # Agentic brainstorming
 
-Use this skill only when a material choice remains about outcome, scope, compatibility, safety, user-visible behavior, or durable architecture. Code design owns internal structure for agreed behavior, and implementation owns local choices within settled boundaries; do not turn those choices into approval gates.
+Use this skill only when a material choice remains about outcome, scope, compatibility, safety, user-visible behavior, or system direction. Code design owns internal structure for agreed behavior, and implementation owns local choices within settled boundaries; do not turn those choices into approval gates.
 
 Safety, permissions, harness constraints, the active task, and applicable repository instructions remain authoritative. Repository instructions may specialize this guidance without expanding scope or permission.
 

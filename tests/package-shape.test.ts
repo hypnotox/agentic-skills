@@ -1,6 +1,7 @@
 import { access, readFile, readdir } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import { describe, expect, test } from "vitest";
+import { parse } from "yaml";
 
 const root = resolve(import.meta.dirname, "..");
 const skillNames = [
@@ -16,12 +17,26 @@ const skillNames = [
 const roleSpecs = {
   "explorer.md": {
     name: "agentic-explorer",
-    trigger: /^Investigate\b/,
+    tool: "subagent_explore",
+    routing: [
+      /\b(?:investigat\w*|explor\w*|research\w*)\b/i,
+      /\bbounded\b/i,
+      /\bquestion\b/i,
+      /\bfresh\b/i,
+      /\b(?:read|report)-only context\b/i,
+    ],
     brief: [/\bquestion\b/i, /evidence boundary/i, /applicable constraints/i, /`none`/],
   },
   "premise-checker.md": {
     name: "agentic-premise-checker",
-    trigger: /^Test\b/,
+    tool: "subagent_grounding",
+    routing: [
+      /\b(?:test\w*|check\w*|challeng\w*|falsif\w*)\b/i,
+      /\bconsequential\b/i,
+      /\bpremise\b/i,
+      /\bfresh\b/i,
+      /\b(?:read|report)-only context\b/i,
+    ],
     brief: [
       /\bpremise\b/i,
       /consequence if wrong/i,
@@ -32,7 +47,13 @@ const roleSpecs = {
   },
   "reviewer.md": {
     name: "agentic-reviewer",
-    trigger: /^Review\b/,
+    tool: "subagent_review_code",
+    routing: [
+      /\b(?:review\w*|inspect\w*|audit\w*)\b/i,
+      /\b(?:surface|change|work)\b/i,
+      /\bfresh\b/i,
+      /\b(?:read|report)-only context\b/i,
+    ],
     brief: [
       /outcome or evaluation standard/i,
       /review surface/i,
@@ -42,7 +63,13 @@ const roleSpecs = {
   },
   "implementer.md": {
     name: "agentic-implementer",
-    trigger: /^Implement\b/,
+    tool: "subagent_implement",
+    routing: [
+      /\b(?:implement\w*|deliver\w*|change\w*)\b/i,
+      /\bsettled\b/i,
+      /\b(?:unit|change|work)\b/i,
+      /\bfresh context\b/i,
+    ],
     brief: [
       /\boutcome\b/i,
       /settled constraints/i,
@@ -57,18 +84,20 @@ const roleSpecs = {
 function parseDocument(content: string): { metadata: Record<string, string>; body: string } {
   const match = content.match(/^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)([\s\S]*)$/);
   if (!match) return { metadata: {}, body: "" };
-  return {
-    metadata: Object.fromEntries(
-      match[1]
-        .split(/\r?\n/)
-        .filter((line) => line.includes(":"))
-        .map((line) => {
-          const separator = line.indexOf(":");
-          return [line.slice(0, separator).trim(), line.slice(separator + 1).trim()];
-        }),
-    ),
-    body: match[2].trim(),
-  };
+
+  try {
+    const value: unknown = parse(match[1]);
+    if (
+      !value ||
+      typeof value !== "object" ||
+      Array.isArray(value) ||
+      Object.values(value).some((entry) => typeof entry !== "string")
+    )
+      return { metadata: {}, body: "" };
+    return { metadata: value as Record<string, string>, body: match[2].trim() };
+  } catch {
+    return { metadata: {}, body: "" };
+  }
 }
 
 async function doesNotExist(path: string): Promise<boolean> {
@@ -131,11 +160,22 @@ describe("canonical package invariants", () => {
       expect(agents).toContain(command);
 
     expect(claude).toBe("@AGENTS.md\n");
+    expect([...packageManifest.files].sort()).toEqual(
+      [
+        ".claude-plugin",
+        "agents",
+        "extensions",
+        "skills",
+        "LICENSE",
+        "NOTICE",
+        "README.md",
+      ].sort(),
+    );
     expect(packageManifest.files).not.toContain("AGENTS.md");
     expect(packageManifest.files).not.toContain("CLAUDE.md");
   });
 
-  test("uses current development sources and creates no lockfile", async () => {
+  test("uses always-current development sources and creates no lockfile", async () => {
     const packageManifest = JSON.parse(await readFile(join(root, "package.json"), "utf8"));
     const pluginManifest = JSON.parse(
       await readFile(join(root, ".claude-plugin", "plugin.json"), "utf8"),
@@ -151,15 +191,26 @@ describe("canonical package invariants", () => {
       "@earendil-works/pi-coding-agent": "*",
       typebox: "*",
     });
-    for (const dependency of ["@types/node", "typebox", "typescript", "vitest"]) {
-      expect(packageManifest.devDependencies[dependency]).toBe("*");
+    for (const dependency of [
+      "@earendil-works/pi-coding-agent",
+      "@types/node",
+      "typebox",
+      "typescript",
+      "vitest",
+      "yaml",
+    ]) {
+      expect(packageManifest.devDependencies).toHaveProperty(dependency);
     }
-    expect(packageManifest.devDependencies["@earendil-works/pi-coding-agent"]).toBe(
-      "https://github.com/hypnotox/pi/releases/latest/download/pi-coding-agent.tgz",
-    );
-    expect(packageManifest.devDependencies["pi-tools"]).toBe(
-      "https://github.com/hypnotox/pi-tools/archive/refs/heads/main.tar.gz",
-    );
+    const currentSourceExceptions = {
+      "@earendil-works/pi-coding-agent":
+        "https://github.com/hypnotox/pi/releases/latest/download/pi-coding-agent.tgz",
+      "pi-tools": "https://github.com/hypnotox/pi-tools/archive/refs/heads/main.tar.gz",
+    };
+    for (const [dependency, source] of Object.entries(packageManifest.devDependencies)) {
+      if (dependency in currentSourceExceptions)
+        expect(source).toBe(currentSourceExceptions[dependency as keyof typeof currentSourceExceptions]);
+      else expect(source).toBe("*");
+    }
 
     expect(await readFile(join(root, ".npmrc"), "utf8")).toBe("package-lock=false\n");
     expect(await doesNotExist(join(root, "package-lock.json"))).toBe(true);
@@ -173,7 +224,8 @@ describe("canonical package invariants", () => {
   test("requires the same minimum fresh-context brief in metadata and role preflight", async () => {
     for (const [file, spec] of Object.entries(roleSpecs)) {
       const { metadata, body } = parseDocument(await readRole(file as keyof typeof roleSpecs));
-      expect(metadata.description).toMatch(spec.trigger);
+      const routingClause = metadata.description.split(/[.;]/, 1)[0];
+      for (const signal of spec.routing) expect(routingClause).toMatch(signal);
       for (const requirement of spec.brief) {
         expect(metadata.description).toMatch(requirement);
         expect(body).toMatch(requirement);
@@ -208,9 +260,10 @@ describe("canonical package invariants", () => {
     const implementer = await readRole("implementer.md");
 
     for (const reportOnly of [explorer, premiseChecker, reviewer]) {
-      expect(reportOnly).toMatch(/Do not modify tracked files/i);
-      expect(reportOnly).toMatch(/Git state/i);
-      expect(reportOnly).toMatch(/external systems/i);
+      const mutationBoundary = reportOnly.match(/Do not modify[^.\n]*\./i)?.[0];
+      expect(mutationBoundary).toMatch(/tracked files/i);
+      expect(mutationBoundary).toMatch(/Git state/i);
+      expect(mutationBoundary).toMatch(/external systems/i);
       expect(reportOnly).toMatch(/Evidence commands[\s\S]*transient output/i);
       expect(reportOnly).toMatch(/leave no intentional artifacts/i);
       expect(reportOnly).toMatch(/directly observed facts, inferences, and unknowns/i);
@@ -229,6 +282,16 @@ describe("canonical package invariants", () => {
     expect(implementer).toMatch(
       /explicit, non-overlapping generated output[\s\S]*write boundary[\s\S]*source ownership/i,
     );
+    const materialBoundary = implementer.match(/[^.\n]*system direction[^.\n]*\./i)?.[0];
+    for (const subject of [
+      "outcome",
+      "scope",
+      "compatibility",
+      "safety",
+      "user-visible behavior",
+      "system direction",
+    ])
+      expect(materialBoundary).toMatch(new RegExp(subject, "i"));
     expect(implementer).toMatch(/material[\s\S]*choice[\s\S]*stop before work depends on it/i);
     expect(implementer).toMatch(/Return `completed` only when[\s\S]*Otherwise return `stopped`/i);
   });
@@ -274,6 +337,18 @@ describe("canonical package invariants", () => {
     expect(codeDesign).toMatch(/contracts[\s\S]*migration[\s\S]*verification seam/i);
     expect(codeDesign).toMatch(/material choice[\s\S]*unresolved/i);
     expect(brainstorming).toMatch(/Code design owns internal structure[\s\S]*implementation owns local choices/i);
+    for (const routing of [brainstorming, codeDesign, debugging, implementing, reviewing]) {
+      const materialBoundary = routing.match(/[^.\n]*system direction[^.\n]*\./i)?.[0];
+      for (const subject of [
+        "outcome",
+        "scope",
+        "compatibility",
+        "safety",
+        "user-visible behavior",
+        "system direction",
+      ])
+        expect(materialBoundary).toMatch(new RegExp(subject, "i"));
+    }
     expect(context).toMatch(/All three lanes are evidence-only and non-mutating/i);
     expect(implementing).toMatch(/shared outputs[\s\S]*cross-unit generated outputs[\s\S]*parent/i);
     expect(implementing).toMatch(
@@ -293,13 +368,16 @@ describe("canonical package invariants", () => {
 
     for (const name of skillNames)
       expect(readme).toContain(`skills/${name}/SKILL.md`);
+    const pi = readme.slice(piStart);
     for (const [file, spec] of Object.entries(roleSpecs)) {
       expect(delegated).toContain(`agents/${file}`);
-      const row = delegated
+      const briefRow = delegated
         .split(/\r?\n/)
         .find((line) => line.includes(`agents/${file}`));
-      expect(row).toBeDefined();
-      for (const requirement of spec.brief) expect(row).toMatch(requirement);
+      const toolRow = pi.split(/\r?\n/).find((line) => line.includes(`agents/${file}`));
+      expect(briefRow).toBeDefined();
+      for (const requirement of spec.brief) expect(briefRow).toMatch(requirement);
+      expect(toolRow).toContain(`\`${spec.tool}\``);
       expect(readme).toContain(`agentic-skills:${spec.name}`);
     }
 
@@ -308,15 +386,10 @@ describe("canonical package invariants", () => {
     expect(piStart).toBeGreaterThan(claudeStart);
     expect(delegated).toMatch(/fresh context[\s\S]*self-contained brief/i);
     expect(delegated).toMatch(/report-only roles[\s\S]*behavioral prompt constraints/i);
-    expect(delegated).toMatch(/Source restrictions, desired detail, and existing verification evidence are optional/i);
-    for (const tool of [
-      "subagent_explore",
-      "subagent_grounding",
-      "subagent_review_code",
-      "subagent_implement",
-    ])
-      expect(readme.slice(piStart)).toContain(tool);
-    expect(readme.slice(piStart)).toMatch(/context files, delegation tools, and handoff remain unavailable/i);
+    const optionalGuidance = delegated.match(/[^.\n]*optional[^.\n]*\./i)?.[0];
+    for (const detail of ["Source restrictions", "desired detail", "existing verification evidence"])
+      expect(optionalGuidance).toMatch(new RegExp(detail, "i"));
+    expect(pi).toMatch(/context files, delegation tools, and handoff remain unavailable/i);
   });
 
   test("contains no generated agentic-workflows machinery", async () => {
@@ -327,7 +400,7 @@ describe("canonical package invariants", () => {
       ...packageManifest.peerDependencies,
     });
 
-    expect(dependencyNames).not.toContain("agentic-workflows");
+    expect(dependencyNames.some((name) => name.includes("agentic-workflows"))).toBe(false);
     expect(JSON.stringify(packageManifest.scripts)).not.toMatch(/agentic-workflows|\bawf\b/i);
     for (const path of [
       ".awf",

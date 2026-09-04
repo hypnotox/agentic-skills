@@ -38,7 +38,8 @@
     "pi-tools": "https://github.com/hypnotox/pi-tools/archive/refs/heads/main.tar.gz",
     "typebox": "*",
     "typescript": "*",
-    "vitest": "*"
+    "vitest": "*",
+    "yaml": "*"
   },
   "pi": {
     "extensions": [

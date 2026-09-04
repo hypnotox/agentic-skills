@@ -21,6 +21,6 @@ Keep shared or cross-unit generated outputs with the parent. An explicit, non-ov
 
 ## Work and receipt
 
-Implement at the semantic owner and run focused feedback plus the strongest practical acceptance checks. Do not weaken tests, fixtures, goldens, or checks to hide failure. Make local implementation choices within the settled outcome. A newly discovered material product, scope, compatibility, safety, user-visible, or durable architectural choice invalidates the settled-work precondition: stop before work depends on it and return the choice to the parent.
+Implement at the semantic owner and run focused feedback plus the strongest practical acceptance checks. Do not weaken tests, fixtures, goldens, or checks to hide failure. Make local implementation choices within the settled outcome. A newly discovered material choice about outcome, scope, compatibility, safety, user-visible behavior, or system direction invalidates the settled-work precondition: stop before work depends on it and return the choice to the parent.
 
 Return `completed` only when the assigned outcome is satisfied within the write boundary and all required checks pass. Otherwise return `stopped`, including when partial edits remain, and identify those edits and the blocker. Then list the assigned unit, changed files, exact checks and results, deviations and rationale, residual risks, and remaining parent work. Include repository status when relevant.

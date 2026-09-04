@@ -10,7 +10,7 @@ Each skill is a generic method. Read its canonical file for routing and procedur
 |---|---|
 | [`agentic-context`](skills/agentic-context/SKILL.md) | Orientation, bounded exploration, and premise testing |
 | [`agentic-artifact-design`](skills/agentic-artifact-design/SKILL.md) | Substantial prose artifacts |
-| [`agentic-brainstorming`](skills/agentic-brainstorming/SKILL.md) | Material behavior or system-direction choices |
+| [`agentic-brainstorming`](skills/agentic-brainstorming/SKILL.md) | Material outcome or system direction choices |
 | [`agentic-code-design`](skills/agentic-code-design/SKILL.md) | Target structure for agreed behavior |
 | [`agentic-debugging`](skills/agentic-debugging/SKILL.md) | Unexpected behavior with an unknown cause |
 | [`agentic-planning`](skills/agentic-planning/SKILL.md) | Verifiable sequencing for settled work |
