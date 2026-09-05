@@ -1,6 +1,6 @@
 # agentic-skills
 
-Repository-agnostic engineering skills and delegation roles for Claude Code and Pi. Markdown skills work from this package alone; Pi delegation uses `pi-tools` for child execution.
+Repository-agnostic engineering skills and delegation roles for Claude Code and Pi. Markdown skills work from this package alone; Pi role execution is owned by [`pi-subagents`](https://github.com/nicobailon/pi-subagents).
 
 ## Skills
 
@@ -53,25 +53,45 @@ Claude Code namespaces the role agents as:
 
 ## Pi
 
+Install [`pi-subagents`](https://github.com/nicobailon/pi-subagents) as the sole `subagent` provider, then install this package:
+
 ```bash
-pi install git:github.com/hypnotox/pi-tools
+pi install npm:pi-subagents
 pi install git:github.com/hypnotox/agentic-skills
 
-# Local checkouts
-pi install /absolute/path/to/pi-tools
+# Local checkout
 pi install /absolute/path/to/agentic-skills
 ```
 
-| Role | Pi tool |
-|---|---|
-| [`agentic-explorer`](agents/explorer.md) | `subagent_explore` |
-| [`agentic-premise-checker`](agents/premise-checker.md) | `subagent_grounding` |
-| [`agentic-reviewer`](agents/reviewer.md) | `subagent_review_code` |
-| [`agentic-implementer`](agents/implementer.md) | `subagent_implement` |
+This package declares its canonical [`agents`](agents) directory for native discovery. Use the role names with the installed `subagent` API; for example:
 
-The [Pi adapter](extensions/pi-subagents/index.ts) publishes each role as the private structural payload `toolName`, `description`, and `loadSystemPrompt`; `pi-tools` requests a replay so either package load order works.
+```js
+{
+  agent: "agentic-explorer",
+  task: "Question: ...\nEvidence boundary: ...\nApplicable constraints: none"
+}
+```
 
-Each tool starts a fresh no-session Pi process with the role prompt and delegated brief. It inherits the parent model, thinking level, working directory, trust state, and ordinary active tools, but not the parent transcript. Skills and ordinary extensions load, but repository context files are not automatically discovered and loaded. The child can still read a known context path through ordinary tools when directed; delegation tools and handoff remain unavailable.
+Use `/subagents-guide tool-reference` for the installed version's complete invocation contract.
+
+Merge these Pi-specific settings into your existing user or project settings while preserving unrelated values:
+
+```json
+{
+  "subagents": {
+    "agentOverrides": {
+      "agentic-premise-checker": { "inheritSkills": true, "excludeTools": ["handoff_session"] },
+      "agentic-explorer": { "inheritSkills": true, "excludeTools": ["handoff_session"] },
+      "agentic-reviewer": { "inheritSkills": true, "excludeTools": ["handoff_session"] },
+      "agentic-implementer": { "inheritSkills": true, "excludeTools": ["handoff_session"] }
+    }
+  }
+}
+```
+
+These overrides expose discovered skills while keeping Pi-specific runtime fields out of the cross-harness role prompts. The roles otherwise retain `pi-subagents` custom-agent defaults: replacement prompts, fresh context without automatic context files, and no nested delegation. The handoff tool is explicitly excluded. Model and thinking selection follow effective Pi and `pi-subagents` settings rather than package-owned routing.
+
+Use native background execution when a role needs ordinary installed extensions; foreground SDK children do not automatically load ambient extensions. Restart Pi after changing installed packages or these settings, and inspect the effective agents with `/subagents-guide agents`.
 
 ## Development checks
 

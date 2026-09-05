@@ -12,7 +12,6 @@
   "files": [
     ".claude-plugin",
     "agents",
-    "extensions",
     "skills",
     "LICENSE",
     "NOTICE",
@@ -28,25 +27,20 @@
     "typecheck": "tsc --noEmit",
     "check": "npm run typecheck && npm test && claude plugin validate . && claude plugin validate --strict skills && claude plugin validate --strict agents"
   },
-  "peerDependencies": {
-    "@earendil-works/pi-coding-agent": "*",
-    "typebox": "*"
-  },
   "devDependencies": {
-    "@earendil-works/pi-coding-agent": "https://github.com/hypnotox/pi/releases/latest/download/pi-coding-agent.tgz",
     "@types/node": "*",
-    "pi-tools": "https://github.com/hypnotox/pi-tools/archive/refs/heads/main.tar.gz",
-    "typebox": "*",
     "typescript": "*",
     "vitest": "*",
     "yaml": "*"
   },
   "pi": {
-    "extensions": [
-      "./extensions/pi-subagents/index.ts"
-    ],
     "skills": [
       "./skills"
+    ]
+  },
+  "pi-subagents": {
+    "agents": [
+      "./agents"
     ]
   }
 }

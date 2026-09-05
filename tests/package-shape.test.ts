@@ -85,15 +85,7 @@ describe("canonical package invariants", () => {
 
     expect(claude).toBe("@AGENTS.md\n");
     expect([...packageManifest.files].sort()).toEqual(
-      [
-        ".claude-plugin",
-        "agents",
-        "extensions",
-        "skills",
-        "LICENSE",
-        "NOTICE",
-        "README.md",
-      ].sort(),
+      [".claude-plugin", "agents", "skills", "LICENSE", "NOTICE", "README.md"].sort(),
     );
     expect(packageManifest.files).not.toContain("AGENTS.md");
     expect(packageManifest.files).not.toContain("CLAUDE.md");
@@ -110,10 +102,11 @@ describe("canonical package invariants", () => {
 
     expect(packageManifest.version).toMatch(/^\d+\.\d+\.\d+$/);
     expect(packageManifest.license).toBe("AGPL-3.0-only");
-    expect(packageManifest.pi).toEqual({
-      extensions: ["./extensions/pi-subagents/index.ts"],
-      skills: ["./skills"],
-    });
+    expect(packageManifest.pi).toEqual({ skills: ["./skills"] });
+    expect(packageManifest["pi-subagents"]).toEqual({ agents: ["./agents"] });
+    for (const directory of packageManifest["pi-subagents"].agents) {
+      expect((await readdir(resolve(root, directory))).sort()).toEqual(Object.keys(roleNames).sort());
+    }
     expect(pluginManifest.name).toBe("agentic-skills");
     expect(pluginManifest).not.toHaveProperty("version");
     expect(marketplaceManifest.plugins).toHaveLength(1);
@@ -130,30 +123,13 @@ describe("canonical package invariants", () => {
   test("uses always-current development sources and creates no lockfile", async () => {
     const packageManifest = JSON.parse(await readFile(join(root, "package.json"), "utf8"));
 
-    expect(packageManifest.peerDependencies).toEqual({
-      "@earendil-works/pi-coding-agent": "*",
-      typebox: "*",
+    expect(packageManifest).not.toHaveProperty("peerDependencies");
+    expect(packageManifest.devDependencies).toEqual({
+      "@types/node": "*",
+      typescript: "*",
+      vitest: "*",
+      yaml: "*",
     });
-    for (const dependency of [
-      "@earendil-works/pi-coding-agent",
-      "@types/node",
-      "typebox",
-      "typescript",
-      "vitest",
-      "yaml",
-    ]) {
-      expect(packageManifest.devDependencies).toHaveProperty(dependency);
-    }
-    const currentSourceExceptions = {
-      "@earendil-works/pi-coding-agent":
-        "https://github.com/hypnotox/pi/releases/latest/download/pi-coding-agent.tgz",
-      "pi-tools": "https://github.com/hypnotox/pi-tools/archive/refs/heads/main.tar.gz",
-    };
-    for (const [dependency, source] of Object.entries(packageManifest.devDependencies)) {
-      if (dependency in currentSourceExceptions)
-        expect(source).toBe(currentSourceExceptions[dependency as keyof typeof currentSourceExceptions]);
-      else expect(source).toBe("*");
-    }
 
     expect(await readFile(join(root, ".npmrc"), "utf8")).toBe("package-lock=false\n");
     expect(await doesNotExist(join(root, "package-lock.json"))).toBe(true);
