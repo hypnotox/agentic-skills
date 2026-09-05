@@ -52,16 +52,13 @@ function createPi(bus: ReturnType<typeof createBus>, activeTools = ["read"]) {
   return { api, tools, handlers };
 }
 
-function installAdapter(pi: ReturnType<typeof createPi>["api"]) {
-  registerAgenticRoles(pi as never, { extensionFile, readFile });
+function installAdapter(
+  pi: ReturnType<typeof createPi>["api"],
+  injectedReadFile: (path: string, encoding: "utf8") => Promise<string> = (path, encoding) =>
+    readFile(path, encoding),
+) {
+  registerAgenticRoles(pi as never, { extensionFile, readFile: injectedReadFile });
 }
-
-const requiredBriefByTool = new Map([
-  ["subagent_grounding", "premise, consequence if wrong, evidence boundary"],
-  ["subagent_explore", "question, evidence boundary"],
-  ["subagent_review_code", "outcome or evaluation standard, review surface"],
-  ["subagent_implement", "outcome, settled constraints, explicit write boundary"],
-]);
 
 const usage = {
   input: 1,
@@ -82,28 +79,62 @@ afterAll(() => {
 });
 
 describe("Pi role adapter", () => {
-  test("publishes the complete local three-field role payload", async () => {
+  test("publishes each role with a lazy loader for its frontmatter-free prompt", async () => {
     const bus = createBus();
     const pi = createPi(bus);
-    installAdapter(pi.api);
+    const fixtures = [
+      ["premise-checker.md", "subagent_grounding", "Premise fixture body."],
+      ["explorer.md", "subagent_explore", "Explorer fixture body."],
+      ["reviewer.md", "subagent_review_code", "Reviewer fixture body."],
+      ["implementer.md", "subagent_implement", "Implementer fixture body."],
+    ] as const;
+    const fixtureDocuments = new Map(
+      fixtures.map(([file, , body]) => [
+        resolve(root, "agents", file),
+        `---\nname: fixture\ndescription: ${file}\n---\n${body}\n`,
+      ]),
+    );
+    const injectedReadFile = vi.fn(async (path: string, encoding: "utf8") => {
+      expect(encoding).toBe("utf8");
+      const document = fixtureDocuments.get(path);
+      if (!document) throw new Error(`unexpected path: ${path}`);
+      return document;
+    });
+
+    installAdapter(pi.api, injectedReadFile);
 
     const publication = bus.emissions.find(([name]) => name === "agentic-skills:roles")?.[1] as any[];
-    expect(publication.map((role) => role.toolName)).toEqual([
-      "subagent_grounding",
-      "subagent_explore",
-      "subagent_review_code",
-      "subagent_implement",
-    ]);
-    for (const role of publication) {
+    expect(injectedReadFile).not.toHaveBeenCalled();
+    expect(publication.map((role) => role.toolName)).toEqual(fixtures.map(([, tool]) => tool));
+    for (const [index, role] of publication.entries()) {
       expect(Object.keys(role).sort()).toEqual(["description", "loadSystemPrompt", "toolName"]);
-      expect(role.description).toContain("self-contained");
-      expect(role.description).toContain(requiredBriefByTool.get(role.toolName));
-      expect(role.description).toContain("applicable constraints or `none`");
-      expect(role.description).toContain("inherits the parent model");
-      expect(role.description).toContain("loads skills but not context files");
-      expect(role.description).toContain("cannot delegate or hand off");
-      expect(await role.loadSystemPrompt()).toMatch(/^# /);
+      expect(typeof role.description).toBe("string");
+      expect(role.description.length).toBeGreaterThan(0);
+      expect(await role.loadSystemPrompt()).toBe(fixtures[index][2]);
+      expect(injectedReadFile).toHaveBeenNthCalledWith(
+        index + 1,
+        resolve(root, "agents", fixtures[index][0]),
+        "utf8",
+      );
     }
+  });
+
+  test("reports missing and empty role prompts at the loader seam", async () => {
+    const bus = createBus();
+    const pi = createPi(bus);
+    const injectedReadFile = vi.fn(async (path: string) => {
+      if (path.endsWith("premise-checker.md")) throw new Error("fixture missing");
+      return "---\nname: empty\ndescription: empty fixture\n---\n  \n";
+    });
+    installAdapter(pi.api, injectedReadFile);
+
+    const publication = bus.emissions.find(([name]) => name === "agentic-skills:roles")?.[1] as any[];
+    await expect(publication[0].loadSystemPrompt()).rejects.toThrow(
+      /Cannot load agentic role prompt .*premise-checker\.md: fixture missing/,
+    );
+    await expect(publication[1].loadSystemPrompt()).rejects.toThrow(
+      /Agentic role prompt has no instruction body: .*explorer\.md/,
+    );
   });
 
   test.each(["adapter before pi-tools", "pi-tools before adapter"])(
@@ -112,6 +143,11 @@ describe("Pi role adapter", () => {
       const bus = createBus();
       const pi = createPi(bus, ["read", "handoff_session", "subagent"]);
       const requests: any[] = [];
+      const forwardedPrompt = "Distinct explorer prompt forwarded to the runner.";
+      const injectedReadFile = vi.fn(async (path: string) => {
+        expect(path).toBe(resolve(root, "agents", "explorer.md"));
+        return `---\nname: fixture\ndescription: fixture\n---\n${forwardedPrompt}\n`;
+      });
       const installTools = () =>
         piToolsModule.registerSubagents(pi.api, {
           runner: {
@@ -124,17 +160,18 @@ describe("Pi role adapter", () => {
         });
 
       if (order === "adapter before pi-tools") {
-        installAdapter(pi.api);
+        installAdapter(pi.api, injectedReadFile);
         installTools();
       } else {
         installTools();
-        installAdapter(pi.api);
+        installAdapter(pi.api, injectedReadFile);
       }
       bus.emit(
         "agentic-skills:roles",
         bus.emissions.find(([name]) => name === "agentic-skills:roles")?.[1],
       );
 
+      expect(injectedReadFile).not.toHaveBeenCalled();
       expect(pi.tools.map((tool) => tool.name)).toEqual([
         "subagent",
         "subagent_grounding",
@@ -156,6 +193,7 @@ describe("Pi role adapter", () => {
         },
       );
       expect(result.content).toEqual([{ type: "text", text: "done" }]);
+      expect(injectedReadFile).toHaveBeenCalledOnce();
       expect(requests[0]).toMatchObject({
         cwd: "/project",
         task: "find the owner",
@@ -163,7 +201,7 @@ describe("Pi role adapter", () => {
         thinkingLevel: "high",
         tools: ["read"],
         approved: true,
-        systemPrompt: expect.stringContaining("# Explorer"),
+        systemPrompt: forwardedPrompt,
       });
     },
   );

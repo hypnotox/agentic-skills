@@ -5,7 +5,7 @@ description: Resolve a material choice about outcome, scope, compatibility, safe
 
 # Agentic brainstorming
 
-Use this skill only when a material choice remains about outcome, scope, compatibility, safety, user-visible behavior, or system direction, including when a proposed mechanism rests on an unsupported premise that materially affects the solution. A mechanism is not settled merely because the agent, user, plan, or current implementation proposed it; challenge the premise within the active task boundary. Code design owns internal structure for agreed behavior, and implementation owns local choices within settled boundaries; do not turn those choices into approval gates.
+Use this skill only when a material choice remains about outcome, scope, compatibility, safety, user-visible behavior, or system direction, including when a proposed mechanism rests on an unsupported premise that materially affects the solution. A mechanism is not settled merely because the agent, user, plan, or current implementation proposed it; challenge the premise within the active task boundary. Code design owns internal structure for agreed behavior, including user steering on consequential structural choices; implementation owns local choices within settled boundaries. Do not route every design discussion here or turn routine choices into approval gates.
 
 Safety, permissions, harness constraints, the active task, and applicable repository instructions remain authoritative. Repository instructions may specialize this guidance without expanding scope or permission.
 

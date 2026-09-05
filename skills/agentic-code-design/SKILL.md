@@ -5,18 +5,18 @@ description: Resolve a structural question about semantic ownership, state or in
 
 # Agentic code design
 
-Use this skill when agreed behavior raises a structural question about meaning, state, invariants, ownership, dependencies, contracts, or enabling refactoring. Skip mechanical edits that fit the current model. Explorer establishes current structure; code design chooses target structure. Planning sequences the resulting work.
+Use this skill when agreed behavior raises a structural question about meaning, state, invariants, ownership, dependencies, contracts, or enabling refactoring. For non-trivial code changes, first assess whether the proposed integration fits those parts of the current model; skip a design exercise for mechanical edits that already fit. Explorer establishes current structure; code design chooses target structure. Planning sequences the settled result.
 
-`agentic-brainstorming` owns material changes to outcome, scope, compatibility, safety, user-visible behavior, or system direction. Code design owns internal structure for agreed behavior. `agentic-implementing` makes local choices within that boundary and escalates only material boundary changes.
+`agentic-brainstorming` owns material changes to outcome, scope, compatibility, safety, user-visible behavior, or system direction. Code design owns internal structure for agreed behavior and its user-facing discussion. Agreement on behavior does not by itself settle a consequential structural choice. `agentic-implementing` makes local choices within a settled design boundary.
 
 Safety, permissions, harness constraints, the active task, and applicable repository instructions remain authoritative. Selecting this skill does not authorize edits. A bounded enabling refactor requires implementation authority from the surrounding task.
 
 ## Define the target model
 
-1. Establish the agreed behavior, current model, consumers, constraints, and authoritative data flow before choosing structure.
-2. Prefer the simplest complete design and the smallest adequate response. Add abstraction, indirection, validation, compatibility, extension, hardening, recovery, or other machinery only for a settled current outcome or constraint, or a relevant evidenced risk. A proposed or existing mechanism is not evidence of its own necessity.
+1. Establish the agreed behavior, current model, consumers, constraints, and authoritative data flow before choosing structure. Assess whether the proposed integration preserves current ownership, state, contracts, and dependency direction or would bolt on duplicated policy, workaround code, or representation leakage.
+2. Prefer the simplest coherent design and the smallest adequate response, not automatically the smallest diff. Add abstraction, indirection, validation, compatibility, extension, hardening, recovery, or other machinery only for a settled current outcome or constraint, or a relevant evidenced risk. A proposed or existing mechanism is not evidence of its own necessity.
 3. Give each value, policy, and mutation path one semantic owner. Place behavior where knowledge and lifecycle can enforce its invariants, not merely in the smallest file.
-4. Model meaningful state, transitions, lifetime, invalidation, ordering, and side effects explicitly when they affect correctness. Model partial success and retry behavior only for identified failure modes where state may have changed, or the outcome of a state-changing operation may be uncertain when failure is observed. Do not invent rollback, journaling, reconciliation, self-healing, or corruption handling for merely conceivable failures. Keep operation-derived state local and pass it directly.
+4. Model meaningful state, transitions, lifetime, invalidation, ordering, side effects, and operation-derived state explicitly when they affect correctness. Define partial-success and retry behavior only for identified failure modes where state may have changed or the result of a state-changing operation is uncertain. Do not invent rollback, journaling, reconciliation, self-healing, or corruption handling for merely conceivable failures.
 5. Separate domain meaning from storage, transport, UI, serialization, and framework shapes. Translate at boundaries rather than spreading external representations through policy code.
 
 Choose names and control flow that expose intent and the underlying model. Use comments for constraints or rationale that the code cannot express clearly.
@@ -32,16 +32,22 @@ For security design, use only an applicable explicit threat profile and establis
 - Derive dependency direction from ownership and stability, not call flow. Select volatile mechanisms at the outermost informed layer and pass narrow capabilities inward; avoid service locators, mutable globals, silent defaults, cycles, and dependency bags.
 - Use an interface only for a cohesive contract with real substitution or boundary pressure. Functions and immutable values often suffice. Test-only implementations may satisfy an existing production contract without distorting production architecture.
 - Let adapters translate mechanism-specific values and failures without absorbing domain policy. Expose only what consumers need.
-- Give failures stable identity when callers react programmatically, preserve causes, and add context at the boundary that understands them. Define the smallest adequate partial-success and retry semantics only when an identified failure mode may change state before failure is observed, or may leave the outcome of a state-changing operation uncertain.
+- Give failures stable identity when callers react programmatically, preserve causes, and add context at the boundary that understands them.
 
 ## Integrate and verify
 
-Trace affected owners, callers, representations, public contracts, generated references, and operational constraints. Include a bounded enabling refactor when authorized and needed to prevent duplicated policy, inappropriate coupling, representation leakage, hidden state, or workaround code.
+Trace affected owners, callers, representations, public contracts, generated references, and operational constraints. Look for a bounded enabling refactor that would prevent duplicated policy, inappropriate coupling, representation leakage, hidden state, or workaround code even when the feature could technically be bolted on. State its concrete correctness or maintenance reason, affected boundary, and whether dependent work requires it or it is only recommended. Do not make unrelated cleanup a prerequisite.
 
-Base compatibility on real consumers. Define migration, move consumers, and remove obsolete paths when practical; any temporary parallel path needs a reason and removal condition. Protect the invariant or contract at the narrowest meaningful verification seam.
+A recommendation does not expand implementation authority. Surface a justified refactor outside current edit authority before work depends on it; obtain the needed decision for a prerequisite, but do not block a sound authorized change on an optional improvement.
 
-Recommend structural work only for an identifiable correctness or maintenance risk, such as ambiguous ownership, future divergence, stale state, representation leakage, inappropriate dependency direction, unreadable control flow, weakened verification, or a recurring workaround—not for pattern compliance or theoretical flexibility.
+Base compatibility on real consumers. Define migration, move consumers, and remove obsolete paths when practical; any temporary parallel path needs a reason and removal condition. Protect the invariant or contract at the narrowest meaningful verification seam. Recommend structural work only for an identifiable correctness or maintenance risk, not pattern compliance or theoretical flexibility.
+
+## Expose the design for steering
+
+For substantial work whose implementation shape is not settled, give the user a concise outline before editing or delegating dependent implementation. Explain where behavior will live, the important abstractions or patterns and their purpose, relevant data flow, any enabling refactor, and the verification seam—but only where these help the user steer the change.
+
+When a consequential structural choice or broader refactor remains, recommend an option and let the user settle it unless they explicitly delegated that decision. An announcement immediately before editing is not a steering point. Reuse an already visible, settled outline; make routine local choices directly, and do not reopen settled structure without consequential new evidence. This is proportionate interaction, not a separate approval phase or required artifact.
 
 ## Return the design
 
-Inline use needs no separate artifact. For standalone use, return the owner, authoritative state, invariants, contracts, dependency direction, migration or deletion shape, and verification seam as applicable. If a material choice remains outside design authority, name it as unresolved rather than selecting it. Keep the result in the active interaction unless persistence is requested or required and authorized.
+Inline use needs no separate artifact. For standalone use, return the owner, authoritative state, invariants, contracts, dependency direction, enabling-refactor status, migration or deletion shape, and verification seam as applicable. Name consequential choices outside design authority as unresolved rather than selecting them. Keep the result in the active interaction unless persistence is requested or required and authorized.

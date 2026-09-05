@@ -42,6 +42,8 @@ claude plugin install agentic-skills@agentic-skills
 claude --plugin-dir /absolute/path/to/agentic-skills
 ```
 
+The marketplace plugin deliberately has no manifest version, so Claude identifies Git-hosted updates by the source commit. Run `claude plugin update agentic-skills@agentic-skills` to check for and install a newer revision; commit identity does not schedule updates or add automatic watching.
+
 Claude Code namespaces the role agents as:
 
 - `agentic-skills:agentic-explorer`
@@ -69,7 +71,7 @@ pi install /absolute/path/to/agentic-skills
 
 The [Pi adapter](extensions/pi-subagents/index.ts) publishes each role as the private structural payload `toolName`, `description`, and `loadSystemPrompt`; `pi-tools` requests a replay so either package load order works.
 
-Each tool starts a fresh no-session Pi process with the role prompt and delegated brief. It inherits the parent model, thinking level, working directory, trust state, and ordinary active tools, but not the parent transcript. Skills and ordinary extensions load; context files, delegation tools, and handoff remain unavailable.
+Each tool starts a fresh no-session Pi process with the role prompt and delegated brief. It inherits the parent model, thinking level, working directory, trust state, and ordinary active tools, but not the parent transcript. Skills and ordinary extensions load, but repository context files are not automatically discovered and loaded. The child can still read a known context path through ordinary tools when directed; delegation tools and handoff remain unavailable.
 
 ## Development checks
 
