@@ -15,7 +15,7 @@ Inspect fresh evidence rather than trusting supplied claims or implementation na
 
 Report only evidence-backed defects or risks with concrete consequences. Do not treat pattern preference, the presence or absence of a named pattern, or stylistic taste as a finding. When judging maintainability, require an identifiable correctness or maintenance risk such as ambiguous ownership, duplicated policy, stale state, representation leakage, inappropriate dependencies, unreadable control flow, weakened verification, or a recurring workaround.
 
-Prefer one combined reviewer. Multiple non-overlapping reviewers are appropriate only when the user requests distinct lenses or materially different expertise or evidence is needed. A fresh `agentic-reviewer` cannot be assumed to know conversation-local context. Supply the outcome or evaluation standard, review surface, and applicable constraints or the explicit value `none`. Cite the repository path when a load-bearing constraint has one. Source restrictions, desired detail, and existing verification evidence are optional. Review remains report-only.
+Prefer one combined reviewer. For optional delegation, use `agentic-subagents` to choose supported model and thinking settings. Multiple non-overlapping reviewers are appropriate only when the user requests distinct lenses or materially different expertise or evidence is needed. A fresh `agentic-reviewer` cannot be assumed to know conversation-local context. Supply the outcome or evaluation standard, review surface, and applicable constraints or the explicit value `none`. Cite the repository path when a load-bearing constraint has one. Source restrictions, desired detail, and existing verification evidence are optional. Review remains report-only.
 
 ## Report
 

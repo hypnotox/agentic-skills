@@ -16,6 +16,7 @@ Each skill is a generic method. Read its canonical file for routing and procedur
 | [`agentic-planning`](skills/agentic-planning/SKILL.md) | Verifiable sequencing for settled work |
 | [`agentic-implementing`](skills/agentic-implementing/SKILL.md) | Implementation and verification |
 | [`agentic-reviewing`](skills/agentic-reviewing/SKILL.md) | Independent, evidence-backed audit |
+| [`agentic-subagents`](skills/agentic-subagents/SKILL.md) | Model and thinking selection for optional delegation |
 
 ## Delegated roles
 
@@ -89,7 +90,7 @@ Merge these Pi-specific settings into your existing user or project settings whi
 }
 ```
 
-These overrides expose discovered skills while keeping Pi-specific runtime fields out of the cross-harness role prompts. The roles otherwise retain `pi-subagents` custom-agent defaults: replacement prompts, fresh context without automatic context files, and no nested delegation. The handoff tool is explicitly excluded. Model and thinking selection follow effective Pi and `pi-subagents` settings rather than package-owned routing.
+These overrides expose discovered skills while keeping Pi-specific runtime fields out of the cross-harness role prompts. The roles otherwise retain `pi-subagents` custom-agent defaults: replacement prompts, fresh context without automatic context files, and no nested delegation. The handoff tool is explicitly excluded. Supported per-launch model and thinking choices may follow [`agentic-subagents`](skills/agentic-subagents/SKILL.md); effective Pi and `pi-subagents` configuration remains authoritative. This package adds no runtime routing.
 
 Use native background execution when a role needs ordinary installed extensions; foreground SDK children do not automatically load ambient extensions. Restart Pi after changing installed packages or these settings, and inspect the effective agents with `/subagents-guide agents`.
 

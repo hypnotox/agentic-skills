@@ -13,6 +13,7 @@ const skillNames = [
   "agentic-implementing",
   "agentic-planning",
   "agentic-reviewing",
+  "agentic-subagents",
 ] as const;
 const roleNames = {
   "explorer.md": "agentic-explorer",

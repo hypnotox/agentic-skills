@@ -9,6 +9,8 @@ Use this skill for substantial orientation, one bounded non-defect investigation
 
 Safety, permissions, harness constraints, the active task, and applicable repository instructions remain authoritative. All three lanes are evidence-only and non-mutating; this skill does not authorize edits or implementation. Evidence commands may create understood transient output, but leave no intentional artifacts.
 
+For optional delegation, use `agentic-subagents` to choose supported model and thinking settings.
+
 ## Orient
 
 Before substantial fresh work, takeover, or widened scope:
