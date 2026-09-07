@@ -17,7 +17,7 @@ Safety, permissions, harness constraints, the active task, and applicable reposi
 2. Prefer the simplest coherent design and the smallest adequate response, not automatically the smallest diff. Add abstraction, indirection, validation, compatibility, extension, hardening, recovery, or other machinery only for a settled current outcome or constraint, or a relevant evidenced risk. A proposed or existing mechanism is not evidence of its own necessity.
 3. Give each value, policy, and mutation path one semantic owner. Place behavior where knowledge and lifecycle can enforce its invariants, not merely in the smallest file.
 4. Model meaningful state, transitions, lifetime, invalidation, ordering, side effects, and operation-derived state explicitly when they affect correctness. Define partial-success and retry behavior only for identified failure modes where state may have changed or the result of a state-changing operation is uncertain. Do not invent rollback, journaling, reconciliation, self-healing, or corruption handling for merely conceivable failures.
-5. Separate domain meaning from storage, transport, UI, serialization, and framework shapes. Translate at boundaries rather than spreading external representations through policy code.
+5. Separate domain meaning from storage, transport, UI, serialization, and framework shapes where doing so clarifies ownership, protects invariants, or makes change easier. Translate at meaningful boundaries; keep representations direct when they already express the domain without obscuring policy.
 
 Choose names and control flow that expose intent and the underlying model. Use comments for constraints or rationale that the code cannot express clearly.
 
@@ -27,7 +27,7 @@ For security design, use only an applicable explicit threat profile and establis
 
 ## Set boundaries, dependencies, and contracts
 
-- Keep code that changes for the same semantic reason together and split unrelated responsibilities. Avoid generic helper or coordinator homes.
+- Keep code that changes for the same semantic reason together and split unrelated responsibilities. Keep helpers and coordinators cohesive; do not use them to collect unrelated responsibilities or obscure semantic ownership.
 - Keep shared policy and invariants authoritative in one place. Multiple mechanism implementations may satisfy one contract, but must not duplicate its policy.
 - Derive dependency direction from ownership and stability, not call flow. Select volatile mechanisms at the outermost informed layer and pass narrow capabilities inward; avoid service locators, mutable globals, silent defaults, cycles, and dependency bags.
 - Use an interface only for a cohesive contract with real substitution or boundary pressure. Functions and immutable values often suffice. Test-only implementations may satisfy an existing production contract without distorting production architecture.

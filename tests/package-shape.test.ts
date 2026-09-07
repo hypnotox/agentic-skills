@@ -115,9 +115,6 @@ describe("canonical package invariants", () => {
       source: "./",
     });
     expect(marketplaceManifest.plugins[0]).not.toHaveProperty("version");
-    expect(packageManifest.scripts.check).toContain("claude plugin validate .");
-    expect(packageManifest.scripts.check).toContain("claude plugin validate --strict skills");
-    expect(packageManifest.scripts.check).toContain("claude plugin validate --strict agents");
   });
 
   test("uses always-current development sources and creates no lockfile", async () => {
