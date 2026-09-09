@@ -92,7 +92,7 @@ Merge these Pi-specific settings into your existing user or project settings whi
 
 These overrides expose discovered skills while keeping Pi-specific runtime fields out of the cross-harness role prompts. The roles otherwise retain `pi-subagents` custom-agent defaults: replacement prompts, fresh context without automatic context files, and no nested delegation. The handoff tool is explicitly excluded. Supported per-launch model and thinking choices may follow [`agentic-subagents`](skills/agentic-subagents/SKILL.md); effective Pi and `pi-subagents` configuration remains authoritative. This package adds no runtime routing.
 
-Use native background execution when a role needs ordinary installed extensions; foreground SDK children do not automatically load ambient extensions. Restart Pi after changing installed packages or these settings, and inspect the effective agents with `/subagents-guide agents`.
+Before execution, call `subagent({ action: "list", capabilities: true })` and select only an executable agent. Before passing a model override, call `subagent({ action: "models" })` and use an exact `provider/id` from its available-model output. Use native background execution when a role needs ordinary installed extensions; foreground SDK children do not automatically load ambient extensions. Restart Pi after changing installed packages or these settings, and use `/subagents-guide agents` for further inspection.
 
 ## Development checks
 
