@@ -21,7 +21,7 @@ Safety, permissions, harness constraints, the active task, and applicable reposi
 8. Update documentation and generated expectations when their source of truth changes, and explain why expectation changes are correct.
 9. Inspect the final diff and run terminal verification proportionate to risk.
 
-Follow the project's established stance on defensive development and testing. Without a stricter requirement or concrete project-specific risk, straightforward tests of normal operation and relevant edge cases are sufficient. Broader safeguards or coverage need that basis; surface newly identified risks rather than silently expanding scope.
+Follow the project's established stance on defensive development and testing. Without a stricter requirement or concrete project-specific risk, straightforward tests of normal operation and relevant edge cases are sufficient. Discuss newly discovered risks before expanding the work to address them.
 
 Optional delegation may accelerate one settled unit. Use `agentic-subagents` to choose supported model and thinking settings when delegating. The parent owns user steering and the simplicity check before carrying agreed structural constraints into the existing brief; an explicitly settled brief remains authoritative to the child. A fresh `agentic-implementer` cannot be assumed to know conversation-local context. Supply the outcome, settled constraints, explicit write boundary, applicable constraints or the explicit value `none`, and acceptance checks. Cite the repository path when a load-bearing constraint has one. Source restrictions, desired detail, and existing verification evidence are optional.
 
