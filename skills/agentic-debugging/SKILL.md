@@ -22,7 +22,7 @@ Do not describe a speculative causal change as a root-cause fix. Preserve eviden
 
 ## Outcome and handoff
 
-Before changing production behavior, establish the strongest practical regression oracle. Prefer a deterministic automated test that fails before the fix and passes afterward. When that is impractical, explain why and use the strongest reproducible alternative.
+Before changing production behavior, establish a reliable regression oracle proportionate to the observed defect and its risks. Prefer a deterministic automated test that fails before the fix and passes afterward. When that is impractical, explain why and use a reproducible alternative sufficient to distinguish the defect from the fix.
 
 For intermittent, production-only, environment-dependent, or evidence-limited failures, `unresolved` is an honest terminal outcome. State that the cause remains unresolved, then report eliminated hypotheses, the strongest remaining explanation, evidence limits, and the next discriminating experiment.
 

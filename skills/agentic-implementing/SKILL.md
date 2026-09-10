@@ -16,10 +16,12 @@ Safety, permissions, harness constraints, the active task, and applicable reposi
 3. If substantial implementation shape is not settled, give the user the concise code-design outline and resolve any consequential structural choice before editing or delegating dependent work. Reuse an already agreed outline, proceed when the choice was explicitly delegated, and skip this interaction for mechanical changes.
 4. Implement the smallest coherent design at the semantic owner and clean integration point. Make routine local choices directly; make bounded enabling refactors only when the task authorizes them.
 5. Use the smallest adequate mitigation for a relevant evidenced risk. Do not introduce speculative abstraction, validation, compatibility, hardening, or recovery behavior. Route material changes to outcome, scope, compatibility, safety, user-visible behavior, or system direction through `agentic-brainstorming` before dependent work.
-6. Run focused feedback while iterating. Use the strongest practical oracle for changed behavior and never weaken tests, fixtures, goldens, or checks to hide failure.
+6. Run focused feedback while iterating. Choose checks sufficient to establish the agreed behavior and relevant failure cases, and never weaken tests, fixtures, goldens, or checks to hide failure.
 7. If feedback reveals unexpected behavior whose cause is unknown, stop speculative changes and apply `agentic-debugging`.
 8. Update documentation and generated expectations when their source of truth changes, and explain why expectation changes are correct.
 9. Inspect the final diff and run terminal verification proportionate to risk.
+
+Follow the project's established stance on defensive development and testing. Without a stricter requirement or concrete project-specific risk, straightforward tests of normal operation and relevant edge cases are sufficient. Discuss newly discovered risks before expanding the work to address them.
 
 Optional delegation may accelerate one settled unit. Use `agentic-subagents` to choose supported model and thinking settings when delegating. The parent owns user steering and the simplicity check before carrying agreed structural constraints into the existing brief; an explicitly settled brief remains authoritative to the child. A fresh `agentic-implementer` cannot be assumed to know conversation-local context. Supply the outcome, settled constraints, explicit write boundary, applicable constraints or the explicit value `none`, and acceptance checks. Cite the repository path when a load-bearing constraint has one. Source restrictions, desired detail, and existing verification evidence are optional.
 

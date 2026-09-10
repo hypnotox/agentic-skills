@@ -13,7 +13,7 @@ Safety, permissions, harness constraints, the active task, and applicable reposi
 
 ## Define the target model
 
-1. Establish the agreed behavior, current model, consumers, constraints, and authoritative data flow before choosing structure. Assess whether the proposed integration preserves current ownership, state, contracts, and dependency direction or would bolt on duplicated policy, workaround code, or representation leakage.
+1. Establish the agreed behavior, current model, consumers, constraints, and authoritative data flow before choosing structure. Assess whether the proposed integration preserves current ownership, state, contracts, and dependency direction or would bolt on duplicated policy, workaround code, or representation leakage. Before introducing a mechanism, check whether existing codebase, platform, or dependency capabilities meet the need cleanly. Reuse them when they fit; explain a concrete reason for an alternative.
 2. Prefer the simplest coherent design and the smallest adequate response, not automatically the smallest diff. Add abstraction, indirection, validation, compatibility, extension, hardening, recovery, or other machinery only for a settled current outcome or constraint, or a relevant evidenced risk. A proposed or existing mechanism is not evidence of its own necessity.
 3. Give each value, policy, and mutation path one semantic owner. Place behavior where knowledge and lifecycle can enforce its invariants, not merely in the smallest file.
 4. Model meaningful state, transitions, lifetime, invalidation, ordering, side effects, and operation-derived state explicitly when they affect correctness. Define partial-success and retry behavior only for identified failure modes where state may have changed or the result of a state-changing operation is uncertain. Do not invent rollback, journaling, reconciliation, self-healing, or corruption handling for merely conceivable failures.
@@ -32,7 +32,7 @@ For security design, use only an applicable explicit threat profile and establis
 - Derive dependency direction from ownership and stability, not call flow. Select volatile mechanisms at the outermost informed layer and pass narrow capabilities inward; avoid service locators, mutable globals, silent defaults, cycles, and dependency bags.
 - Use an interface only for a cohesive contract with real substitution or boundary pressure. Functions and immutable values often suffice. Test-only implementations may satisfy an existing production contract without distorting production architecture.
 - Let adapters translate mechanism-specific values and failures without absorbing domain policy. Expose only what consumers need.
-- Give failures stable identity when callers react programmatically, preserve causes, and add context at the boundary that understands them.
+- Keep failure distinguishable from valid results. Recover or fall back only when the behavior has a defined meaning and still satisfies the relevant contract; do not conceal failure behind defaults or apparent success. Give failures stable identity when callers react programmatically, preserve causes, and add context at the boundary that understands them.
 
 ## Integrate and verify
 
