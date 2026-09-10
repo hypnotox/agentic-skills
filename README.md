@@ -13,7 +13,7 @@ Each skill is a generic method. Read its canonical file for routing and procedur
 | [`agentic-brainstorming`](skills/agentic-brainstorming/SKILL.md) | Material outcome or system direction choices |
 | [`agentic-code-design`](skills/agentic-code-design/SKILL.md) | Target structure for agreed behavior |
 | [`agentic-debugging`](skills/agentic-debugging/SKILL.md) | Unexpected behavior with an unknown cause |
-| [`agentic-planning`](skills/agentic-planning/SKILL.md) | Verifiable sequencing for settled work |
+| [`agentic-planning`](skills/agentic-planning/SKILL.md) | Proportionate sequencing for settled work |
 | [`agentic-implementing`](skills/agentic-implementing/SKILL.md) | Implementation and verification |
 | [`agentic-reviewing`](skills/agentic-reviewing/SKILL.md) | Independent, evidence-backed audit |
 | [`agentic-subagents`](skills/agentic-subagents/SKILL.md) | Model and thinking selection for optional delegation |
