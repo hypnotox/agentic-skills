@@ -38,7 +38,9 @@ Use connected paragraphs by default. Use bullets for independent items, numberin
 
 ## Draft and compose
 
-Write the shortest precise version. Prefer present-tense authoritative prose and imperative instructions. Use concrete actions and stable domain terms; match repository spelling, naming, capitalization, links, and formatting. Remove promotional language, incidental tool narration, and stale-prone detail while preserving qualifications that affect correctness, compatibility, safety, or scope.
+Write the shortest precise version. Match tense and voice to the content's status; use imperative language for instructions. Use concrete actions and stable domain terms; match repository spelling, naming, capitalization, links, and formatting. Remove promotional language, incidental tool narration, and stale-prone detail while preserving qualifications that affect correctness, compatibility, safety, or scope.
+
+For guidance, state intended behavior and when it applies; distinguish requirements, defaults, and options. Prescribe methods only when they matter to the result, keep examples from adding requirements, and reconcile conflicting or repeated instructions.
 
 When another task skill applies, it owns task-specific method, evidence, required content, and terminal behavior. Apply this skill inline for audience fit and document integrity; do not add a separate phase, approval gate, or persistence requirement.
 

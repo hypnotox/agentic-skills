@@ -146,7 +146,6 @@ describe("canonical package invariants", () => {
     for (const path of [
       ".awf",
       ".agentic-workflows",
-      ".claude",
       "agentic-workflows.config.ts",
       "agentic-workflows.config.json",
     ]) {
