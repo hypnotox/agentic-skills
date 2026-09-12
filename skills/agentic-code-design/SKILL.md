@@ -23,7 +23,7 @@ Choose names and control flow that expose intent and the underlying model. Use c
 
 Use KISS and YAGNI as the default against unjustified complexity; treat SOLID, DRY, and patterns as diagnostics rather than reasons to add machinery. Policy duplication matters more than textual similarity; stay direct until evidenced variation, volatility, ownership, or translation pressure creates a useful seam. Treat verified applicable platform guarantees and established contracts as valid assumptions rather than adding defenses for their hypothetical violation.
 
-For security design, use only an applicable explicit threat profile and established trust assumptions. Do not infer project-specific threats. Route a grounded unresolved material security choice through `agentic-brainstorming`.
+Base security design on explicit requirements, established trust assumptions, and concrete project evidence. A documented threat profile is not a prerequisite for recognizing an evidenced risk. Do not invent threats or defenses; route an unresolved material security choice through `agentic-brainstorming` before dependent work.
 
 ## Set boundaries, dependencies, and contracts
 
