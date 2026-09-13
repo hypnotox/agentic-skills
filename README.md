@@ -18,7 +18,7 @@ Each skill is a generic method. Read its canonical file for routing and procedur
 | [`agentic-reviewing`](skills/agentic-reviewing/SKILL.md) | Shared review method and specialist selection |
 | [`agentic-subagents`](skills/agentic-subagents/SKILL.md) | Model and thinking selection for delegation |
 
-Brainstorming, planning, implementation, and artifact design own their applicable review checkpoints. The [reviewing skill](skills/agentic-reviewing/SKILL.md) coordinates independent review and shared checkpoints; exploration gathers evidence without replacing the end-of-brainstorming second opinion.
+Brainstorming, planning, implementation, and artifact design own their applicable review checkpoints. The [reviewing skill](skills/agentic-reviewing/SKILL.md) supplies the review method and specialist selection. Brainstorming calls the premise-checker directly; earlier exploration does not replace that second opinion.
 
 ## Delegated roles
 

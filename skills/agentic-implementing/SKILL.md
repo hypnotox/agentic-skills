@@ -20,7 +20,7 @@ Safety, permissions, harness constraints, the active task, and applicable reposi
 7. If feedback reveals unexpected behavior whose cause is unknown, stop speculative changes and apply `agentic-debugging`.
 8. Update documentation and generated expectations when their source of truth changes, and explain why expectation changes are correct.
 9. Inspect the final diff and run terminal verification proportionate to risk.
-10. Before reporting a substantive change complete, use `agentic-reviewing` with the focuses relevant to its behavior, structure, instructions, or artifacts. The parent owns the combined review of delegated work.
+10. Before reporting a substantive change to behavior, structure, instructions, or artifact meaning complete, obtain an independent review through `agentic-reviewing` when subagents are available and permitted. Otherwise apply the relevant checks directly and state that independent review was unavailable. Reconcile material findings against evidence and settled constraints, and recheck conclusions affected by substantive corrections. For delegated work, the parent owns this review of the combined result; children return their work for it.
 
 Follow the project's established stance on defensive development and testing. Without a stricter requirement or concrete project-specific risk, straightforward tests of normal operation and relevant edge cases are sufficient. Discuss newly discovered risks before expanding the work to address them.
 
