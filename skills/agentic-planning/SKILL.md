@@ -24,6 +24,6 @@ Explain what changes and why. Carry forward enough of the settled implementation
 
 A plan is a revisable route, not a frozen contract. Paths, order, commands, and delegated ownership may change as evidence develops while the outcome and settled constraints remain authoritative. Surface changes that affect that outcome or those constraints rather than silently revising them.
 
-Before a substantive plan is relied on, use `agentic-reviewing` with `agentic-plan-reviewer` to assess whether its route, dependencies, scope, and verification serve the settled outcome.
+Before relying on a plan that establishes or materially changes the route to the outcome, obtain an independent `agentic-plan-reviewer` assessment through `agentic-reviewing` when subagents are available and permitted. Otherwise check the route, dependencies, scope, and verification directly and state that independent review was unavailable. Reconcile material findings against the settled outcome and constraints before proceeding, and recheck conclusions affected by substantive corrections.
 
 Keep plans in the active interaction by default. Create or update a plan file only when the user asks or applicable repository instructions require it and the task authorizes that write. Do not create hidden state, caches, memory, or a plan lifecycle as a fallback.
