@@ -18,7 +18,11 @@ const skillNames = [
 const roleNames = {
   "explorer.md": "agentic-explorer",
   "premise-checker.md": "agentic-premise-checker",
-  "reviewer.md": "agentic-reviewer",
+  "implementation-reviewer.md": "agentic-implementation-reviewer",
+  "code-design-reviewer.md": "agentic-code-design-reviewer",
+  "plan-reviewer.md": "agentic-plan-reviewer",
+  "instruction-reviewer.md": "agentic-instruction-reviewer",
+  "artifact-reviewer.md": "agentic-artifact-reviewer",
   "implementer.md": "agentic-implementer",
 } as const;
 

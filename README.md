@@ -15,23 +15,27 @@ Each skill is a generic method. Read its canonical file for routing and procedur
 | [`agentic-debugging`](skills/agentic-debugging/SKILL.md) | Unexpected behavior with an unknown cause |
 | [`agentic-planning`](skills/agentic-planning/SKILL.md) | Proportionate sequencing for settled work |
 | [`agentic-implementing`](skills/agentic-implementing/SKILL.md) | Implementation and verification |
-| [`agentic-reviewing`](skills/agentic-reviewing/SKILL.md) | Independent, evidence-backed audit |
+| [`agentic-reviewing`](skills/agentic-reviewing/SKILL.md) | Shared review method and specialist selection |
 | [`agentic-subagents`](skills/agentic-subagents/SKILL.md) | Model and thinking selection for optional delegation |
 
 ## Delegated roles
 
-Treat every delegated role as fresh context: provide a self-contained brief rather than assuming access to the parent transcript. Safety, permissions, and harness constraints remain authoritative. The delegated brief and applicable repository instructions govern work within the role; the role and brief set the boundary, while loaded skills supply method within it.
+Start each child with a fresh conversation, without forking or inheriting the parent transcript. Provide a self-contained assignment with the outcome, task boundary, and relevant settled decisions. Applicable global and repository instructions should remain available; the brief need not duplicate them. Safety, permissions, and harness constraints remain authoritative. The role and brief set the boundary, while loaded skills supply method within it.
 
 | Role | Required brief |
 |---|---|
-| [`agentic-explorer`](agents/explorer.md) | question; evidence boundary; applicable constraints or `none` |
-| [`agentic-premise-checker`](agents/premise-checker.md) | premise; consequence if wrong; evidence boundary; applicable constraints or `none` |
-| [`agentic-reviewer`](agents/reviewer.md) | outcome or evaluation standard; review surface; applicable constraints or `none` |
-| [`agentic-implementer`](agents/implementer.md) | outcome; settled constraints; write boundary; applicable constraints or `none`; acceptance checks |
+| [`agentic-explorer`](agents/explorer.md) | question; evidence boundary; applicable task-specific constraints or `none` |
+| [`agentic-premise-checker`](agents/premise-checker.md) | premise; consequence if wrong; evidence boundary; applicable task-specific constraints or `none` |
+| [`agentic-implementer`](agents/implementer.md) | outcome; settled constraints; write boundary; applicable task-specific constraints or `none`; acceptance checks |
+| [`agentic-implementation-reviewer`](agents/implementation-reviewer.md) | review brief |
+| [`agentic-code-design-reviewer`](agents/code-design-reviewer.md) | review brief |
+| [`agentic-plan-reviewer`](agents/plan-reviewer.md) | review brief |
+| [`agentic-instruction-reviewer`](agents/instruction-reviewer.md) | review brief |
+| [`agentic-artifact-reviewer`](agents/artifact-reviewer.md) | review brief |
 
-Write `none` explicitly when no constraints apply. Cite the repository path for a load-bearing constraint when one exists. Source restrictions, desired detail, and existing verification evidence are optional.
+The [shared reviewing skill](skills/agentic-reviewing/SKILL.md) guides direct review, reviewer selection, and delegation briefs. Each reviewer role carries its own report-only review contract. There is no generic reviewer role. Write `none` explicitly when no task-specific constraints apply; this does not discard applicable instructions. Cite the repository path for a load-bearing constraint when one exists. Source restrictions, desired detail, and existing verification evidence are optional.
 
-Explorer, premise-checker, and reviewer are report-only roles. Their mutation limits are behavioral prompt constraints, not security boundaries; harness-provided safety and permissions still apply.
+Children may ask the parent for material missing context through an available communication channel; otherwise they report the limitation or blocker. Clarification does not expand role authority. Explorer, premise-checker, and all reviewers are report-only roles. Their mutation limits are behavioral prompt constraints, not security boundaries; harness-provided safety and permissions still apply.
 
 ## Claude Code
 
@@ -45,12 +49,7 @@ claude --plugin-dir /absolute/path/to/agentic-skills
 
 The marketplace plugin deliberately has no manifest version, so Claude identifies Git-hosted updates by the source commit. Run `claude plugin update agentic-skills@agentic-skills` to check for and install a newer revision; commit identity does not schedule updates or add automatic watching.
 
-Claude Code namespaces the role agents as:
-
-- `agentic-skills:agentic-explorer`
-- `agentic-skills:agentic-premise-checker`
-- `agentic-skills:agentic-reviewer`
-- `agentic-skills:agentic-implementer`
+Claude Code prefixes each role name with `agentic-skills:`, for example `agentic-skills:agentic-implementation-reviewer`.
 
 ## Pi
 
@@ -64,12 +63,13 @@ pi install git:github.com/hypnotox/agentic-skills
 pi install /absolute/path/to/agentic-skills
 ```
 
-This package declares its canonical [`agents`](agents) directory for native discovery. Use the role names with the installed `subagent` API; for example:
+This package declares its canonical [`agents`](agents) directory for native discovery. Use the role names with the installed `subagent` API. Pass `context: "fresh"` explicitly when launching these roles so a global context default cannot fork the parent conversation:
 
 ```js
 {
   agent: "agentic-explorer",
-  task: "Question: ...\nEvidence boundary: ...\nApplicable constraints: none"
+  context: "fresh",
+  task: "Question: ...\nEvidence boundary: ...\nApplicable task-specific constraints: none"
 }
 ```
 
@@ -81,16 +81,22 @@ Merge these Pi-specific settings into your existing user or project settings whi
 {
   "subagents": {
     "agentOverrides": {
-      "agentic-premise-checker": { "inheritSkills": true, "excludeTools": ["handoff_session"] },
-      "agentic-explorer": { "inheritSkills": true, "excludeTools": ["handoff_session"] },
-      "agentic-reviewer": { "inheritSkills": true, "excludeTools": ["handoff_session"] },
-      "agentic-implementer": { "inheritSkills": true, "excludeTools": ["handoff_session"] }
+      "agentic-premise-checker": {"systemPromptMode": "append", "inheritProjectContext": true, "inheritGlobalContext": true, "inheritSkills": true, "defaultContext": "fresh", "excludeTools": ["handoff_session"]},
+      "agentic-explorer": {"systemPromptMode": "append", "inheritProjectContext": true, "inheritGlobalContext": true, "inheritSkills": true, "defaultContext": "fresh", "excludeTools": ["handoff_session"]},
+      "agentic-implementer": {"systemPromptMode": "append", "inheritProjectContext": true, "inheritGlobalContext": true, "inheritSkills": true, "defaultContext": "fresh", "excludeTools": ["handoff_session"]},
+      "agentic-implementation-reviewer": {"systemPromptMode": "append", "inheritProjectContext": true, "inheritGlobalContext": true, "inheritSkills": true, "defaultContext": "fresh", "excludeTools": ["handoff_session"]},
+      "agentic-code-design-reviewer": {"systemPromptMode": "append", "inheritProjectContext": true, "inheritGlobalContext": true, "inheritSkills": true, "defaultContext": "fresh", "excludeTools": ["handoff_session"]},
+      "agentic-plan-reviewer": {"systemPromptMode": "append", "inheritProjectContext": true, "inheritGlobalContext": true, "inheritSkills": true, "defaultContext": "fresh", "excludeTools": ["handoff_session"]},
+      "agentic-instruction-reviewer": {"systemPromptMode": "append", "inheritProjectContext": true, "inheritGlobalContext": true, "inheritSkills": true, "defaultContext": "fresh", "excludeTools": ["handoff_session"]},
+      "agentic-artifact-reviewer": {"systemPromptMode": "append", "inheritProjectContext": true, "inheritGlobalContext": true, "inheritSkills": true, "defaultContext": "fresh", "excludeTools": ["handoff_session"]}
     }
   }
 }
 ```
 
-These overrides expose discovered skills while keeping Pi-specific runtime fields out of the cross-harness role prompts. The roles otherwise retain `pi-subagents` custom-agent defaults: replacement prompts, fresh context without automatic context files, and no nested delegation. The handoff tool is explicitly excluded. Supported per-launch model and thinking choices may follow [`agentic-subagents`](skills/agentic-subagents/SKILL.md); effective Pi and `pi-subagents` configuration remains authoritative. This package adds no runtime routing.
+These overrides append the specialist prompt to Pi's base prompt, load project and global instruction files, and expose discovered skills without inheriting the parent conversation. They keep Pi-specific runtime fields out of the cross-harness role prompts. Remove the obsolete `agentic-reviewer` override when updating an existing installation.
+
+Use Pi's native `contact_supervisor` and parent `reply` mechanism for material clarification when available. Roles do not delegate further, and `handoff_session` remains excluded. Supported per-launch model and thinking choices may follow [`agentic-subagents`](skills/agentic-subagents/SKILL.md); effective Pi and `pi-subagents` configuration remains authoritative. This package adds no runtime routing.
 
 Before execution, call `subagent({ action: "list", capabilities: true })` and select only an executable agent. Before passing a model override, call `subagent({ action: "models" })` and use an exact `provider/id` from its available-model output. Use native background execution when a role needs ordinary installed extensions; foreground SDK children do not automatically load ambient extensions. Restart Pi after changing installed packages or these settings, and use `/subagents-guide agents` for further inspection.
 
