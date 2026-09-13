@@ -8,7 +8,7 @@ Each skill is a generic method. Read its canonical file for routing and procedur
 
 | Skill | Focus |
 |---|---|
-| [`agentic-context`](skills/agentic-context/SKILL.md) | Orientation, bounded exploration, and premise testing |
+| [`agentic-exploration`](skills/agentic-exploration/SKILL.md) | Orientation and bounded factual exploration |
 | [`agentic-artifact-design`](skills/agentic-artifact-design/SKILL.md) | Substantial prose artifacts |
 | [`agentic-brainstorming`](skills/agentic-brainstorming/SKILL.md) | Material outcome or system direction choices |
 | [`agentic-code-design`](skills/agentic-code-design/SKILL.md) | Target structure for agreed behavior |
@@ -16,7 +16,9 @@ Each skill is a generic method. Read its canonical file for routing and procedur
 | [`agentic-planning`](skills/agentic-planning/SKILL.md) | Proportionate sequencing for settled work |
 | [`agentic-implementing`](skills/agentic-implementing/SKILL.md) | Implementation and verification |
 | [`agentic-reviewing`](skills/agentic-reviewing/SKILL.md) | Shared review method and specialist selection |
-| [`agentic-subagents`](skills/agentic-subagents/SKILL.md) | Model and thinking selection for optional delegation |
+| [`agentic-subagents`](skills/agentic-subagents/SKILL.md) | Model and thinking selection for delegation |
+
+Brainstorming, planning, implementation, and artifact design own their applicable review checkpoints. The [reviewing skill](skills/agentic-reviewing/SKILL.md) coordinates independent review and shared checkpoints; exploration gathers evidence without replacing the end-of-brainstorming second opinion.
 
 ## Delegated roles
 
@@ -25,7 +27,7 @@ Start each child with a fresh conversation, without forking or inheriting the pa
 | Role | Required brief |
 |---|---|
 | [`agentic-explorer`](agents/explorer.md) | question; evidence boundary; applicable task-specific constraints or `none` |
-| [`agentic-premise-checker`](agents/premise-checker.md) | premise; consequence if wrong; evidence boundary; applicable task-specific constraints or `none` |
+| [`agentic-premise-checker`](agents/premise-checker.md) | intended outcome; proposed direction; settled constraints; evidence boundary; applicable task-specific constraints or `none` |
 | [`agentic-implementer`](agents/implementer.md) | outcome; settled constraints; write boundary; applicable task-specific constraints or `none`; acceptance checks |
 | [`agentic-implementation-reviewer`](agents/implementation-reviewer.md) | review brief |
 | [`agentic-code-design-reviewer`](agents/code-design-reviewer.md) | review brief |

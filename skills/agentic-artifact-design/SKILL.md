@@ -42,12 +42,14 @@ Write the shortest precise version. Match tense and voice to the content's statu
 
 For guidance, state intended behavior and when it applies; distinguish requirements, defaults, and options. Prescribe methods only when they matter to the result, keep examples from adding requirements, and reconcile conflicting or repeated instructions.
 
-When another task skill applies, it owns task-specific method, evidence, required content, and terminal behavior. Apply this skill inline for audience fit and document integrity; do not add a separate phase, approval gate, or persistence requirement.
+When another task skill applies, it owns task-specific method, evidence, required content, and terminal behavior. Apply this skill inline for audience fit and document integrity, including its questions in that skill's review checkpoint rather than adding a separate one. Do not add approval gates or persistence requirements.
 
 Compress after drafting: remove repetition and filler, merge fragments expressing one idea, replace vague references with owned concepts or paths, and confirm required context and caveats remain.
 
 ## Verify and deliver
 
 Check that the structure serves the reader, required content and order remain, claims and terminology agree with sources, changing facts have one owner, links and commands are accurate, and generated ownership is respected. Run applicable formatting, rendering, link, or repository checks, then inspect the artifact as a reader.
+
+Before delivering a substantive artifact or revision, use `agentic-reviewing` to check reader usability and source integrity. For standalone artifact work, select `agentic-artifact-reviewer`; add instruction review when the artifact directs behavior and that warrants separate judgment.
 
 Keep the artifact in the active interaction unless the task requests a file or applicable instructions require one and the write is authorized. Do not invent documentation, plans, logs, caches, memory stores, directories, or process artifacts merely because this skill applies.

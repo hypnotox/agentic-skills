@@ -12,10 +12,11 @@ Safety, permissions, harness constraints, the active task, and applicable reposi
 ## Resolve the choice
 
 1. State the intended outcome, settled constraints, affected boundary, and evidence needed separately from proposed mechanisms.
-2. Separate settled facts from assumptions and unknowns; do not promote an assumption or unknown into a requirement. Test a checkable consequential premise through `agentic-context`, while keeping genuine choices here.
+2. Separate settled facts from assumptions and unknowns; do not promote an assumption or unknown into a requirement. Resolve factual questions through `agentic-exploration`, while keeping genuine choices here.
 3. Present only evidence-supported viable options with proportionate trade-offs, risks, reversibility, and compatibility effects. One option is enough when only one is supported; do not manufacture alternatives for balance.
 4. Recommend the simplest effective option. Possibility alone is not evidence of need, and an evidenced concern receives the smallest adequate response. If the evidence cannot distinguish the options responsibly, report the choice as unresolved, name the missing discriminating evidence, and propose a bounded investigation.
-5. Confirm a supported direction before dependent work, unless the user explicitly delegated the decision and proceeding remains within granted authority. Do not force a choice while it remains unresolved.
+5. Once the proposed direction is concrete, use `agentic-premise-checker` for an independent second opinion before treating it as settled. Check its fit to the intended outcome, material assumptions, and whether its mechanisms serve a current need. Follow `agentic-reviewing` for checkpoint coordination; the premise-checker role owns its brief and verdict. Earlier exploration does not replace this check.
+6. Reconcile material findings, then confirm a supported direction before dependent work, unless the user explicitly delegated the decision and proceeding remains within granted authority. Do not force a choice while it remains unresolved.
 
 Surface only concerns grounded in the current task, system, contract, or observed behavior that would materially affect the solution; omit merely conceivable concerns instead of asking about them. Follow the project's established security requirements and trust assumptions. Without stricter requirements, implementing the agreed behavior is sufficient. Do not add safeguards for hypothetical risks. If a concrete risk would require expanding the agreed scope, resolve that choice under the decision authority above before dependent work. A delegated agent returns the choice to its parent.
 
