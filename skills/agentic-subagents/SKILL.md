@@ -1,11 +1,11 @@
 ---
 name: agentic-subagents
-description: Choose model capability and thinking settings before an optional subagent launch, within available controls and user preferences.
+description: Choose model capability and thinking settings before a subagent launch, within available controls and user preferences.
 ---
 
 # Agentic subagents
 
-If subagents are available and you choose to delegate, use this guidance for the model and thinking settings you can control. Without subagents, work directly. Role boundaries, permissions, harness constraints, and user preferences remain authoritative. This skill does not authorize delegation or persistent configuration changes. Retain environment-supplied settings where selection is unavailable, without claiming control over them.
+When delegating to available subagents, use this guidance for the model and thinking settings you can control. Without subagents, work directly. Role boundaries, permissions, harness constraints, and user preferences remain authoritative. This skill does not authorize delegation or persistent configuration changes. Retain environment-supplied settings where selection is unavailable, without claiming control over them.
 
 ## Assess the contribution
 
