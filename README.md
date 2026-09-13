@@ -63,7 +63,7 @@ pi install git:github.com/hypnotox/agentic-skills
 pi install /absolute/path/to/agentic-skills
 ```
 
-This package declares its canonical [`agents`](agents) directory for native discovery. Use the role names with the installed `subagent` API. Pass `context: "fresh"` explicitly when launching these roles so a global context default cannot fork the parent conversation:
+This package declares its committed [`agents`](agents) directory for native discovery. Use the role names with the installed `subagent` API. Pass `context: "fresh"` explicitly when launching these roles so a global context default cannot fork the parent conversation:
 
 ```js
 {
@@ -100,12 +100,29 @@ Use Pi's native `contact_supervisor` and parent `reply` mechanism for material c
 
 Before execution, call `subagent({ action: "list", capabilities: true })` and select only an executable agent. Before passing a model override, call `subagent({ action: "models" })` and use an exact `provider/id` from its available-model output. Use native background execution when a role needs ordinary installed extensions; foreground SDK children do not automatically load ambient extensions. Restart Pi after changing installed packages or these settings, and use `/subagents-guide agents` for further inspection.
 
-## Development checks
+## Development
 
-`npm run check` requires the current Node release, npm, and Claude Code.
+Pi and Claude Code install the committed skills and self-contained agent files directly. Installation and execution require no generation or build step; there are no install or packaging hooks that generate instructions.
+
+### Reviewer sources
+
+The five reviewer files in [`agents`](agents) are generated. Maintain their sources instead:
+
+- [`templates/reviewers/template.md`](templates/reviewers/template.md) owns the common role boundary and composition.
+- [`templates/reviewers/roles`](templates/reviewers/roles) owns each reviewer's frontmatter, introduction, and `## Focus` section. Each source filename determines its output filename in `agents/`.
+- [`skills/agentic-reviewing/SKILL.md`](skills/agentic-reviewing/SKILL.md) owns the generic method. Its complete `## Review` and `## Report` sections are included in every reviewer; the selection and delegation guidance stays in the skill.
+
+[`scripts/generate-agents.ts`](scripts/generate-agents.ts) fills the template's four slots: `introduction`, `review`, `focus`, and `report`. Each slot must occur exactly once. No template processing happens in either harness. Explorer, premise-checker, and implementer remain handwritten.
+
+After changing these sources, run `npm run generate` and commit the source and generated changes together. Generation also removes marked generated agents whose role source was removed, leaving handwritten agents alone. The generator and templates are development tooling, excluded from the npm package.
+
+### Checks
+
+`npm run check` requires the current Node release, npm, and Claude Code. It checks generated files without rewriting them, then runs typechecking, tests, and harness validation. `npm run generate:check` runs only the non-writing drift check and fails for missing, changed, or obsolete generated agents.
 
 ```bash
 npm install
+npm run generate # After changing reviewer sources
 npm run check
 npm pack --dry-run
 ```

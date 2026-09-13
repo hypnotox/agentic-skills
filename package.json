@@ -23,9 +23,11 @@
     "pi-package"
   ],
   "scripts": {
+    "generate": "node scripts/generate-agents.ts",
+    "generate:check": "node scripts/generate-agents.ts --check",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
-    "check": "npm run typecheck && npm test && claude plugin validate . && claude plugin validate --strict skills && claude plugin validate --strict agents"
+    "check": "npm run generate:check && npm run typecheck && npm test && claude plugin validate . && claude plugin validate --strict skills && claude plugin validate --strict agents"
   },
   "devDependencies": {
     "@types/node": "*",

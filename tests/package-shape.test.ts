@@ -54,8 +54,8 @@ async function doesNotExist(path: string): Promise<boolean> {
   }
 }
 
-describe("canonical package invariants", () => {
-  test("ships only the canonical skills and roles with valid nonempty documents", async () => {
+describe("installable package invariants", () => {
+  test("ships only the expected skills and roles with valid nonempty documents", async () => {
     const skillDirectories = (await readdir(join(root, "skills"), { withFileTypes: true }))
       .filter((entry) => entry.isDirectory())
       .map((entry) => entry.name)
@@ -94,6 +94,12 @@ describe("canonical package invariants", () => {
     );
     expect(packageManifest.files).not.toContain("AGENTS.md");
     expect(packageManifest.files).not.toContain("CLAUDE.md");
+    expect(packageManifest.files).not.toContain("templates");
+    expect(packageManifest.files).not.toContain("scripts");
+
+    for (const hook of ["preinstall", "install", "postinstall", "prepublish", "prepare", "prepack", "postpack"]) {
+      expect(packageManifest.scripts).not.toHaveProperty(hook);
+    }
   });
 
   test("uses versionless Claude manifests and configured package mappings", async () => {
