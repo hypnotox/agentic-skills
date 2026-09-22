@@ -11,7 +11,7 @@ Safety, permissions, harness constraints, the active task, and applicable reposi
 
 ## Build a revisable route
 
-Inspect the affected current state, dependencies, and verification surfaces. For a code change with an unresolved structural question, apply `agentic-code-design` before sequencing or expose it as a blocker.
+Inspect the affected current state, dependencies, and verification surfaces. For a code change, apply `agentic-code-design` before sequencing when a structural question remains or assessing the proposed structure requires nontrivial judgment, even if the design choice is settled. Reuse directly applicable independent review and preserve settled choices unless consequential new evidence reopens them. Expose unresolved design dependencies as blockers.
 
 1. State the outcome and settled constraints.
 2. Structure work around coherent changes to behavior, responsibilities, architecture, state, or integration.
@@ -24,6 +24,6 @@ Explain what changes and why. Carry forward enough of the settled implementation
 
 A plan is a revisable route, not a frozen contract. Paths, order, commands, and delegated ownership may change as evidence develops while the outcome and settled constraints remain authoritative. Surface changes that affect that outcome or those constraints rather than silently revising them.
 
-Before relying on a plan that establishes or materially changes the route to the outcome, obtain an independent `agentic-plan-reviewer` assessment through `agentic-reviewing` when subagents are available and permitted. Otherwise check the route, dependencies, scope, and verification directly and state that independent review was unavailable. Reconcile material findings against the settled outcome and constraints before proceeding, and recheck conclusions affected by substantive corrections.
+Before relying on a plan whose route requires nontrivial judgment, obtain or reuse independent `agentic-plan-reviewer` assessment through `agentic-reviewing`, applying its shared trigger, reuse, and fallback rules. Assess the route, dependencies, scope, and verification. Reconcile material findings against the settled outcome and constraints before proceeding, and recheck conclusions affected by substantive corrections.
 
 Keep plans in the active interaction by default. Create or update a plan file only when the user asks or applicable repository instructions require it and the task authorizes that write. Do not create hidden state, caches, memory, or a plan lifecycle as a fallback.

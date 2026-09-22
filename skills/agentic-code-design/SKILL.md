@@ -1,11 +1,11 @@
 ---
 name: agentic-code-design
-description: Resolve a structural question about semantic ownership, state or invariants, contracts, dependency direction, or refactor boundaries for agreed behavior.
+description: Resolve questions about ownership, state, contracts, dependencies, or refactor boundaries, and review consequential proposed code structure before dependent specifications, plans, or implementation.
 ---
 
 # Agentic code design
 
-Use this skill when agreed behavior raises a structural question about meaning, state, invariants, ownership, dependencies, contracts, or enabling refactoring. For non-trivial code changes, first assess whether the proposed integration fits those parts of the current model; skip a design exercise for mechanical edits that already fit. Explorer establishes current structure; code design chooses target structure. Planning sequences the settled result.
+Use this skill when agreed behavior raises a structural question about meaning, state, invariants, ownership, dependencies, contracts, or enabling refactoring, or when proposed structure needs early independent review even though the choice is settled. For non-trivial code changes, first assess whether the proposed integration fits those parts of the current model; skip a design exercise for mechanical edits that already fit. Explorer establishes current structure; code design chooses and reviews target structure. Planning sequences the settled result.
 
 `agentic-brainstorming` owns material changes to outcome, scope, compatibility, safety, user-visible behavior, or system direction. Code design owns internal structure for agreed behavior and its user-facing discussion. Agreement on behavior does not by itself settle a consequential structural choice. `agentic-implementing` makes local choices within a settled design boundary.
 
@@ -43,6 +43,8 @@ A recommendation does not expand implementation authority. Surface a justified r
 Base compatibility on real consumers. Define migration, move consumers, and remove obsolete paths when practical; any temporary parallel path needs a reason and removal condition. Protect the invariant or contract at the narrowest meaningful verification seam. Recommend structural work only for an identifiable correctness or maintenance risk, not pattern compliance or theoretical flexibility.
 
 ## Expose the design for steering
+
+Before a structure requiring nontrivial judgment becomes a dependency of a specification, plan, or implementation, obtain or reuse independent `agentic-code-design-reviewer` assessment through `agentic-reviewing`. Supply the agreed behavior, constraints, current model, and proposed structure; an inline outline suffices. A behavioral specification may precede design. Use the findings to inform consequential choices, and reassess material structural changes before relying on them. This checkpoint adds no approval stage.
 
 For substantial work whose implementation shape is not settled, give the user a concise outline before editing or delegating dependent implementation. Explain where behavior will live, the important abstractions or patterns and their purpose, relevant data flow, any enabling refactor, and the verification seam—but only where these help the user steer the change.
 

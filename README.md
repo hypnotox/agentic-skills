@@ -18,7 +18,7 @@ Each skill is a generic method. Read its canonical file for routing and procedur
 | [`agentic-reviewing`](skills/agentic-reviewing/SKILL.md) | Shared review method and specialist selection |
 | [`agentic-subagents`](skills/agentic-subagents/SKILL.md) | Model and thinking selection for delegation |
 
-Brainstorming, planning, implementation, and artifact design own their applicable review checkpoints. The [reviewing skill](skills/agentic-reviewing/SKILL.md) supplies the review method and specialist selection. Brainstorming calls the premise-checker directly; earlier exploration does not replace that second opinion.
+Brainstorming, code design, planning, implementation, and artifact design own their applicable review checkpoints. Implementation includes result and task-level historical review. The [reviewing skill](skills/agentic-reviewing/SKILL.md) supplies the review method, reuse rules, and specialist selection. Brainstorming calls the premise-checker directly; earlier exploration does not replace that second opinion.
 
 ## Delegated roles
 
@@ -34,6 +34,7 @@ Start each child with a fresh conversation, without forking or inheriting the pa
 | [`agentic-plan-reviewer`](agents/plan-reviewer.md) | review brief |
 | [`agentic-instruction-reviewer`](agents/instruction-reviewer.md) | review brief |
 | [`agentic-artifact-reviewer`](agents/artifact-reviewer.md) | review brief |
+| [`agentic-retrospective-reviewer`](agents/retrospective-reviewer.md) | review brief; available work history, with gaps identified |
 
 The [shared reviewing skill](skills/agentic-reviewing/SKILL.md) guides direct review, reviewer selection, and delegation briefs. Each reviewer role carries its own report-only review contract. There is no generic reviewer role. Write `none` explicitly when no task-specific constraints apply; this does not discard applicable instructions. Cite the repository path for a load-bearing constraint when one exists. Source restrictions, desired detail, and existing verification evidence are optional.
 
@@ -90,7 +91,8 @@ Merge these Pi-specific settings into your existing user or project settings whi
       "agentic-code-design-reviewer": {"systemPromptMode": "append", "inheritProjectContext": true, "inheritGlobalContext": true, "inheritSkills": true, "defaultContext": "fresh", "excludeTools": ["handoff_session"]},
       "agentic-plan-reviewer": {"systemPromptMode": "append", "inheritProjectContext": true, "inheritGlobalContext": true, "inheritSkills": true, "defaultContext": "fresh", "excludeTools": ["handoff_session"]},
       "agentic-instruction-reviewer": {"systemPromptMode": "append", "inheritProjectContext": true, "inheritGlobalContext": true, "inheritSkills": true, "defaultContext": "fresh", "excludeTools": ["handoff_session"]},
-      "agentic-artifact-reviewer": {"systemPromptMode": "append", "inheritProjectContext": true, "inheritGlobalContext": true, "inheritSkills": true, "defaultContext": "fresh", "excludeTools": ["handoff_session"]}
+      "agentic-artifact-reviewer": {"systemPromptMode": "append", "inheritProjectContext": true, "inheritGlobalContext": true, "inheritSkills": true, "defaultContext": "fresh", "excludeTools": ["handoff_session"]},
+      "agentic-retrospective-reviewer": {"systemPromptMode": "append", "inheritProjectContext": true, "inheritGlobalContext": true, "inheritSkills": true, "defaultContext": "fresh", "excludeTools": ["handoff_session"]}
     }
   }
 }
@@ -108,7 +110,7 @@ Pi and Claude Code install the committed skills and self-contained agent files d
 
 ### Reviewer sources
 
-The five reviewer files in [`agents`](agents) are generated. Maintain their sources instead:
+The reviewer files in [`agents`](agents) are generated. Maintain their sources instead:
 
 - [`templates/reviewers/template.md`](templates/reviewers/template.md) owns the common role boundary and composition.
 - [`templates/reviewers/roles`](templates/reviewers/roles) owns each reviewer's frontmatter, introduction, and `## Focus` section. Each source filename determines its output filename in `agents/`.
