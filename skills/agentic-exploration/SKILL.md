@@ -9,8 +9,6 @@ Use this skill for substantial orientation or bounded non-defect exploration, in
 
 Safety, permissions, harness constraints, the active task, and applicable repository instructions remain authoritative. Both lanes are evidence-only and non-mutating; this skill does not authorize edits or implementation. Evidence commands may create understood transient output, but leave no intentional artifacts.
 
-For optional delegation, use `agentic-subagents` to choose supported model and thinking settings.
-
 ## Orient
 
 Before substantial fresh work, takeover, or widened scope:
@@ -24,7 +22,7 @@ Prefer an exact known-source read over broad exploration.
 
 ## Explore
 
-Investigate a bounded non-defect unknown directly, or delegate it to `agentic-explorer` when separate fresh context helps. Explorer establishes current structure; `agentic-code-design` chooses target structure.
+Investigate a bounded non-defect unknown directly, or delegate it to `agentic-explorer` when separate fresh context helps. This instruction authorizes the coordinating agent to choose delegation without a separate operator request, within the active task, evidence boundary, and applicable permissions. Delegated children do not delegate further. Use `agentic-subagents` for supported activation, model, and thinking settings. Explorer establishes current structure; `agentic-code-design` chooses target structure.
 
 A fresh child cannot be assumed to know conversation-local context. Supply the question, evidence boundary, and applicable task-specific constraints or the explicit value `none`. Cite the repository path when a load-bearing constraint has one. Source restrictions and desired detail are optional.
 

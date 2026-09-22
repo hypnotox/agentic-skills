@@ -9,7 +9,9 @@ Use this skill to review existing code or prose, a design, proposed change, diff
 
 Safety, permissions, harness constraints, the active task, and applicable repository instructions remain authoritative. Repository instructions may specialize this guidance without expanding scope or permission. Review remains report-only.
 
-## Select reviewers when delegating
+## Delegate required independent review
+
+When new independent review is required, delegate it to a suitable available reviewer. This instruction authorizes the coordinating agent to launch that review without a separate operator request, within the active task and applicable permissions and role boundaries. Reuse directly applicable independent review instead of repeating it.
 
 The parent selects the reviewer whose primary question matches the assignment:
 
@@ -24,7 +26,9 @@ The parent selects the reviewer whose primary question matches the assignment:
 
 One specialist is sufficient when one focus covers the task. Use multiple specialists when distinct questions warrant separate judgment, not merely because the roles exist. Give each a clear primary focus; overlapping evidence is acceptable. These focuses are not file-type boundaries or reasons to ignore an obvious material issue, but do not silently expand an assignment into a comprehensive audit.
 
-The parent selects coverage, consolidates related findings, reconciles them against evidence and agreed constraints, makes authorized corrections, refreshes affected checks, and reports material limitations. Review adds no approval stage and does not settle user-owned consequential choices. Reviewers do not delegate. Use `agentic-subagents` to choose supported model and thinking settings when delegating. If delegation is unavailable or prohibited, apply the relevant focuses directly and disclose that the review was not independent.
+The parent selects coverage, consolidates related findings, reconciles them against evidence and agreed constraints, makes authorized corrections, refreshes affected checks, and reports material limitations. Review adds no approval stage and does not settle user-owned consequential choices. Reviewers do not delegate. Use `agentic-subagents` to choose supported model and thinking settings for the authorized delegation.
+
+Use supported discovery and activation within applicable permissions before treating delegation as unavailable. If an explicit prohibition applies or no suitable reviewer can be made available, apply the relevant focuses directly and disclose the reason and lack of independence. Absence of a separate operator request is not a prohibition.
 
 ## Establish the review brief
 
