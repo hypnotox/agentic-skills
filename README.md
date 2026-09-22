@@ -20,6 +20,8 @@ Each skill is a generic method. Read its canonical file for routing and procedur
 
 Brainstorming, code design, planning, implementation, and artifact design own their applicable review checkpoints. Implementation includes result and task-level historical review. The [reviewing skill](skills/agentic-reviewing/SKILL.md) supplies the review method, reuse rules, and specialist selection. Brainstorming calls the premise-checker directly; earlier exploration does not replace that second opinion.
 
+Applicable workflow instructions authorize the coordinating agent to delegate the reviews they require and the exploration or implementation they permit, without a separate operator request. Required independent review uses a suitable available reviewer unless directly applicable review can be reused; exploration and implementation delegation remain optional. Task scope, write boundaries, explicit prohibitions, harness permissions, and child-role limits still apply. `agentic-subagents` configures delegation after the calling workflow supplies that authority.
+
 ## Delegated roles
 
 Start each child with a fresh conversation, without forking or inheriting the parent transcript. Provide a self-contained assignment with the outcome, task boundary, and relevant settled decisions. Applicable global and repository instructions should remain available; the brief need not duplicate them. Safety, permissions, and harness constraints remain authoritative. The role and brief set the boundary, while loaded skills supply method within it.
@@ -101,6 +103,8 @@ Merge these Pi-specific settings into your existing user or project settings whi
 These overrides append the specialist prompt to Pi's base prompt, load project and global instruction files, and expose discovered skills without inheriting the parent conversation. They keep Pi-specific runtime fields out of the cross-harness role prompts. Remove the obsolete `agentic-reviewer` override when updating an existing installation.
 
 Use Pi's native `contact_supervisor` and parent `reply` mechanism for material clarification when available. Roles do not delegate further, and `handoff_session` remains excluded. Supported per-launch model and thinking choices may follow [`agentic-subagents`](skills/agentic-subagents/SKILL.md); effective Pi and `pi-subagents` configuration remains authoritative. This package adds no runtime routing.
+
+For delegation authorized by an applicable workflow, if `subagent` is inactive and `subagents_enable` is exposed, call `subagents_enable({})` first. It activates tools without launching work; `subagent` becomes available on the next model request. Use this supported activation before treating delegation as unavailable. If `subagent` is already exposed, proceed directly.
 
 Before execution, call `subagent({ action: "list", capabilities: true })` and select only an executable agent. Before passing a model override, call `subagent({ action: "models" })` and use an exact `provider/id` from its available-model output. Use native background execution when a role needs ordinary installed extensions; foreground SDK children do not automatically load ambient extensions. Restart Pi after changing installed packages or these settings, and use `/subagents-guide agents` for further inspection.
 

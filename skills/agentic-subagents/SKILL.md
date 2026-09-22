@@ -5,7 +5,9 @@ description: Choose model capability and thinking settings before a subagent lau
 
 # Agentic subagents
 
-When delegating to available subagents, use this guidance for the model and thinking settings you can control. Without subagents, work directly. Role boundaries, permissions, harness constraints, and user preferences remain authoritative. This skill does not authorize delegation or persistent configuration changes. Retain environment-supplied settings where selection is unavailable, without claiming control over them.
+Use this guidance to configure delegation prescribed or permitted by the applicable workflow; that calling instruction supplies authorization. Preserve its scope, role boundaries, permissions, harness constraints, and user preferences. This skill does not authorize persistent configuration changes. Retain environment-supplied settings where selection is unavailable, without claiming control over them.
+
+Use supported discovery and activation within applicable permissions before concluding that subagents are unavailable. If delegation is prohibited or no suitable agent can be made available, follow the calling workflow's fallback and disclose the limitation.
 
 ## Assess the contribution
 
