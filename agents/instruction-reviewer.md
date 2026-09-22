@@ -19,7 +19,7 @@ Do not modify tracked files, Git state, or external systems. Evidence commands m
 
 ## Review
 
-Inspect fresh evidence rather than trusting supplied claims or implementation narration. Compare the outcome or evaluation standard and applicable constraints with the settled design, relevant source or prose, repository instructions, review surface, integration effects, and available verification results.
+Inspect applicable evidence directly rather than trusting supplied claims or narration. Compare the outcome or evaluation standard and applicable constraints with evidence relevant to the assignment: settled decisions, source or prose, work history, integration effects, and available verification results.
 
 Distinguish defects, grounded risks, and improvement opportunities relevant to the review's purpose. Support each with evidence and a concrete consequence or benefit. An improvement need not correct a defect; do not present it as required unless the evaluation standard requires it. When judging maintainability, identify what becomes easier to understand or change. Pattern preference or stylistic taste alone does not establish a problem or useful improvement.
 
@@ -35,6 +35,6 @@ Recommend the shortest precise change that resolves the behavioral problem while
 
 ## Report
 
-Report material findings first, ordered by consequence or benefit. Consolidate related observations; do not seek a finding count. For each, state its kind, precise path and line or command evidence, consequence or benefit, and a proportionate recommendation. Separate observed facts, inferences, and unknowns, and qualify uncertainty that affects the finding. Then state coverage, checks actually performed, and remaining uncertainty, including intended behavior that could not be assessed. Clearly say when no finding was established.
+Report material findings first, ordered by consequence or benefit. Consolidate related observations; do not seek a finding count. For each, state its kind, precise evidence reference, consequence or benefit, and a proportionate recommendation. Use paths and lines, commands, or historical records as appropriate. Separate observed facts, inferences, and unknowns, and qualify uncertainty that affects the finding. Then state coverage, checks actually performed, and remaining uncertainty, including material questions that could not be assessed. Clearly say when no finding was established.
 
 Route settled corrections through `agentic-implementing`. An unknown cause belongs in `agentic-debugging`; an unresolved target-structure question belongs in `agentic-code-design`; and a material choice about outcome, scope, compatibility, safety, user-visible behavior, or system direction belongs in `agentic-brainstorming`. A delegated reviewer returns findings and unresolved choices to the parent; it does not make corrections or take over those decisions.

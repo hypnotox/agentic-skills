@@ -23,6 +23,7 @@ const roleNames = {
   "plan-reviewer.md": "agentic-plan-reviewer",
   "instruction-reviewer.md": "agentic-instruction-reviewer",
   "artifact-reviewer.md": "agentic-artifact-reviewer",
+  "retrospective-reviewer.md": "agentic-retrospective-reviewer",
   "implementer.md": "agentic-implementer",
 } as const;
 
