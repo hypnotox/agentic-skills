@@ -1,6 +1,6 @@
 # agentic-skills
 
-Repository-agnostic engineering skills and delegation roles for Claude Code and Pi. Markdown skills work from this package alone; Pi role execution is owned by [`pi-subagents`](https://github.com/nicobailon/pi-subagents).
+Repository-agnostic engineering skills and delegation roles for Claude Code, Codex, and Pi. Skills use the same Markdown in every harness. Codex roles are distributed as committed [TOML files](codex/agents); Pi role execution is owned by [`pi-subagents`](https://github.com/nicobailon/pi-subagents).
 
 ## Skills
 
@@ -56,6 +56,54 @@ The marketplace plugin deliberately has no manifest version, so Claude identifie
 
 Claude Code prefixes each role name with `agentic-skills:`, for example `agentic-skills:agentic-implementation-reviewer`.
 
+## Codex
+
+Use a current Codex release with [custom TOML agents](https://learn.chatgpt.com/docs/agent-configuration/subagents). The full installation below comes directly from this GitHub repository and needs only Git and a shell—no npm install, generation, or build step.
+
+### Install skills and agents from the repository
+
+Clone the whole repository into Codex's user [skills directory](https://learn.chatgpt.com/docs/build-skills#where-to-save-skills), then link its generated agents into Codex's user agent directory. Codex discovers the nested skill folders and TOML files. In Bash on Linux or macOS:
+
+```bash
+(
+  set -e
+  repo="$HOME/.agents/skills/agentic-skills"
+  agents="${CODEX_HOME:-$HOME/.codex}/agents/agentic-skills"
+  test ! -e "$agents"
+  test ! -L "$agents"
+  mkdir -p "$(dirname "$repo")" "$(dirname "$agents")"
+  git clone https://github.com/hypnotox/agentic-skills.git "$repo"
+  ln -s "$repo/codex/agents" "$agents"
+)
+```
+
+The destination names must be unused; the commands do not replace an existing agent directory or symlink. Keep the full checkout: some skills link to `../../agents/*.md`, so copying only individual skill directories would lose their role references. For an existing checkout, link its root into `~/.agents/skills/agentic-skills` and its `codex/agents` directory into `${CODEX_HOME:-$HOME/.codex}/agents/agentic-skills`, using unused destination names. For project-only discovery, use the project's `.agents/skills/agentic-skills` and `.codex/agents/agentic-skills` instead.
+
+Restart Codex after installation. Check `/skills` for the nine skills (Codex may prefix them with `agentic-skills:`), and refer to agents by their declared names, such as `agentic-explorer` or `agentic-implementation-reviewer`. Give each the [required brief](#delegated-roles) and explicitly choose fresh/no-history context using the installed Codex delegation tool's contract; do not assume its default is fresh. The TOML files set only `name`, `description`, and `developer_instructions`, leaving model, reasoning, tools, and permission configuration to Codex and the user.
+
+Update the checkout and restart Codex:
+
+```bash
+git -C "$HOME/.agents/skills/agentic-skills" pull --ff-only
+```
+
+The directory link follows added, changed, and removed agent files without regeneration or relinking. To uninstall, remove only the agent-directory symlink and move the checkout out of the skills directory (or remove it if no longer needed).
+
+### Native repository plugin: skills only
+
+Alternatively, install the skills through Codex's [plugin marketplace](https://developers.openai.com/plugins/build/plugins). This repository includes a root [`plugin.json`](plugin.json) and [marketplace catalog](.agents/plugins/marketplace.json):
+
+```bash
+codex plugin marketplace add hypnotox/agentic-skills
+codex plugin add agentic-skills@agentic-skills
+
+# Local checkout instead of the GitHub marketplace source
+codex plugin marketplace add /absolute/path/to/agentic-skills
+codex plugin add agentic-skills@agentic-skills
+```
+
+Choose one skills installation route to avoid duplicate discovery. The plugin carries the role files but does **not** register custom Codex agents. If using the plugin and wanting named agents too, keep an ordinary checkout outside the skills directory and link only its `codex/agents` directory into Codex's agent directory as above. Refresh the marketplace with `codex plugin marketplace upgrade agentic-skills`; manage the installed plugin with Codex's plugin commands. This repository is not a listing in OpenAI's public plugin directory.
+
 ## Pi
 
 Install [`pi-subagents`](https://github.com/nicobailon/pi-subagents) as the sole `subagent` provider, then install this package:
@@ -110,23 +158,25 @@ Before execution, call `subagent({ action: "list", capabilities: true })` and se
 
 ## Development
 
-Pi and Claude Code install the committed skills and self-contained agent files directly. Installation and execution require no generation or build step; there are no install or packaging hooks that generate instructions.
+Pi, Claude Code, and Codex use the committed skills and self-contained agent files directly. Installation and execution require no generation or build step; there are no install or packaging hooks that generate instructions.
 
-### Reviewer sources
+### Agent sources and rendering
 
-The reviewer files in [`agents`](agents) are generated. Maintain their sources instead:
+The reviewer Markdown files in [`agents`](agents) and every TOML file in [`codex/agents`](codex/agents) are generated. Maintain their sources instead:
 
 - [`templates/reviewers/template.md`](templates/reviewers/template.md) owns the common role boundary and composition.
 - [`templates/reviewers/roles`](templates/reviewers/roles) owns each reviewer's frontmatter, introduction, and `## Focus` section. Each source filename determines its output filename in `agents/`.
 - [`skills/agentic-reviewing/SKILL.md`](skills/agentic-reviewing/SKILL.md) owns the generic method. Its complete `## Review` and `## Report` sections are included in every reviewer; the selection and delegation guidance stays in the skill.
 
-[`scripts/generate-agents.ts`](scripts/generate-agents.ts) fills the template's four slots: `introduction`, `review`, `focus`, and `report`. Each slot must occur exactly once. No template processing happens in either harness. Explorer, premise-checker, and implementer remain handwritten.
+[`scripts/generate-agents.ts`](scripts/generate-agents.ts) fills the template's four slots: `introduction`, `review`, `focus`, and `report`. Each slot must occur exactly once. No template processing happens in any harness. Explorer, premise-checker, and implementer remain handwritten in `agents/`.
 
-After changing these sources, run `npm run generate` and commit the source and generated changes together. Generation also removes marked generated agents whose role source was removed, leaving handwritten agents alone. The generator and templates are development tooling, excluded from the npm package.
+The same generator renders every role's Markdown metadata and body into a self-contained Codex TOML file. It composes reviewers from their owning sources in memory, not from potentially stale generated Markdown. Codex filenames follow the frontmatter `name`; duplicate or invalid names fail before outputs are changed. Build notices are excluded from `developer_instructions`, and no harness settings are added to the shared role prompts.
+
+After changing reviewer sources or handwritten roles, run `npm run generate` and commit the source and generated changes together. Generation also removes marked generated agents whose source was removed, leaving unowned files alone. The generator and templates are development tooling, excluded from the npm package.
 
 ### Checks
 
-`npm run check` requires the current Node release, npm, and Claude Code. It checks generated files without rewriting them, then runs typechecking, tests, and harness validation. `npm run generate:check` runs only the non-writing drift check and fails for missing, changed, or obsolete generated agents.
+`npm run check` requires the current Node release, npm, and Claude Code. It checks generated files without rewriting them, then runs typechecking, tests, and harness validation. `npm run generate:check` runs only the non-writing drift check and fails for missing, changed, or obsolete generated agents in either format. Tests parse the Codex TOML, compare it with the canonical Markdown, and inspect npm's actual package file list, including the hidden marketplace. Codex itself is not required for these development checks.
 
 ```bash
 npm install

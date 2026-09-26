@@ -1,7 +1,7 @@
 {
   "name": "agentic-skills",
   "version": "0.1.0",
-  "description": "Repository-agnostic engineering skills and role prompts for Claude Code and Pi.",
+  "description": "Repository-agnostic engineering skills and role prompts for Claude Code, Codex, and Pi.",
   "license": "AGPL-3.0-only",
   "author": "Josua Müller <hypnotox@pm.me>",
   "repository": {
@@ -10,8 +10,11 @@
   },
   "type": "module",
   "files": [
+    ".agents/plugins",
     ".claude-plugin",
+    "plugin.json",
     "agents",
+    "codex/agents",
     "skills",
     "LICENSE",
     "NOTICE",
@@ -20,6 +23,7 @@
   "keywords": [
     "agent-skills",
     "claude-code-plugin",
+    "codex-plugin",
     "pi-package"
   ],
   "scripts": {
@@ -31,6 +35,7 @@
   },
   "devDependencies": {
     "@types/node": "*",
+    "smol-toml": "*",
     "typescript": "*",
     "vitest": "*",
     "yaml": "*"

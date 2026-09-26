@@ -1,0 +1,12 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "agentic-skills",
+  "description": "Repository-agnostic engineering skills and focused delegation roles.",
+  "author": {
+    "name": "Josua Müller",
+    "email": "hypnotox@pm.me"
+  },
+  "homepage": "https://github.com/hypnotox/agentic-skills",
+  "repository": "https://github.com/hypnotox/agentic-skills",
+  "license": "AGPL-3.0-only"
+}
