@@ -1,6 +1,6 @@
 # agentic-skills
 
-Repository-agnostic engineering skills and delegation roles for Claude Code, Codex, and Pi. Skills use the same Markdown in every harness. Codex roles are distributed as committed [TOML files](codex/agents); Pi role execution is owned by [`pi-subagents`](https://github.com/nicobailon/pi-subagents).
+Repository-agnostic engineering and creative skills and delegation roles for Claude Code, Codex, and Pi. Skills use the same Markdown in every harness. Codex roles are distributed as committed [TOML files](codex/agents); Pi role execution is owned by [`pi-subagents`](https://github.com/nicobailon/pi-subagents).
 
 ## Skills
 
@@ -9,7 +9,10 @@ Each skill is a generic method. Read its canonical file for routing and procedur
 | Skill | Focus |
 |---|---|
 | [`agentic-exploration`](skills/agentic-exploration/SKILL.md) | Orientation and bounded factual exploration |
-| [`agentic-artifact-design`](skills/agentic-artifact-design/SKILL.md) | Substantial prose artifacts |
+| [`agentic-artifact-design`](skills/agentic-artifact-design/SKILL.md) | Purpose, context, ownership, and maintenance of documents and assets |
+| [`agentic-visual-design`](skills/agentic-visual-design/SKILL.md) | Visual intent, composition, form, colour, and appearance in context |
+| [`agentic-typography`](skills/agentic-typography/SKILL.md) | Text roles, hierarchy, voice, placement, and rendered readability |
+| [`agentic-animation`](skills/agentic-animation/SKILL.md) | Staging, timing, dynamics, continuity, and playback assessment |
 | [`agentic-brainstorming`](skills/agentic-brainstorming/SKILL.md) | Material outcome or system direction choices |
 | [`agentic-code-design`](skills/agentic-code-design/SKILL.md) | Target structure for agreed behavior |
 | [`agentic-debugging`](skills/agentic-debugging/SKILL.md) | Unexpected behavior with an unknown cause |
@@ -18,7 +21,9 @@ Each skill is a generic method. Read its canonical file for routing and procedur
 | [`agentic-reviewing`](skills/agentic-reviewing/SKILL.md) | Shared review method and specialist selection |
 | [`agentic-subagents`](skills/agentic-subagents/SKILL.md) | Model and thinking selection for delegation |
 
-Brainstorming, code design, planning, implementation, and artifact design own their applicable review checkpoints. Implementation includes result and task-level historical review. The [reviewing skill](skills/agentic-reviewing/SKILL.md) supplies the review method, reuse rules, and specialist selection. Brainstorming calls the premise-checker directly; earlier exploration does not replace that second opinion.
+Brainstorming, code design, planning, implementation, artifact design, visual design, typography, and animation own their applicable review checkpoints. Implementation includes result and task-level historical review. The [reviewing skill](skills/agentic-reviewing/SKILL.md) supplies the review method, reuse rules, and specialist selection. Brainstorming calls the premise-checker directly; earlier exploration does not replace that second opinion.
+
+Artifact design supplies the common purpose, consumer, context, and ownership questions for documents and assets; its prose guidance applies to prose. The producing task skill owns specialized method, evidence, and completion, with shared artifact questions included in its applicable review. Visual design spans illustration, graphics, interfaces, and 3D work; typography owns text treatment and placement, and animation owns movement over time. Select specialists for the distinct judgments the task needs. Appearance and readability require actual presentation evidence; motion quality requires continuous playback at the intended speed and context. Report qualities left unassessed when that evidence is unavailable.
 
 Applicable workflow instructions authorize the coordinating agent to delegate the reviews they require and the exploration or implementation they permit, without a separate operator request. Required independent review uses a suitable available reviewer unless directly applicable review can be reused; exploration and implementation delegation remain optional. Task scope, write boundaries, explicit prohibitions, harness permissions, and child-role limits still apply. `agentic-subagents` configures delegation after the calling workflow supplies that authority.
 
@@ -36,6 +41,9 @@ Start each child with a fresh conversation, without forking or inheriting the pa
 | [`agentic-plan-reviewer`](agents/plan-reviewer.md) | review brief |
 | [`agentic-instruction-reviewer`](agents/instruction-reviewer.md) | review brief |
 | [`agentic-artifact-reviewer`](agents/artifact-reviewer.md) | review brief |
+| [`agentic-visual-design-reviewer`](agents/visual-design-reviewer.md) | review brief |
+| [`agentic-typography-reviewer`](agents/typography-reviewer.md) | review brief |
+| [`agentic-animation-reviewer`](agents/animation-reviewer.md) | review brief |
 | [`agentic-retrospective-reviewer`](agents/retrospective-reviewer.md) | review brief; available work history, with gaps identified |
 
 The [shared reviewing skill](skills/agentic-reviewing/SKILL.md) guides direct review, reviewer selection, and delegation briefs. Each reviewer role carries its own report-only review contract. There is no generic reviewer role. Write `none` explicitly when no task-specific constraints apply; this does not discard applicable instructions. Cite the repository path for a load-bearing constraint when one exists. Source restrictions, desired detail, and existing verification evidence are optional.
@@ -79,7 +87,7 @@ Clone the whole repository into Codex's user [skills directory](https://learn.ch
 
 The destination names must be unused; the commands do not replace an existing agent directory or symlink. Keep the full checkout: some skills link to `../../agents/*.md`, so copying only individual skill directories would lose their role references. For an existing checkout, link its root into `~/.agents/skills/agentic-skills` and its `codex/agents` directory into `${CODEX_HOME:-$HOME/.codex}/agents/agentic-skills`, using unused destination names. For project-only discovery, use the project's `.agents/skills/agentic-skills` and `.codex/agents/agentic-skills` instead.
 
-Restart Codex after installation. Check `/skills` for the nine skills (Codex may prefix them with `agentic-skills:`), and refer to agents by their declared names, such as `agentic-explorer` or `agentic-implementation-reviewer`. Give each the [required brief](#delegated-roles) and explicitly choose fresh/no-history context using the installed Codex delegation tool's contract; do not assume its default is fresh. The TOML files set only `name`, `description`, and `developer_instructions`, leaving model, reasoning, tools, and permission configuration to Codex and the user.
+Restart Codex after installation. Check `/skills` for the skills listed above (Codex may prefix them with `agentic-skills:`), and refer to agents by their declared names, such as `agentic-explorer` or `agentic-implementation-reviewer`. Give each the [required brief](#delegated-roles) and explicitly choose fresh/no-history context using the installed Codex delegation tool's contract; do not assume its default is fresh. The TOML files set only `name`, `description`, and `developer_instructions`, leaving model, reasoning, tools, and permission configuration to Codex and the user.
 
 Update the checkout and restart Codex:
 
@@ -142,6 +150,9 @@ Merge these Pi-specific settings into your existing user or project settings whi
       "agentic-plan-reviewer": {"systemPromptMode": "append", "inheritProjectContext": true, "inheritGlobalContext": true, "inheritSkills": true, "defaultContext": "fresh", "excludeTools": ["handoff_session"]},
       "agentic-instruction-reviewer": {"systemPromptMode": "append", "inheritProjectContext": true, "inheritGlobalContext": true, "inheritSkills": true, "defaultContext": "fresh", "excludeTools": ["handoff_session"]},
       "agentic-artifact-reviewer": {"systemPromptMode": "append", "inheritProjectContext": true, "inheritGlobalContext": true, "inheritSkills": true, "defaultContext": "fresh", "excludeTools": ["handoff_session"]},
+      "agentic-visual-design-reviewer": {"systemPromptMode": "append", "inheritProjectContext": true, "inheritGlobalContext": true, "inheritSkills": true, "defaultContext": "fresh", "excludeTools": ["handoff_session"]},
+      "agentic-typography-reviewer": {"systemPromptMode": "append", "inheritProjectContext": true, "inheritGlobalContext": true, "inheritSkills": true, "defaultContext": "fresh", "excludeTools": ["handoff_session"]},
+      "agentic-animation-reviewer": {"systemPromptMode": "append", "inheritProjectContext": true, "inheritGlobalContext": true, "inheritSkills": true, "defaultContext": "fresh", "excludeTools": ["handoff_session"]},
       "agentic-retrospective-reviewer": {"systemPromptMode": "append", "inheritProjectContext": true, "inheritGlobalContext": true, "inheritSkills": true, "defaultContext": "fresh", "excludeTools": ["handoff_session"]}
     }
   }
@@ -188,3 +199,5 @@ npm pack --dry-run
 ## License and provenance
 
 [`AGPL-3.0-only`](LICENSE). Adapted from [`hypnotox/agentic-workflows`](https://github.com/hypnotox/agentic-workflows); see [`NOTICE`](NOTICE).
+
+The methods expand principles from [`agentic-doctrine`](https://github.com/hypnotox/agentic-doctrine) into self-contained skills and focused reviewer criteria. This README owns the provenance reference; installed skills and roles carry the guidance they need.

@@ -1,7 +1,7 @@
 {
   "name": "agentic-skills",
   "version": "0.1.0",
-  "description": "Repository-agnostic engineering skills and role prompts for Claude Code, Codex, and Pi.",
+  "description": "Repository-agnostic engineering and creative skills and role prompts for Claude Code, Codex, and Pi.",
   "license": "AGPL-3.0-only",
   "author": "Josua Müller <hypnotox@pm.me>",
   "repository": {

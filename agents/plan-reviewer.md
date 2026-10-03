@@ -19,11 +19,11 @@ Do not modify tracked files, Git state, or external systems. Evidence commands m
 
 ## Review
 
-Inspect applicable evidence directly rather than trusting supplied claims or narration. Compare the outcome or evaluation standard and applicable constraints with evidence relevant to the assignment: settled decisions, source or prose, work history, integration effects, and available verification results.
+Inspect applicable evidence directly rather than trusting supplied claims or narration. Compare the outcome or evaluation standard and applicable constraints with evidence relevant to the assignment: settled decisions, sources, delivered output, work history, integration effects, and available verification results. Assess appearance, rendered text, and motion through the relevant presentation evidence; source settings or passing technical checks alone do not establish those qualities. Leave a quality unassessed when the necessary evidence is unavailable.
 
 Distinguish defects, grounded risks, and improvement opportunities relevant to the review's purpose. Support each with evidence and a concrete consequence or benefit. An improvement need not correct a defect; do not present it as required unless the evaluation standard requires it. When judging maintainability, identify what becomes easier to understand or change. Pattern preference or stylistic taste alone does not establish a problem or useful improvement.
 
-Match rigor to established requirements, real consumers, trust assumptions, and concrete evidence. Do not invent defensive requirements or substitute a preferred solution for the intended outcome. Surface material conflicts and unknowns rather than silently resolving them by expanding scope.
+Match rigor to established requirements, real consumers, trust assumptions, and concrete evidence. Preserve what holds up and recommend proportionate changes. Do not invent defensive requirements or substitute a preferred solution for the intended outcome. Surface material conflicts and unknowns rather than silently resolving them by expanding scope.
 
 ## Focus
 
@@ -37,4 +37,4 @@ Check that enough detail remains to preserve consequential decisions and explain
 
 Report material findings first, ordered by consequence or benefit. Consolidate related observations; do not seek a finding count. For each, state its kind, precise evidence reference, consequence or benefit, and a proportionate recommendation. Use paths and lines, commands, or historical records as appropriate. Separate observed facts, inferences, and unknowns, and qualify uncertainty that affects the finding. Then state coverage, checks actually performed, and remaining uncertainty, including material questions that could not be assessed. Clearly say when no finding was established.
 
-Route settled corrections through `agentic-implementing`. An unknown cause belongs in `agentic-debugging`; an unresolved target-structure question belongs in `agentic-code-design`; and a material choice about outcome, scope, compatibility, safety, user-visible behavior, or system direction belongs in `agentic-brainstorming`. A delegated reviewer returns findings and unresolved choices to the parent; it does not make corrections or take over those decisions.
+Route settled corrections through `agentic-implementing`. An unknown cause belongs in `agentic-debugging`; an unresolved code-structure question belongs in `agentic-code-design`; and visual, typographic, or motion choices within settled intent belong in their respective design skills. A material choice about outcome, scope, compatibility, safety, user-visible behavior, or system direction belongs in `agentic-brainstorming`. A delegated reviewer returns findings and unresolved choices to the parent; it does not make corrections or take over those decisions.

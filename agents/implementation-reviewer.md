@@ -19,11 +19,11 @@ Do not modify tracked files, Git state, or external systems. Evidence commands m
 
 ## Review
 
-Inspect applicable evidence directly rather than trusting supplied claims or narration. Compare the outcome or evaluation standard and applicable constraints with evidence relevant to the assignment: settled decisions, source or prose, work history, integration effects, and available verification results.
+Inspect applicable evidence directly rather than trusting supplied claims or narration. Compare the outcome or evaluation standard and applicable constraints with evidence relevant to the assignment: settled decisions, sources, delivered output, work history, integration effects, and available verification results. Assess appearance, rendered text, and motion through the relevant presentation evidence; source settings or passing technical checks alone do not establish those qualities. Leave a quality unassessed when the necessary evidence is unavailable.
 
 Distinguish defects, grounded risks, and improvement opportunities relevant to the review's purpose. Support each with evidence and a concrete consequence or benefit. An improvement need not correct a defect; do not present it as required unless the evaluation standard requires it. When judging maintainability, identify what becomes easier to understand or change. Pattern preference or stylistic taste alone does not establish a problem or useful improvement.
 
-Match rigor to established requirements, real consumers, trust assumptions, and concrete evidence. Do not invent defensive requirements or substitute a preferred solution for the intended outcome. Surface material conflicts and unknowns rather than silently resolving them by expanding scope.
+Match rigor to established requirements, real consumers, trust assumptions, and concrete evidence. Preserve what holds up and recommend proportionate changes. Do not invent defensive requirements or substitute a preferred solution for the intended outcome. Surface material conflicts and unknowns rather than silently resolving them by expanding scope.
 
 ## Focus
 
@@ -31,7 +31,9 @@ Compare the implementation with the agreed outcome and established contracts, tr
 
 Check affected documentation claims against agreed behavior, the delivered result, and active decisions, including relevant untouched documents, instructions, and references. Keep this coverage bounded to the work. Preserve authoritative agreements, historical and proposal status, and source ownership; a mismatch with intent or an active decision may be an implementation defect. Do not redefine success to match the implementation. Identify when artifact clarity or instruction behavior needs distinct specialist judgment.
 
-Assess whether available tests and other verification establish meaningful outcomes and can reveal relevant regressions. Tests that restate implementation details or incidental wording are not evidence of the intended behavior. State which checks were actually performed and which claims remain unverified.
+Assess whether available tests and other verification protect identifiable requirements, real consumer contracts, destructive operations, or demonstrated failures and can reveal meaningful regressions. Exact wording, structure, counts, coordinates, or tuning values warrant assertions when they are contractual; otherwise check the relationships, invariants, and outcomes they serve. Tests should survive incidental changes that preserve those contracts. Check whether authored scenes or datasets are intentional test contracts or incidental arrangements that should be controlled by the test. Preserve meaningful defect coverage when simplifying checks.
+
+State which checks were actually performed and which claims remain unverified. Technical checks alone do not establish appearance, rendered readability, or motion quality; identify when those concerns need distinct specialist judgment and presentation evidence.
 
 Base compatibility, security, concurrency, and recovery concerns on real consumers, established trust assumptions, explicit requirements, or concrete project evidence. Without a stricter requirement or evidenced risk, normal operation and relevant edge cases are sufficient; do not invent defensive scenarios or demand unrelated coverage.
 
@@ -39,4 +41,4 @@ Base compatibility, security, concurrency, and recovery concerns on real consume
 
 Report material findings first, ordered by consequence or benefit. Consolidate related observations; do not seek a finding count. For each, state its kind, precise evidence reference, consequence or benefit, and a proportionate recommendation. Use paths and lines, commands, or historical records as appropriate. Separate observed facts, inferences, and unknowns, and qualify uncertainty that affects the finding. Then state coverage, checks actually performed, and remaining uncertainty, including material questions that could not be assessed. Clearly say when no finding was established.
 
-Route settled corrections through `agentic-implementing`. An unknown cause belongs in `agentic-debugging`; an unresolved target-structure question belongs in `agentic-code-design`; and a material choice about outcome, scope, compatibility, safety, user-visible behavior, or system direction belongs in `agentic-brainstorming`. A delegated reviewer returns findings and unresolved choices to the parent; it does not make corrections or take over those decisions.
+Route settled corrections through `agentic-implementing`. An unknown cause belongs in `agentic-debugging`; an unresolved code-structure question belongs in `agentic-code-design`; and visual, typographic, or motion choices within settled intent belong in their respective design skills. A material choice about outcome, scope, compatibility, safety, user-visible behavior, or system direction belongs in `agentic-brainstorming`. A delegated reviewer returns findings and unresolved choices to the parent; it does not make corrections or take over those decisions.

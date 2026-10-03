@@ -15,7 +15,7 @@ Inspect the affected current state, dependencies, and verification surfaces. For
 
 1. State the outcome and settled constraints.
 2. Structure work around coherent changes to behavior, responsibilities, architecture, state, or integration.
-3. Order actual dependencies and identify where separately changed parts meet; do not manufacture phases or coordination for naturally linear work.
+3. Order actual dependencies, including necessary trials before dependent work or polish, and identify where separately changed parts meet; do not manufacture phases or coordination for naturally linear work.
 4. Assign ownership only when delegation helps; keep shared and integration work with one owner.
 5. Include verification where it meaningfully helps establish the outcome, proportionate to the task and its risks; not every step needs its own proof.
 6. Surface open blockers instead of disguising them as tasks.

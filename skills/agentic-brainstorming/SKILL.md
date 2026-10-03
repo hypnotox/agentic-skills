@@ -23,3 +23,5 @@ Surface only concerns grounded in the current task, system, contract, or observe
 Keep the decision in the active interaction by default. Persist it only when the user asks or applicable repository instructions require it and the task authorizes that write. Do not invent a decision log, memory store, hidden state, or other process artifact.
 
 Once settled, preserve the decision's boundary. Reopen it only when new evidence creates another material choice.
+
+When consequential uncertainty can be resolved by a proportionate trial, establish what observation would distinguish the viable directions and run it before committing to costly dependent work. Use the relevant task method and existing authorization for experiments or rough studies; evidence-only exploration does not grant implementation authority. Distinguish the trial's observed result from expectations and from qualities it did not assess.

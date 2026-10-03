@@ -1,7 +1,7 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "agentic-skills",
-  "description": "Repository-agnostic engineering skills and role agents.",
+  "description": "Repository-agnostic engineering and creative skills and role agents.",
   "owner": {
     "name": "Josua Müller",
     "email": "hypnotox@pm.me"
@@ -9,7 +9,7 @@
   "plugins": [
     {
       "name": "agentic-skills",
-      "description": "Repository-agnostic engineering skills and focused role agents.",
+      "description": "Repository-agnostic engineering and creative skills and focused role agents.",
       "source": "./",
       "category": "development"
     }

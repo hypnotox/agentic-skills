@@ -9,6 +9,7 @@ import { parse } from "yaml";
 const root = resolve(import.meta.dirname, "..");
 const exec = promisify(execFile);
 const skillNames = [
+  "agentic-animation",
   "agentic-artifact-design",
   "agentic-brainstorming",
   "agentic-code-design",
@@ -18,6 +19,8 @@ const skillNames = [
   "agentic-planning",
   "agentic-reviewing",
   "agentic-subagents",
+  "agentic-typography",
+  "agentic-visual-design",
 ] as const;
 const roleNames = {
   "explorer.md": "agentic-explorer",
@@ -27,6 +30,9 @@ const roleNames = {
   "plan-reviewer.md": "agentic-plan-reviewer",
   "instruction-reviewer.md": "agentic-instruction-reviewer",
   "artifact-reviewer.md": "agentic-artifact-reviewer",
+  "visual-design-reviewer.md": "agentic-visual-design-reviewer",
+  "typography-reviewer.md": "agentic-typography-reviewer",
+  "animation-reviewer.md": "agentic-animation-reviewer",
   "retrospective-reviewer.md": "agentic-retrospective-reviewer",
   "implementer.md": "agentic-implementer",
 } as const;
