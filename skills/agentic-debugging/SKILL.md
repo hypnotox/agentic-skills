@@ -1,6 +1,6 @@
 ---
 name: agentic-debugging
-description: Investigate unexpected behavior with an unknown cause, distinguish hypotheses with evidence, and establish a regression oracle or report that the cause remains unresolved.
+description: Investigate unexpected behavior when its cause is unknown; skip known mechanical fixes.
 ---
 
 # Agentic debugging

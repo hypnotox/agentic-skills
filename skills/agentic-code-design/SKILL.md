@@ -1,6 +1,6 @@
 ---
 name: agentic-code-design
-description: Resolve questions about ownership, state, contracts, dependencies, or refactor boundaries, and review consequential proposed code structure before dependent specifications, plans, or implementation.
+description: Choose or review code structure for agreed behavior before dependent work, including ownership, state, contracts, dependencies, and refactor boundaries.
 ---
 
 # Agentic code design

@@ -6,4 +6,6 @@ Keep ownership explicit: [`skills/*/SKILL.md`](skills) define generic methods. [
 
 Keep the cross-harness design thin. Build-time composition may produce committed, self-contained agent files; installation and execution in Pi, Claude Code, and Codex must not require generation or a build step. Edit the owning sources and regenerate rather than editing generated agents. Do not add runtime instruction machinery, persistence, memory, scheduling, orchestration, or harness adapters. Development dependencies use `"*"` so published sources stay current. Add no version pins and commit no lockfile.
 
+Keep discovery descriptions focused on selection cues and essential launch requirements; procedures belong in skill and role bodies.
+
 Run `npm install`, `npm run check`, and `npm pack --dry-run`. Follow the linked canonical files instead of duplicating their procedures here.
