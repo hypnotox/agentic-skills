@@ -1,6 +1,6 @@
 # agentic-skills
 
-Repository-agnostic engineering and creative skills and delegation roles for Claude Code, Codex, and Pi. Skills use the same Markdown in every harness. Codex roles are distributed as committed [TOML files](codex/agents); Pi role execution is owned by [`pi-subagents`](https://github.com/nicobailon/pi-subagents).
+Repository-agnostic engineering and creative skills and delegation roles for Claude Code, Codex, omp, and Pi. Skills use the same Markdown in every harness. Codex roles are distributed as committed [TOML files](codex/agents); omp uses its built-in `task` tool with the committed Markdown roles; Pi role execution is owned by [`pi-subagents`](https://github.com/nicobailon/pi-subagents).
 
 ## Skills
 
@@ -112,6 +112,57 @@ codex plugin add agentic-skills@agentic-skills
 
 Choose one skills installation route to avoid duplicate discovery. The plugin carries the role files but does **not** register custom Codex agents. If using the plugin and wanting named agents too, keep an ordinary checkout outside the skills directory and link only its `codex/agents` directory into Codex's agent directory as above. Refresh the marketplace with `codex plugin marketplace upgrade agentic-skills`; manage the installed plugin with Codex's plugin commands. This repository is not a listing in OpenAI's public plugin directory.
 
+## omp (Oh My Pi)
+
+Use a current [omp](https://github.com/can1357/oh-my-pi) release with plugin skill and task-agent discovery. Install through its native marketplace commands; omp reuses the repository's Claude-compatible catalog:
+
+```bash
+omp plugin marketplace add hypnotox/agentic-skills
+omp plugin install agentic-skills@agentic-skills
+
+# Local checkout, without installation
+omp --plugin-dir /absolute/path/to/agentic-skills
+
+# Persistent local checkout link instead (Bun required for uninstall)
+omp plugin link /absolute/path/to/agentic-skills
+```
+
+Choose one route. The marketplace installation and local link both expose the committed [`skills`](skills) and all twelve Markdown roles in [`agents`](agents), including all nine reviewers. The explicit `package.json` `omp` manifest is empty because omp discovers these conventional directories without extension modules or path mappings. No `pi-subagents`, Pi-specific overrides, generation, or build step is needed.
+
+The marketplace and `--plugin-dir` routes do not require Bun for this instruction-only package. Local-link removal goes through omp's npm/link plugin manager and requires `bun` on `PATH`. To persistently install a local checkout without that prerequisite, use `omp plugin marketplace add /absolute/path/to/agentic-skills` followed by the same marketplace install command.
+
+Restart omp after CLI installation or linking. After an in-session `/marketplace install`, use `/reload-plugins` to refresh skills and task agents. Skill commands use `/skill:agentic-reviewing` (and the other skill names above); roles use their unprefixed frontmatter names, such as `agentic-implementation-reviewer`, not Claude Code's `agentic-skills:` prefix.
+
+If omp also discovers a Claude installation of this package, it deduplicates identical skills instead of importing them twice. Differing revisions remain available under namespaced skill names; keep both installations aligned or select a single discovery source if you want only one revision exposed.
+
+Launch reviewers with omp's native `task` tool and the [required review brief](#delegated-roles). With its default batch schema:
+
+```json
+{
+  "context": "Outcome: the change must preserve the public API. Review surface: src/ and the affected tests. Settled decisions: no API changes. Applicable task-specific constraints: none.",
+  "tasks": [
+    {
+      "agent": "agentic-implementation-reviewer",
+      "task": "Review the change for correctness and contract consistency. Report findings with precise evidence; do not edit or delegate.",
+      "solutionSpace": "Independent correctness review; no known defect or prescribed fix."
+    }
+  ]
+}
+```
+
+The calling workflow must authorize delegation. omp starts task children without the parent transcript and carries discovered skills and applicable context files into the child; do not pass Pi's `context: "fresh"` field. Here `context` is shared assignment text, not a history mode. Supply each child a complete brief. Role and brief boundaries remain authoritative; report-only roles' mutation and no-further-delegation limits remain prompt constraints, not a sandbox.
+
+For other specialist reviews, replace `agent` with the appropriate name from [Delegated roles](#delegated-roles). Use the active tool schema if `task.batch` is disabled. The shared roles do not pin models, thinking, or tools; omp's configuration and supported per-item launch overrides remain authoritative. Follow [`agentic-subagents`](skills/agentic-subagents/SKILL.md) before choosing overrides. Background results are delivered automatically; use `wait` only when blocked and `agent://<id>` for full reports. Use `write` to `agent://<id>` for clarification when omp exposes peer messaging.
+
+For marketplace updates:
+
+```bash
+omp plugin marketplace update agentic-skills
+omp plugin upgrade agentic-skills@agentic-skills
+```
+
+Upgrade this plugin explicitly: omp's upgrade-all version comparison does not detect new revisions of this versionless catalog entry. For a local link, update the checkout instead. Restart or reload after updates. Uninstall with `omp plugin uninstall agentic-skills@agentic-skills` for a marketplace install, or `omp plugin uninstall agentic-skills` for a local link; the latter removes the link, not the source checkout. Use `--scope project` on marketplace installation, upgrade, and removal for project-only use; `plugin link` is user-scoped.
+
 ## Pi
 
 Install [`pi-subagents`](https://github.com/nicobailon/pi-subagents) as the sole `subagent` provider, then install this package:
@@ -169,7 +220,7 @@ Before execution, call `subagent({ action: "list", capabilities: true })` and se
 
 ## Development
 
-Pi, Claude Code, and Codex use the committed skills and self-contained agent files directly. Installation and execution require no generation or build step; there are no install or packaging hooks that generate instructions.
+omp, Pi, Claude Code, and Codex use the committed skills and self-contained agent files directly. Installation and execution require no generation or build step; there are no install or packaging hooks that generate instructions.
 
 ### Agent sources and rendering
 
@@ -181,7 +232,7 @@ The reviewer Markdown files in [`agents`](agents) and every TOML file in [`codex
 
 [`scripts/generate-agents.ts`](scripts/generate-agents.ts) fills the template's four slots: `introduction`, `review`, `focus`, and `report`. Each slot must occur exactly once. No template processing happens in any harness. Explorer, premise-checker, and implementer remain handwritten in `agents/`.
 
-The same generator renders every role's Markdown metadata and body into a self-contained Codex TOML file. It composes reviewers from their owning sources in memory, not from potentially stale generated Markdown. Codex filenames follow the frontmatter `name`; duplicate or invalid names fail before outputs are changed. Build notices are excluded from `developer_instructions`, and no harness settings are added to the shared role prompts.
+The same generator renders every role's Markdown metadata and body into a self-contained Codex TOML file. It composes reviewers from their owning sources in memory, not from potentially stale generated Markdown. Codex filenames follow the frontmatter `name`; duplicate or invalid names fail before outputs are changed. Build notices are excluded from `developer_instructions`, and no harness settings are added to the shared role prompts. omp discovers the shared Markdown agents directly; it has no separate generated format.
 
 After changing reviewer sources or handwritten roles, run `npm run generate` and commit the source and generated changes together. Generation also removes marked generated agents whose source was removed, leaving unowned files alone. The generator and templates are development tooling, excluded from the npm package.
 
