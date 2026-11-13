@@ -19,7 +19,7 @@ Expose consequential choices early. Resolve motion choices within agreed intent 
 
 ## Develop the action
 
-Use proportionate rough motion studies to resolve consequential uncertainty about poses, timing, and transitions before polishing. Stage poses, silhouettes, and framing around the intended focus, preserving the visual cues that need to carry through the action.
+Block out key poses, timing, and transitions with proportionate rough passes, and settle them before adding detail or polish. Stage poses, silhouettes, and framing around the intended focus, preserving the visual cues that need to carry through the action.
 
 Shape timing, spacing, and rhythm deliberately: action pace, holds, acceleration, deceleration, and paths between positions. Watch how those relationships convey energy, emphasis, and character. Strong key poses alone do not establish that the movement reads.
 

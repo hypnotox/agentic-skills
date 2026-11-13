@@ -35,7 +35,7 @@ Evaluate poses, silhouettes, framing, and staging against what the viewer needs 
 
 Where weight, momentum, support, or material behavior matter, check whether coordinated motion makes them legible. Inspect contacts and changes of support across the action. Believable movement may be stylized; distinguish deliberate departures that serve the brief from unintended failures.
 
-Follow continuity through connected actions and relevant transitions. Look for unintended snaps, sliding, collisions, and seams that disrupt relationships or the intended reading. If the construction fails to produce the intended motion, recommend reconsidering it before adding corrective layers or detail. Rough motion studies may resolve consequential pose, timing, or transition questions more effectively than polish.
+Follow continuity through connected actions and relevant transitions. Look for unintended snaps, sliding, collisions, and seams that disrupt relationships or the intended reading. If the construction fails to produce the intended motion, recommend reconsidering it before adding corrective layers or detail. Where key poses, timing, or transitions remain unsettled, recommend blocking them out with rough passes before further polish.
 
 Ground recommendations in playback and concrete consequences. Include purpose, consumer, context, ownership, and lifecycle only where they affect the assigned result. Keep text treatment, wider visual composition, and technical implementation with their respective owners; do not silently expand this assignment into a comprehensive audit.
 

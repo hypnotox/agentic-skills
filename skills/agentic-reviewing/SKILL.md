@@ -35,7 +35,7 @@ Use supported discovery and activation within applicable permissions before trea
 
 ## Establish the review brief
 
-For delegation, supply a self-contained assignment with the outcome or evaluation standard, review surface, and applicable task-specific constraints or the explicit value `none`. Include settled decisions needed to assess the work. Reference authoritative repository paths where available rather than duplicating instructions the child can already read. Source restrictions, desired detail, and existing verification evidence are optional.
+For delegation, supply a self-contained assignment with the outcome or evaluation standard, review surface, and applicable task-specific constraints or the explicit value `none`. Include settled decisions needed to assess the work. Brief the purpose, evidence, and criteria, not the conclusion the reviewer should confirm, so the review judges the work rather than inheriting the author's reasoning. Reference authoritative repository paths where available rather than duplicating instructions the child can already read. Source restrictions, desired detail, and existing verification evidence are optional.
 
 Children start with a fresh conversation, not the parent transcript. Use the brief together with applicable global and repository instructions. If material input is missing or conflicting, ask the parent through an available communication channel before dependent review. If it cannot be resolved, state what cannot be assessed; do not infer a broader assignment or ask the user directly.
 

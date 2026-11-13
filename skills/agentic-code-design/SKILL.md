@@ -23,7 +23,7 @@ Choose names and control flow that expose intent and the underlying model. Use c
 
 Use KISS and YAGNI as the default against unjustified complexity; treat SOLID, DRY, and patterns as diagnostics rather than reasons to add machinery. Policy duplication matters more than textual similarity; stay direct until evidenced variation, volatility, ownership, or translation pressure creates a useful seam. Treat verified applicable platform guarantees and established contracts as valid assumptions rather than adding defenses for their hypothetical violation.
 
-Follow the project's established security requirements and trust assumptions. Without stricter requirements, implementing the agreed behavior is sufficient. Do not add safeguards for hypothetical risks. If a concrete risk would require expanding the agreed scope, surface it through `agentic-brainstorming` before dependent work.
+Follow the project's established stance on compatibility, validation, security, recovery, and testing, and its trust assumptions. Without stricter requirements, implementing the agreed behavior is sufficient. Do not add safeguards for hypothetical risks. Where code already handles untrusted input, the platform's safe idiom, such as parameterized queries or context-appropriate escaping, is baseline correctness rather than an added safeguard. If a concrete risk would require expanding the agreed scope, surface it through `agentic-brainstorming` before dependent work.
 
 ## Set boundaries, dependencies, and contracts
 
