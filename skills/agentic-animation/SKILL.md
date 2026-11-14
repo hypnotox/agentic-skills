@@ -19,7 +19,7 @@ Expose consequential choices early. Resolve motion choices within agreed intent 
 
 ## Develop the action
 
-Block out key poses, timing, and transitions with proportionate rough passes, and settle them before adding detail or polish. Stage poses, silhouettes, and framing around the intended focus, preserving the visual cues that need to carry through the action.
+Where key poses, timing, or transitions are not yet settled, block them out with proportionate rough passes and settle them before adding detail or polish. Stage poses, silhouettes, and framing around the intended focus, preserving the visual cues that need to carry through the action.
 
 Shape timing, spacing, and rhythm deliberately: action pace, holds, acceleration, deceleration, and paths between positions. Watch how those relationships convey energy, emphasis, and character. Strong key poses alone do not establish that the movement reads.
 

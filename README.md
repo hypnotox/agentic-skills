@@ -15,7 +15,7 @@ Each skill is a generic method. Read its canonical file for routing and procedur
 | [`agentic-animation`](skills/agentic-animation/SKILL.md) | Staging, timing, dynamics, continuity, and playback assessment |
 | [`agentic-brainstorming`](skills/agentic-brainstorming/SKILL.md) | Material outcome or system direction choices |
 | [`agentic-code-design`](skills/agentic-code-design/SKILL.md) | Target structure for agreed behavior |
-| [`agentic-debugging`](skills/agentic-debugging/SKILL.md) | Unexpected behavior with an unknown cause |
+| [`agentic-debugging`](skills/agentic-debugging/SKILL.md) | Unexpected behavior or output in code or any other medium with an unknown cause |
 | [`agentic-planning`](skills/agentic-planning/SKILL.md) | Proportionate sequencing for settled work |
 | [`agentic-implementing`](skills/agentic-implementing/SKILL.md) | Implementation and verification |
 | [`agentic-reviewing`](skills/agentic-reviewing/SKILL.md) | Shared review method and specialist selection |
