@@ -18,10 +18,10 @@ Each skill is a generic method. Read its canonical file for routing and procedur
 | [`agentic-debugging`](skills/agentic-debugging/SKILL.md) | Unexpected behavior or output in code or any other medium with an unknown cause |
 | [`agentic-planning`](skills/agentic-planning/SKILL.md) | Proportionate sequencing for settled work |
 | [`agentic-implementing`](skills/agentic-implementing/SKILL.md) | Implementation and verification |
-| [`agentic-reviewing`](skills/agentic-reviewing/SKILL.md) | Shared review method and specialist selection |
+| [`agentic-reviewing`](skills/agentic-reviewing/SKILL.md) | When independent review is warranted, shared review method, and specialist selection |
 | [`agentic-subagents`](skills/agentic-subagents/SKILL.md) | Model and thinking selection for delegation |
 
-Brainstorming, code design, planning, implementation, artifact design, visual design, typography, and animation own their applicable review checkpoints. Implementation includes result and task-level historical review. The [reviewing skill](skills/agentic-reviewing/SKILL.md) supplies the review method, reuse rules, and specialist selection. Brainstorming calls the premise-checker directly; earlier exploration does not replace that second opinion.
+Brainstorming, code design, planning, implementation, artifact design, visual design, typography, and animation own their applicable review checkpoints. Implementation includes result and task-level historical review. The [reviewing skill](skills/agentic-reviewing/SKILL.md) supplies the review trigger, review method, reuse rules, and specialist selection, including the roles that take decision records and specifications. Brainstorming calls the premise-checker directly; earlier exploration does not replace that second opinion.
 
 Artifact design supplies the common purpose, consumer, context, and ownership questions for documents and assets; its prose guidance applies to prose. The producing task skill owns specialized method, evidence, and completion, with shared artifact questions included in its applicable review. Visual design spans illustration, graphics, interfaces, and 3D work; typography owns text treatment and placement, and animation owns movement over time. Select specialists for the distinct judgments the task needs. Appearance and readability require actual presentation evidence; motion quality requires continuous playback at the intended speed and context. Report qualities left unassessed when that evidence is unavailable.
 

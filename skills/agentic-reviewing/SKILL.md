@@ -13,13 +13,13 @@ Safety, permissions, harness constraints, the active task, and applicable reposi
 
 This is the review trigger that other skills' review checkpoints cite; each checkpoint names its reviewer, what is assessed, and when in its method the check happens. New independent review is warranted when the work under assessment involves any of these situations:
 
-- several viable designs or approaches, where choosing among them shapes the result;
+- several viable designs or approaches, where neither the request nor an established convention settles the choice and it would materially change the result;
 - a change to a public contract or to compatibility, such as an interface, format, command, or behavior that people or systems outside the change rely on;
 - a step that is hard to reverse, such as a data migration, a deletion, or a publication;
 - guidance that changes how agents behave, such as skills, role prompts, or repository instructions;
 - work meant for delivery whose quality can be judged only by looking at or playing the result, such as visual, typographic, and motion work.
 
-Routine, well-understood, and uniform mechanical work needs no review, whatever its size. Outside these situations, review is optional at your judgment. Reuse directly applicable independent review instead of repeating it. Reuse covers only the questions and evidence actually assessed; materially changed assumptions, designs, results, or history require refreshing affected conclusions. Work-history review has its own trigger in `agentic-implementing`.
+Routine work and uniform mechanical work need no review, whatever the size. Outside these situations, review is optional at your judgment. Reuse directly applicable independent review instead of repeating it. Reuse covers only the questions and evidence actually assessed; materially changed assumptions, designs, results, or history require refreshing affected conclusions. Work-history review has its own trigger in `agentic-implementing`.
 
 ## Delegate required independent review
 
@@ -40,7 +40,7 @@ The parent selects the reviewer whose primary question matches the assignment:
 | [`agentic-retrospective-reviewer`](../../agents/retrospective-reviewer.md) | What significant issues, avoidable friction, and useful lessons does the work history establish? |
 | [`agentic-premise-checker`](../../agents/premise-checker.md) | Does the proposed direction serve the intended outcome on supported premises? |
 
-A decision record goes to the premise checker, which assesses its fit to the intended outcome, its material assumptions, and whether the alternatives were set aside on supported grounds. A specification goes to the artifact reviewer, with the agreed intent as its evaluation standard.
+A decision record goes to the premise checker, which assesses its fit to the intended outcome, its material assumptions, and whether the alternatives were set aside on supported grounds. A specification goes to the artifact reviewer, with the agreed intent as its evaluation standard: brief it to assess whether the specification makes that intent precise and complete, not only whether it reads well.
 
 One specialist is sufficient when one focus covers the task. Use multiple specialists when distinct questions warrant separate judgment, not merely because the roles exist. Include shared artifact questions in the applicable output review rather than adding a separate artifact review automatically. Give each a clear primary focus; overlapping evidence is acceptable. These focuses are not file-type boundaries or reasons to ignore an obvious material issue, but do not silently expand an assignment into a comprehensive audit.
 
