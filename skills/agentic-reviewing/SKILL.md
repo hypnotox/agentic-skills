@@ -19,7 +19,7 @@ This is the review trigger that other skills' review checkpoints cite; each chec
 - guidance that changes how agents behave, such as skills, role prompts, or repository instructions;
 - work meant for delivery whose quality can be judged only by looking at or playing the result, such as visual, typographic, and motion work.
 
-Routine work and uniform mechanical work need no review, whatever the size. Outside these situations, review is optional at your judgment. Reuse directly applicable independent review instead of repeating it. Reuse covers only the questions and evidence actually assessed; materially changed assumptions, designs, results, or history require refreshing affected conclusions. Work-history review has its own trigger in `agentic-implementing`.
+Routine work and uniform mechanical work need no review, whatever the size, with one exception: a change to a public contract or to compatibility, or a step that is hard to reverse, warrants review even when the work is routine or mechanical, because a mistake there reaches others or cannot be taken back. Outside these situations, review is optional at your judgment. Reuse directly applicable independent review instead of repeating it. Reuse covers only the questions and evidence actually assessed; materially changed assumptions, designs, results, or history require refreshing affected conclusions. Work-history review has its own trigger in `agentic-implementing`.
 
 ## Delegate required independent review
 
