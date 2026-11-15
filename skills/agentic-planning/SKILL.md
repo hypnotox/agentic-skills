@@ -11,7 +11,7 @@ Safety, permissions, harness constraints, the active task, and applicable reposi
 
 ## Build a revisable route
 
-Inspect the affected current state, dependencies, and verification surfaces. For a code change, apply `agentic-code-design` before sequencing when a structural question remains or assessing the proposed structure requires nontrivial judgment, even if the design choice is settled. Reuse directly applicable independent review and preserve settled choices unless consequential new evidence reopens them. Expose unresolved design dependencies as blockers.
+Inspect the affected current state, dependencies, and verification surfaces. For a code change, apply `agentic-code-design` before sequencing when a structural question remains or the proposed structure meets the review trigger in `agentic-reviewing`, even if the design choice is settled. Reuse directly applicable independent review and preserve settled choices unless consequential new evidence reopens them. Expose unresolved design dependencies as blockers.
 
 1. State the outcome and settled constraints.
 2. Structure work around coherent changes to behavior, responsibilities, architecture, state, or integration.
@@ -24,6 +24,6 @@ Explain what changes and why. Carry forward enough of the settled implementation
 
 A plan is a revisable route, not a frozen contract. Paths, order, commands, and delegated ownership may change as evidence develops while the outcome and settled constraints remain authoritative. Surface changes that affect that outcome or those constraints rather than silently revising them.
 
-Before relying on a plan whose route requires nontrivial judgment, delegate a fresh-context assessment to `agentic-plan-reviewer` unless directly applicable independent review can be reused. This checkpoint authorizes the coordinating agent to delegate without a separate operator request, within applicable permissions and role boundaries. Apply `agentic-reviewing` for shared trigger, reuse, activation, and fallback rules. Assess the route, dependencies, scope, and verification. Reconcile material findings against the settled outcome and constraints before proceeding, and recheck conclusions affected by substantive corrections.
+Before relying on a plan whose route meets the review trigger in `agentic-reviewing`, delegate a fresh-context assessment to `agentic-plan-reviewer` unless directly applicable independent review can be reused. This checkpoint authorizes the coordinating agent to delegate without a separate operator request, within applicable permissions and role boundaries. Apply `agentic-reviewing` for shared reuse, activation, and fallback rules. Assess the route, dependencies, scope, and verification. Reconcile material findings against the settled outcome and constraints before proceeding, and recheck conclusions affected by substantive corrections.
 
 Keep plans in the active interaction by default. Create or update a plan file only when the user asks or applicable repository instructions require it and the task authorizes that write. Do not create hidden state, caches, memory, or a plan lifecycle as a fallback.

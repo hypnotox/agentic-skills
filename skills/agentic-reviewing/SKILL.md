@@ -5,13 +5,25 @@ description: Independently review code, documents, assets, designs, implementati
 
 # Agentic reviewing
 
-Use this skill to review code, documents, assets, designs, proposed changes, implementations, or work history. Obtain or reuse directly applicable independent review when the relevant assessment requires nontrivial judgment. Routine, well-understood and uniform mechanical work is exempt regardless of size. Reuse covers only the questions and evidence actually assessed; materially changed assumptions, designs, results, or history require refreshing affected conclusions.
+Use this skill to review code, documents, assets, designs, proposed changes, implementations, or work history.
 
-Safety, permissions, harness constraints, the active task, and applicable repository instructions remain authoritative. Repository instructions may specialize this guidance without expanding scope or permission. Review remains report-only.
+Safety, permissions, harness constraints, the active task, and applicable repository instructions remain authoritative. Repository instructions may specialize this guidance, including when review is warranted, without expanding scope or permission. Review remains report-only.
+
+## When independent review is warranted
+
+This is the review trigger that other skills' review checkpoints cite; each checkpoint names its reviewer, what is assessed, and when in its method the check happens. New independent review is warranted when the work under assessment involves any of these situations:
+
+- several viable designs or approaches, where choosing among them shapes the result;
+- a change to a public contract or to compatibility, such as an interface, format, command, or behavior that people or systems outside the change rely on;
+- a step that is hard to reverse, such as a data migration, a deletion, or a publication;
+- guidance that changes how agents behave, such as skills, role prompts, or repository instructions;
+- work meant for delivery whose quality can be judged only by looking at or playing the result, such as visual, typographic, and motion work.
+
+Routine, well-understood, and uniform mechanical work needs no review, whatever its size. Outside these situations, review is optional at your judgment. Reuse directly applicable independent review instead of repeating it. Reuse covers only the questions and evidence actually assessed; materially changed assumptions, designs, results, or history require refreshing affected conclusions. Work-history review has its own trigger in `agentic-implementing`.
 
 ## Delegate required independent review
 
-When new independent review is required, delegate it to a suitable available reviewer. This instruction authorizes the coordinating agent to launch that review without a separate operator request, within the active task and applicable permissions and role boundaries. Reuse directly applicable independent review instead of repeating it.
+When new independent review is warranted, delegate it to a suitable available reviewer. This instruction authorizes the coordinating agent to launch that review without a separate operator request, within the active task and applicable permissions and role boundaries.
 
 The parent selects the reviewer whose primary question matches the assignment:
 
@@ -26,6 +38,9 @@ The parent selects the reviewer whose primary question matches the assignment:
 | [`agentic-typography-reviewer`](../../agents/typography-reviewer.md) | Does the rendered text communicate and express what its role requires? |
 | [`agentic-animation-reviewer`](../../agents/animation-reviewer.md) | Does continuous playback establish the intended motion, timing, and continuity? |
 | [`agentic-retrospective-reviewer`](../../agents/retrospective-reviewer.md) | What significant issues, avoidable friction, and useful lessons does the work history establish? |
+| [`agentic-premise-checker`](../../agents/premise-checker.md) | Does the proposed direction serve the intended outcome on supported premises? |
+
+A decision record goes to the premise checker, which assesses its fit to the intended outcome, its material assumptions, and whether the alternatives were set aside on supported grounds. A specification goes to the artifact reviewer, with the agreed intent as its evaluation standard.
 
 One specialist is sufficient when one focus covers the task. Use multiple specialists when distinct questions warrant separate judgment, not merely because the roles exist. Include shared artifact questions in the applicable output review rather than adding a separate artifact review automatically. Give each a clear primary focus; overlapping evidence is acceptable. These focuses are not file-type boundaries or reasons to ignore an obvious material issue, but do not silently expand an assignment into a comprehensive audit.
 
